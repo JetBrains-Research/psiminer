@@ -22,10 +22,14 @@ sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
+    maven {
+        url  "https://dl.bintray.com/egor-bogomolov/astminer"
+    }
 }
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    compile 'io.github.vovak.astminer:astminer:0.5'
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 

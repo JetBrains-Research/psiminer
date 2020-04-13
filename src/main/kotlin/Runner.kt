@@ -1,8 +1,23 @@
+import astminer.common.getNormalizedToken
+import astminer.common.model.*
+import astminer.common.preOrder
+import astminer.common.setNormalizedToken
+import astminer.common.splitToSubtokens
+import astminer.parse.antlr.SimpleNode
+import astminer.parse.antlr.compressTree
+import astminer.parse.antlr.decompressTypeLabel
+import astminer.parse.antlr.java.JavaMethodSplitter
+import astminer.paths.Code2VecPathStorage
+import astminer.paths.PathMiner
+import astminer.paths.PathRetrievalSettings
+import astminer.paths.toPathContext
 import com.intellij.ide.impl.ProjectUtil
 import com.intellij.openapi.application.ApplicationStarter
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VfsUtilCore
 import com.intellij.psi.*
+import com.intellij.psi.util.elementType
+import org.antlr.v4.runtime.ParserRuleContext
 import java.io.File
 import kotlin.system.exitProcess
 import kotlin.system.measureTimeMillis
@@ -37,7 +52,7 @@ class Runner : ApplicationStarter {
                         println("${vFile.canonicalPath}")
                         File(outputPath).appendText("${vFile.canonicalPath}\n")
                         File(outputPath).appendText(
-                            (psi?.code2VecInfo()?.joinToString("\n") ?: "Nothing") + "\n\n"
+                            (psi?.code2VecInfoWithAstMiner()?.joinToString("\n") ?: "Nothing") + "\n\n"
                         )
                         true
                     }
@@ -76,4 +91,196 @@ fun PsiFile.code2VecInfo(): List<String> {
         }
     })
     return result
+}
+
+fun PsiFile.code2VecInfoWithAstMiner(): List<String> {
+    println("ASTMINER VERSION")
+    val outputDir = "/Users/dmitrii.petukhov/Documents/code2vecPathMining_debug"
+    val miner = PathMiner(PathRetrievalSettings(5, 5))
+    val storage = Code2VecPathStorage(outputDir)
+
+    val rootNode = convertPSITree(this)
+    val methods = JavaMethodSplitterFromPsi().splitIntoMethods(rootNode)
+
+    methods.forEach { methodInfo ->
+        val methodNameNode = methodInfo.method.nameNode ?: return@forEach
+        val methodRoot = methodInfo.method.root
+        val label = splitToSubtokens(methodNameNode.getToken()).joinToString("|")
+        methodRoot.preOrder().forEach { it.setNormalizedToken() }
+        methodNameNode.setNormalizedToken("METHOD_NAME")
+
+        // Retrieve paths from every node individually
+        val paths = miner.retrievePaths(methodRoot)
+        storage.store(LabeledPathContexts(label, paths.map { toPathContext(it) { node -> node.getNormalizedToken() } }))
+    }
+
+    storage.save()
+
+    return listOf()
+}
+
+// conversion
+
+fun convertPSITree(root: PsiElement): SimpleNode {
+    val tree = convertPsiElement(root, null)
+    return compressTree(tree)
+}
+
+fun PsiElement.asSimpleNode(): SimpleNode {
+    return SimpleNode(this.elementType.toString(), null, null)
+}
+
+fun convertPsiElement(node: PsiElement, parent: SimpleNode?): SimpleNode {
+    val currentNode = SimpleNode(node.elementType.toString(), parent, null)
+    val children: MutableList<Node> = ArrayList()
+
+    node.children.forEach {
+        when (it) {
+            is PsiJavaToken -> {
+                children.add(SimpleNode(it.tokenType.toString(), currentNode, it.text))
+            }
+            /*
+            is PsiReference -> {
+                it.resolve()?.let {
+                    println("RESOLVED ${it} | ${it.firstChild}")
+                    children.add(convertPsiElement(it, currentNode))
+                }
+            }
+             */
+            is PsiVariable -> {
+                val token = "${it.name}XXX${it.type.canonicalText}"
+                children.add(SimpleNode(it.elementType.toString(), currentNode, token))
+            }
+
+            /* TODO: consider creating ParameterNode at this point
+            is PsiParameterList -> {
+                it.parameters.forEach {
+                    val returnTypeNodePsi = SimpleNode(it.type.canonicalText, null, it.elementType.toString())
+                    val nameNodePsi = it.nameIdentifier
+
+//                    val returnTypeNode = convertPsiElement(returnTypeNodePsi as PsiElement, null)
+                    val nameNode = convertPsiElement(nameNodePsi as PsiElement, null)
+
+                    children.add(
+                        ParameterNode(it.asSimpleNode(), returnTypeNodePsi, nameNode) as Node
+                    )
+                }
+            }
+            */
+            is PsiWhiteSpace -> { }
+            else -> {
+                children.add(convertPsiElement(it, currentNode))
+            }
+        }
+    }
+    currentNode.setChildren(children)
+
+    return currentNode
+}
+
+
+/**
+ * Method Splitter
+ */
+
+fun Node.getChildWithPrefix(prefix: String): Node? {
+    return getChildren().filter { it.getTypeLabel().startsWith(prefix) }.firstOrNull()
+}
+
+class JavaMethodSplitterFromPsi : TreeMethodSplitter<SimpleNode> {
+    companion object {
+        private const val METHOD_NODE = "METHOD"
+        private const val METHOD_RETURN_TYPE_NODE = "TYPE" // "typeTypeOrVoid"
+        private const val METHOD_NAME_NODE = "IDENTIFIER"
+
+        private const val CLASS_DECLARATION_NODE = "CLASS" // "classDeclaration"
+        private const val CLASS_NAME_NODE = "IDENTIFIER"
+
+        private const val METHOD_PARAMETER_NODE = "PARAMETER_LIST" // "formalParameters"
+        private const val METHOD_PARAMETER_INNER_NODE = "PARAMETER"
+        private val METHOD_SINGLE_PARAMETER_NODE = listOf("formalParameter", "lastFormalParameter")
+        private const val PARAMETER_RETURN_TYPE_NODE = "TYPE" // "typeType"
+        private const val PARAMETER_NAME_NODE = "IDENTIFIER" // "variableDeclaratorId"
+    }
+
+    override fun splitIntoMethods(root: SimpleNode): Collection<MethodInfo<SimpleNode>> {
+        val methodRoots = root.preOrder().filter {
+            decompressTypeLabel(it.getTypeLabel()).last() == METHOD_NODE
+        }
+        return methodRoots.map { collectMethodInfo(it as SimpleNode) }
+    }
+
+    private fun collectMethodInfo(methodNode: SimpleNode): MethodInfo<SimpleNode> {
+        // 1. Extract Method Info
+        val methodName = methodNode.getChildOfType(METHOD_NAME_NODE) as? SimpleNode
+        val methodReturnTypeNode = methodNode.getChildOfType("TYPE")?.let {
+            it.getChildren().firstOrNull() ?: it
+        } as? SimpleNode
+        // TODO: do we really need it? examples?
+        methodReturnTypeNode?.setToken(collectParameterToken(methodReturnTypeNode))
+
+        // 2. Extract Class Info
+        val classRoot = getEnclosingClass(methodNode)
+        val className = classRoot?.getChildOfType(CLASS_NAME_NODE) as? SimpleNode
+
+        val parametersRoot = methodNode.getChildOfType(METHOD_PARAMETER_NODE) as? SimpleNode
+        val innerParametersRoot = parametersRoot?.getChildOfType(METHOD_PARAMETER_INNER_NODE) as? SimpleNode
+
+        /* TODO: verify
+        val parametersList = when {
+            innerParametersRoot != null -> getListOfParameters(innerParametersRoot)
+            parametersRoot != null -> getListOfParameters(parametersRoot)
+            else -> emptyList()
+        }
+         */
+        val parametersList = emptyList<ParameterNode<SimpleNode>>()
+
+        return MethodInfo(
+            MethodNode(methodNode, methodReturnTypeNode, methodName),
+            ElementNode(classRoot, className),
+            parametersList
+        )
+    }
+
+    private fun getEnclosingClass(node: SimpleNode): SimpleNode? {
+        if (decompressTypeLabel(node.getTypeLabel()).last() == CLASS_DECLARATION_NODE) {
+            return node
+        }
+        val parentNode = node.getParent() as? SimpleNode
+        if (parentNode != null) {
+            return getEnclosingClass(parentNode)
+        }
+        return null
+    }
+
+    private fun getListOfParameters(parametersRoot: SimpleNode): List<ParameterNode<SimpleNode>> {
+        if (METHOD_SINGLE_PARAMETER_NODE.contains(decompressTypeLabel(parametersRoot.getTypeLabel()).last())) {
+            return listOf(getParameterInfoFromNode(parametersRoot))
+        }
+        return parametersRoot.getChildren().filter {
+            val firstType = decompressTypeLabel(it.getTypeLabel()).first()
+            METHOD_SINGLE_PARAMETER_NODE.contains(firstType)
+        }.map {
+            getParameterInfoFromNode(it as SimpleNode)
+        }
+    }
+
+    private fun getParameterInfoFromNode(parameterRoot: SimpleNode): ParameterNode<SimpleNode> {
+        val returnTypeNode = parameterRoot.getChildOfType(PARAMETER_RETURN_TYPE_NODE) as? SimpleNode
+        returnTypeNode?.setToken(collectParameterToken(returnTypeNode))
+        return ParameterNode(
+            parameterRoot,
+            returnTypeNode,
+            parameterRoot.getChildOfType(PARAMETER_NAME_NODE) as? SimpleNode
+        )
+    }
+
+    private fun collectParameterToken(parameterRoot: SimpleNode): String {
+        if (parameterRoot.isLeaf()) {
+            return parameterRoot.getToken()
+        }
+        return parameterRoot.getChildren().joinToString(separator = "") { child ->
+            collectParameterToken(child as SimpleNode)
+        }
+    }
 }

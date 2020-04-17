@@ -16,6 +16,7 @@ import com.intellij.openapi.application.ApplicationStarter
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VfsUtilCore
 import com.intellij.psi.*
+import com.intellij.psi.javadoc.PsiDocComment
 import com.intellij.psi.util.elementType
 import org.antlr.v4.runtime.ParserRuleContext
 import java.io.File
@@ -49,10 +50,19 @@ class Runner : ApplicationStarter {
                 ProjectRootManager.getInstance(project).contentRoots.forEach { root ->
                     VfsUtilCore.iterateChildrenRecursively(root, null) { vFile ->
                         val psi = PsiManager.getInstance(project).findFile(vFile)
+
                         println("${vFile.canonicalPath}")
+                        val chunks = vFile.canonicalPath?.split("/")
+                            ?.takeLast(4)
+                            ?.joinToString("/", prefix = "/")
+                            ?: ""
+                        if (!chunks.startsWith("/java-small")) {
+                            println(chunks)
+                            return@iterateChildrenRecursively true
+                        }
                         File(outputPath).appendText("${vFile.canonicalPath}\n")
                         File(outputPath).appendText(
-                            (psi?.code2VecInfoWithAstMiner()?.joinToString("\n") ?: "Nothing") + "\n\n"
+                            (psi?.code2VecInfoWithAstMiner(chunks)?.joinToString("\n") ?: "Nothing") + "\n\n"
                         )
                         true
                     }
@@ -93,11 +103,14 @@ fun PsiFile.code2VecInfo(): List<String> {
     return result
 }
 
-fun PsiFile.code2VecInfoWithAstMiner(): List<String> {
-    println("ASTMINER VERSION")
-    val outputDir = "/Users/dmitrii.petukhov/Documents/code2vecPathMining_debug"
+val node2type: MutableMap<Node, String> = mutableMapOf()
+
+fun PsiFile.code2VecInfoWithAstMiner(saveTo: String): List<String> {
+//    println("ASTMINER VERSION")
+    node2type.clear()
+    val outputDir = "/Users/dmitrii.petukhov/Documents/code2vecPathMining_java-small$saveTo"
     val miner = PathMiner(PathRetrievalSettings(5, 5))
-    val storage = Code2VecPathStorage(outputDir)
+    val storage = XCode2VecPathStorage(outputDir)
 
     val rootNode = convertPSITree(this)
     val methods = JavaMethodSplitterFromPsi().splitIntoMethods(rootNode)
@@ -111,7 +124,9 @@ fun PsiFile.code2VecInfoWithAstMiner(): List<String> {
 
         // Retrieve paths from every node individually
         val paths = miner.retrievePaths(methodRoot)
-        storage.store(LabeledPathContexts(label, paths.map { toPathContext(it) { node -> node.getNormalizedToken() } }))
+        storage.store(XLabeledPathContexts(label, paths.map {
+            toXPathContext(it, { node -> node.getNormalizedToken() }, {node2type.getOrDefault(it, "unknown")})
+        }))
     }
 
     storage.save()
@@ -120,6 +135,8 @@ fun PsiFile.code2VecInfoWithAstMiner(): List<String> {
 }
 
 // conversion
+
+// class SimpleNodeWithType(val tokenType: String?, typeLabel: String, parent: Node, token: String): SimpleNode(typeLabel, parent, token)
 
 fun convertPSITree(root: PsiElement): SimpleNode {
     val tree = convertPsiElement(root, null)
@@ -134,11 +151,45 @@ fun convertPsiElement(node: PsiElement, parent: SimpleNode?): SimpleNode {
     val currentNode = SimpleNode(node.elementType.toString(), parent, null)
     val children: MutableList<Node> = ArrayList()
 
-    node.children.forEach {
+    node.children
+        .filter {
+            !(it is PsiWhiteSpace || it is PsiDocComment || it is PsiImportStatement || it is PsiPackageStatement)
+                    && !(it is PsiMethod && it.isConstructor)
+        }
+        .forEach {
         when (it) {
+//            is PsiIdentifier -> {
+//                it.parent
+//            }
             is PsiJavaToken -> {
-                children.add(SimpleNode(it.tokenType.toString(), currentNode, it.text))
+                val n = SimpleNode(it.tokenType.toString(), currentNode, it.text)
+                children.add(n)
             }
+            is PsiThisExpression -> {
+                val token = "this"
+                val tokenType = it.type?.presentableText ?: "null"
+                val n = SimpleNode(it.elementType.toString(), currentNode, token)
+                node2type[n] = tokenType
+                children.add(n)
+            }
+            is PsiReferenceExpression -> {
+                val token = it.element.text
+                val tokenType = it.type?.presentableText ?: "null"
+                val n = SimpleNode(it.elementType.toString(), currentNode, token)
+                node2type[n] = tokenType
+                children.add(n)
+            }
+            is PsiVariable -> {
+                val token = it.name
+                val tokenType = it.type.presentableText ?: "null"
+                val n = SimpleNode(it.elementType.toString(), currentNode, token)
+                node2type[n] = tokenType
+                children.add(n)
+                it.children.forEach { kid -> convertPsiElement(kid, n) }
+            }
+//            is PsiJavaCodeReferenceElement -> {
+//                it
+//            }
             /*
             is PsiReference -> {
                 it.resolve()?.let {
@@ -147,10 +198,10 @@ fun convertPsiElement(node: PsiElement, parent: SimpleNode?): SimpleNode {
                 }
             }
              */
-            is PsiVariable -> {
-                val token = "${it.name}XXX${it.type.canonicalText}"
-                children.add(SimpleNode(it.elementType.toString(), currentNode, token))
-            }
+//            is PsiVariable -> {
+//                val token = "${it.name}XXX${it.type.canonicalText}"
+//                children.add(SimpleNode(it.elementType.toString(), currentNode, token))
+//            }
 
             /* TODO: consider creating ParameterNode at this point
             is PsiParameterList -> {
@@ -167,7 +218,12 @@ fun convertPsiElement(node: PsiElement, parent: SimpleNode?): SimpleNode {
                 }
             }
             */
-            is PsiWhiteSpace -> { }
+//            is PsiMethod -> {
+//                if (!it.isConstructor) {
+//                    children.add(convertPsiElement(it, currentNode))
+//                }
+//            }
+//            is PsiWhiteSpace, is PsiDocComment -> { }
             else -> {
                 children.add(convertPsiElement(it, currentNode))
             }

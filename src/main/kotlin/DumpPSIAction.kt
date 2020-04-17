@@ -22,7 +22,7 @@ class DumpPSIAction : AnAction() {
         }
         */
 
-        e.psiFile()?.code2VecInfoWithAstMiner()
+        e.psiFile()?.code2VecInfoWithAstMiner("")
 
         /*
         println(DebugUtil.psiToString(e.psiFile()!!, true))

@@ -7,6 +7,7 @@ import astminer.parse.antlr.SimpleNode
 import astminer.parse.antlr.compressTree
 import astminer.parse.antlr.decompressTypeLabel
 import astminer.parse.antlr.java.JavaMethodSplitter
+import astminer.parse.antlr.java.JavaParser
 import astminer.paths.Code2VecPathStorage
 import astminer.paths.PathMiner
 import astminer.paths.PathRetrievalSettings
@@ -18,17 +19,18 @@ import com.intellij.openapi.vfs.VfsUtilCore
 import com.intellij.psi.*
 import com.intellij.psi.javadoc.PsiDocComment
 import com.intellij.psi.util.elementType
-import org.antlr.v4.runtime.ParserRuleContext
 import java.io.File
 import kotlin.system.exitProcess
 import kotlin.system.measureTimeMillis
+
+val node2type: MutableMap<Node, String> = hashMapOf()
 
 class Runner : ApplicationStarter {
 
     override fun getCommandName(): String = "code2vec"
 
     override fun main(args: Array<out String>) {
-        println("Hello Plugin!")
+        println("code2vec plugin started 181818")
 
         if (args.size != 3) {
             println("incorrect number of arguments!")
@@ -42,109 +44,135 @@ class Runner : ApplicationStarter {
         if (project == null) {
             println("Could not load project from $projectPath")
         } else {
-            println("Opened project")
-            // val sdkName = ProjectRootManager.getInstance(project).projectSdkName
-            // println(sdkName)
-            println("Processing files...")
+            println("opened project")
+            println("processing files...")
+            val outputDir = "/Users/dmitrii.petukhov/Documents/code2vecPathMining_java-med_ALL_IN"
+            val miner = PathMiner(PathRetrievalSettings(5, 5))
+            val storage = XCode2VecPathStorage("$outputDir/withTypes")
+
+            val minerGold = PathMiner(PathRetrievalSettings(5, 5))
+            val storageGold = XCode2VecPathStorage("$outputDir/gold")
+
             val executionTime = measureTimeMillis {
                 ProjectRootManager.getInstance(project).contentRoots.forEach { root ->
+                    var total = 0
+                    VfsUtilCore.iterateChildrenRecursively(root, null) { _ -> total += 1; true }
+
+                    var index = 0
                     VfsUtilCore.iterateChildrenRecursively(root, null) { vFile ->
                         val psi = PsiManager.getInstance(project).findFile(vFile)
+                        index += 1
+                        println("processing ${vFile.canonicalPath} $index / $total")
 
-                        println("${vFile.canonicalPath}")
+                        // verify path
                         val chunks = vFile.canonicalPath?.split("/")
-                            ?.takeLast(4)
+                            ?.drop(4)
                             ?.joinToString("/", prefix = "/")
                             ?: ""
-                        if (!chunks.startsWith("/java-small")) {
-                            println(chunks)
+                        val datasetName = "/java-med"
+                        if (!chunks.startsWith(datasetName)) {
+                            println("skipping! chunks: $chunks")
                             return@iterateChildrenRecursively true
+                        } else {
+                            println("👍🏻 chunks: $chunks")
                         }
-                        File(outputPath).appendText("${vFile.canonicalPath}\n")
-                        File(outputPath).appendText(
-                            (psi?.code2VecInfoWithAstMiner(chunks)?.joinToString("\n") ?: "Nothing") + "\n\n"
-                        )
+
+                        // determine if it's train / val / test
+                        // val dataset = Dataset.valueOf()
+                        val dataset = if (chunks.startsWith("$datasetName/training")) {
+                            Dataset.Train
+                        } else if (chunks.startsWith("$datasetName/test")) {
+                            Dataset.Test
+                        } else {
+                            assert(chunks.startsWith("$datasetName/validation"))
+                            Dataset.Val
+                        }
+                        println(">>> dataset type: $dataset")
+                        // File(outputPath).appendText("${vFile.canonicalPath}\n")
+
+
+                        //parse file
+                        if (!vFile.isDirectory) {
+                            JavaParser().parse(vFile.inputStream)?.let { fileNode ->
+                                //extract method nodes
+                                val methods = JavaMethodSplitter().splitIntoMethods(fileNode)
+
+                                methods.forEach { methodInfo ->
+                                    val methodNameNode = methodInfo.method.nameNode ?: return@forEach
+                                    val methodRoot = methodInfo.method.root
+                                    val label = splitToSubtokens(methodNameNode.getToken()).joinToString("|")
+                                    methodRoot.preOrder().forEach { it.setNormalizedToken() }
+                                    methodNameNode.setNormalizedToken("METHOD_NAME")
+
+                                    // Retrieve paths from every node individually
+                                    val paths = minerGold.retrievePaths(methodRoot)
+                                    storageGold.store(XLabeledPathContexts(
+                                        label = label,
+                                        pathContexts = paths.map {
+                                            toXPathContext(
+                                                path = it,
+                                                getTokenType = {node -> "unknown" },
+                                                getToken = { node -> node.getNormalizedToken() }
+                                            )
+                                        }
+                                    ), dataset)
+                                }
+                            }
+                        }
+
+                        /**
+                         * Processing START
+                         */
+                        psi?.let { it ->
+                            val rootNode = convertPSITree(it)
+                            val methods = JavaMethodSplitterFromPsi().splitIntoMethods(rootNode)
+
+                            methods.forEach { methodInfo ->
+                                val methodNameNode = methodInfo.method.nameNode ?: return@forEach
+                                val methodRoot = methodInfo.method.root
+                                val label = splitToSubtokens(methodNameNode.getToken()).joinToString("|")
+                                methodRoot.preOrder().forEach { it.setNormalizedToken() }
+                                methodNameNode.setNormalizedToken("METHOD_NAME")
+
+                                // Retrieve paths from every node individually
+                                val paths = miner.retrievePaths(methodRoot)
+                                storage.store(XLabeledPathContexts(
+                                    label = label,
+                                    pathContexts = paths.map {
+                                        toXPathContext(
+                                            path = it,
+                                            getToken = { node -> node.getNormalizedToken() },
+                                            getTokenType = {node2type.getOrDefault(it, "unknown")}
+                                        )
+                                    }
+                                ), dataset)
+                            }
+                        }
+
+                        /**
+                         * Processing END
+                         */
+
                         true
                     }
                 }
             } / 1000
-            File(outputPath).appendText("\nCOMPUTED IN $executionTime SECONDS\n")
+
+            storageGold.save()
+            storage.save()
+            println("\nCOMPUTED IN $executionTime SECONDS\n")
             println("Processing files...DONE! [$executionTime sec]")
             exitProcess(0)
-//            PsiManager.getInstance(project).findFile()
-//            PsiDocumentManager.getInstance(project).
         }
     }
 }
 
-fun PsiFile.code2VecInfo(): List<String> {
-    val result = mutableListOf<String>()
-    this.accept(object : PsiRecursiveElementWalkingVisitor() {
-        override fun visitElement(element: PsiElement) {
-            when (element) {
-                is PsiMethod -> {
-                    result.add("[PSI_METHOD]: '${element.name}'")
-
-                    element.accept(object : PsiRecursiveElementWalkingVisitor() {
-                        override fun visitElement(element: PsiElement) {
-                            when (element) {
-                                is PsiVariable -> {
-                                    result.add("variable '${element.name}' | type '${element.type.presentableText}'")
-                                }
-                            }
-                            super.visitElement(element)
-                        }
-                    })
-                }
-            }
-            super.visitElement(element)
-        }
-    })
-    return result
-}
-
-val node2type: MutableMap<Node, String> = mutableMapOf()
-
-fun PsiFile.code2VecInfoWithAstMiner(saveTo: String): List<String> {
-//    println("ASTMINER VERSION")
-    node2type.clear()
-    val outputDir = "/Users/dmitrii.petukhov/Documents/code2vecPathMining_java-small$saveTo"
-    val miner = PathMiner(PathRetrievalSettings(5, 5))
-    val storage = XCode2VecPathStorage(outputDir)
-
-    val rootNode = convertPSITree(this)
-    val methods = JavaMethodSplitterFromPsi().splitIntoMethods(rootNode)
-
-    methods.forEach { methodInfo ->
-        val methodNameNode = methodInfo.method.nameNode ?: return@forEach
-        val methodRoot = methodInfo.method.root
-        val label = splitToSubtokens(methodNameNode.getToken()).joinToString("|")
-        methodRoot.preOrder().forEach { it.setNormalizedToken() }
-        methodNameNode.setNormalizedToken("METHOD_NAME")
-
-        // Retrieve paths from every node individually
-        val paths = miner.retrievePaths(methodRoot)
-        storage.store(XLabeledPathContexts(label, paths.map {
-            toXPathContext(it, { node -> node.getNormalizedToken() }, {node2type.getOrDefault(it, "unknown")})
-        }))
-    }
-
-    storage.save()
-
-    return listOf()
-}
 
 // conversion
-
-// class SimpleNodeWithType(val tokenType: String?, typeLabel: String, parent: Node, token: String): SimpleNode(typeLabel, parent, token)
 
 fun convertPSITree(root: PsiElement): SimpleNode {
     val tree = convertPsiElement(root, null)
     return compressTree(tree)
-}
-
-fun PsiElement.asSimpleNode(): SimpleNode {
-    return SimpleNode(this.elementType.toString(), null, null)
 }
 
 fun convertPsiElement(node: PsiElement, parent: SimpleNode?): SimpleNode {
@@ -158,9 +186,6 @@ fun convertPsiElement(node: PsiElement, parent: SimpleNode?): SimpleNode {
         }
         .forEach {
         when (it) {
-//            is PsiIdentifier -> {
-//                it.parent
-//            }
             is PsiJavaToken -> {
                 val n = SimpleNode(it.tokenType.toString(), currentNode, it.text)
                 children.add(n)
@@ -187,22 +212,6 @@ fun convertPsiElement(node: PsiElement, parent: SimpleNode?): SimpleNode {
                 children.add(n)
                 it.children.forEach { kid -> convertPsiElement(kid, n) }
             }
-//            is PsiJavaCodeReferenceElement -> {
-//                it
-//            }
-            /*
-            is PsiReference -> {
-                it.resolve()?.let {
-                    println("RESOLVED ${it} | ${it.firstChild}")
-                    children.add(convertPsiElement(it, currentNode))
-                }
-            }
-             */
-//            is PsiVariable -> {
-//                val token = "${it.name}XXX${it.type.canonicalText}"
-//                children.add(SimpleNode(it.elementType.toString(), currentNode, token))
-//            }
-
             /* TODO: consider creating ParameterNode at this point
             is PsiParameterList -> {
                 it.parameters.forEach {
@@ -223,7 +232,6 @@ fun convertPsiElement(node: PsiElement, parent: SimpleNode?): SimpleNode {
 //                    children.add(convertPsiElement(it, currentNode))
 //                }
 //            }
-//            is PsiWhiteSpace, is PsiDocComment -> { }
             else -> {
                 children.add(convertPsiElement(it, currentNode))
             }

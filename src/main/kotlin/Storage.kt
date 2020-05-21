@@ -1,10 +1,7 @@
 import astminer.common.model.*
 import astminer.common.storage.*
-import astminer.paths.CountingPathStorage
-import com.intellij.util.containers.enumMapOf
 import java.io.File
-import java.util.*
-import kotlin.collections.HashMap
+import java.io.FileOutputStream
 
 const val DEFAULT_FRAGMENTS_PER_BATCH = 100L
 
@@ -37,13 +34,6 @@ abstract class XCountingPathStorage<LabelType>(
     val batchMode: Boolean = true,
     val fragmentsPerBatch: Long = DEFAULT_FRAGMENTS_PER_BATCH) : XPathStorage<LabelType> {
 
-    private var contextsFileIndexMap = mapOf(
-        Dataset.Train to 0,
-        Dataset.Test to 0,
-        Dataset.Val to 0
-    )
-    // private var currentFragmentsCount = 0
-
     protected val tokensTypesMap: RankedIncrementalIdStorage<String> = RankedIncrementalIdStorage()
     protected val tokensMap: RankedIncrementalIdStorage<String> = RankedIncrementalIdStorage()
     protected val orientedNodeTypesMap: RankedIncrementalIdStorage<OrientedNodeType> = RankedIncrementalIdStorage()
@@ -55,6 +45,18 @@ abstract class XCountingPathStorage<LabelType>(
             Dataset.Test to mutableListOf(),
             Dataset.Val to mutableListOf()
         )
+
+    private val streams: Map<Dataset, () -> FileOutputStream>
+
+    init {
+        File(outputFolderPath).mkdirs()
+        streams = Dataset.values().map {
+            val f = File("$outputFolderPath/${it.name.toLowerCase()}_path_contexts.csv")
+            if (f.exists()) error("${f.absolutePath} already exists, terminating!")
+            f.createNewFile()
+            it to { FileOutputStream(f, true) }
+        }.toMap()
+    }
 
     private fun dumpTokenTypeStorage(file: File, tokensLimit: Long) {
         dumpIdStorageToCsv(tokensTypesMap, "token_type", tokenToCsvString, file, tokensLimit)
@@ -72,7 +74,7 @@ abstract class XCountingPathStorage<LabelType>(
         dumpIdStorageToCsv(pathsMap, "path", pathToCsvString, file, pathsLimit)
     }
 
-    abstract fun dumpPathContexts(file: File, tokensLimit: Long, pathsLimit: Long, labeledPathContextIdsList: MutableList<XLabeledPathContextIds<LabelType>>)
+    abstract fun dumpPathContexts(file: () -> FileOutputStream, tokensLimit: Long, pathsLimit: Long, labeledPathContextIdsList: MutableList<XLabeledPathContextIds<LabelType>>)
 
     private fun doStore(xpathContext: XPathContext): XPathContextId {
         val startTokenTypeId = tokensTypesMap.record(xpathContext.startTokenType)
@@ -86,14 +88,14 @@ abstract class XCountingPathStorage<LabelType>(
 
     private fun dumpPathContextsIfNeeded(dataset: Dataset) {
         val labeledPathContextIdsList = labeledPathContextIdsMap[dataset] ?: error("unknown dataset type: $dataset")
-        val contextsFileIndex = (contextsFileIndexMap[dataset] ?: error("unknown dataset type: $dataset")).inc()
+        val stream = streams[dataset] ?: error("unknown dataset type: $dataset")
 
         if (!batchMode || labeledPathContextIdsList.size < fragmentsPerBatch) {
             return
         }
         File(outputFolderPath).mkdirs()
         dumpPathContexts(
-            File("$outputFolderPath/${dataset.name.toLowerCase()}_path_contexts_$contextsFileIndex.csv"),
+            stream,
             Long.MAX_VALUE, Long.MAX_VALUE,
             labeledPathContextIdsList
         )
@@ -126,12 +128,12 @@ abstract class XCountingPathStorage<LabelType>(
         dumpPathsStorage(File("$outputFolderPath/paths.csv"), pathsLimit)
 
         labeledPathContextIdsMap.forEach { dataset, labeledPathContextIdsList ->
+            val stream = streams[dataset] ?: error("unknown dataset $dataset")
             if (!batchMode) {
-                dumpPathContexts(File("$outputFolderPath/path_contexts.csv"), tokensLimit, pathsLimit, labeledPathContextIdsList)
+                dumpPathContexts(stream, tokensLimit, pathsLimit, labeledPathContextIdsList)
             } else {
-                val contextsFileIndex = (contextsFileIndexMap[dataset] ?: error("unknown dataset type: $dataset")).inc()
                 dumpPathContexts(
-                    File("$outputFolderPath/path_contexts_${contextsFileIndex}.csv"),
+                    stream,
                     Long.MAX_VALUE, Long.MAX_VALUE,
                     labeledPathContextIdsList
                 )
@@ -142,7 +144,7 @@ abstract class XCountingPathStorage<LabelType>(
 
 
 class XCode2VecPathStorage(outputFolderPath: String) : XCountingPathStorage<String>(outputFolderPath, batchMode = true) {
-    override fun dumpPathContexts(file: File, tokensLimit: Long, pathsLimit: Long, labeledPathContextIdsList: MutableList<XLabeledPathContextIds<String>>) {
+    override fun dumpPathContexts(file: () -> FileOutputStream, tokensLimit: Long, pathsLimit: Long, labeledPathContextIdsList: MutableList<XLabeledPathContextIds<String>>) {
         val lines = mutableListOf<String>()
         labeledPathContextIdsList.forEach { labeledPathContextIds ->
             val pathContextIdsString = labeledPathContextIds.pathContexts.filter {
@@ -156,6 +158,11 @@ class XCode2VecPathStorage(outputFolderPath: String) : XCountingPathStorage<Stri
             }
             lines.add("${labeledPathContextIds.label} $pathContextIdsString")
         }
-        writeLinesToFile(lines, file)
+        file().bufferedWriter().use { out ->
+            lines.forEach {
+                out.append(it)
+                out.newLine()
+            }
+        }
     }
 }

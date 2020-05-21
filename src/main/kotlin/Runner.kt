@@ -84,7 +84,7 @@ class Runner : ApplicationStarter {
                         } else if (chunks.startsWith("$datasetName/test")) {
                             Dataset.Test
                         } else {
-                            assert(chunks.startsWith("$datasetName/validation"))
+                            // assert(chunks.startsWith("$datasetName/validation"))
                             Dataset.Val
                         }
                         println(">>> dataset type: $dataset")

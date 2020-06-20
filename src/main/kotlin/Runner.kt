@@ -8,10 +8,10 @@ import astminer.parse.antlr.compressTree
 import astminer.parse.antlr.decompressTypeLabel
 import astminer.parse.antlr.java.JavaMethodSplitter
 import astminer.parse.antlr.java.JavaParser
-import astminer.paths.Code2VecPathStorage
 import astminer.paths.PathMiner
 import astminer.paths.PathRetrievalSettings
-import astminer.paths.toPathContext
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.intellij.ide.impl.ProjectUtil
 import com.intellij.openapi.application.ApplicationStarter
 import com.intellij.openapi.roots.ProjectRootManager
@@ -19,26 +19,29 @@ import com.intellij.openapi.vfs.VfsUtilCore
 import com.intellij.psi.*
 import com.intellij.psi.javadoc.PsiDocComment
 import com.intellij.psi.util.elementType
-import java.io.File
 import kotlin.system.exitProcess
 import kotlin.system.measureTimeMillis
 
 val node2type: MutableMap<Node, String> = hashMapOf()
+
+//val mapper = ObjectMapper().registerModule(KotlinModule())
 
 class Runner : ApplicationStarter {
 
     override fun getCommandName(): String = "code2vec"
 
     override fun main(args: Array<out String>) {
-        println("code2vec plugin started 181818")
+        println("code2vec plugin started ;)")
+
+        // System.setProperty("org.litote.mongo.test.mapping.service", "org.litote.kmongo.jackson.JacksonClassMappingTypeService")
 
         if (args.size != 3) {
             println("incorrect number of arguments!")
             exitProcess(0)
         }
 
-        val projectPath = args[1] // "/Users/petukhov/Downloads/c2v_data/small/test/hadoop"
-        val outputPath = args[2] // "/Users/petukhov/Downloads/c2v_data/small/test/hadoop.c2v.txt"
+        val projectPath = args[1] // "./c2v_data/java-small"
+        val outputPath = args[2] // "./c2v_data_preprocessed/java-small"
 
         val project = ProjectUtil.openOrImport(projectPath, null, true)
         if (project == null) {
@@ -46,22 +49,26 @@ class Runner : ApplicationStarter {
         } else {
             println("opened project")
             println("processing files...")
-            val outputDir = "/Users/dmitrii.petukhov/Documents/code2vecPathMining_java-med_ALL_IN"
             val miner = PathMiner(PathRetrievalSettings(5, 5))
-            val storage = XCode2VecPathStorage("$outputDir/withTypes")
+            val storage = XCode2VecPathStorage("astminer_withTypes", "$outputPath/withTypes")
 
             val minerGold = PathMiner(PathRetrievalSettings(5, 5))
-            val storageGold = XCode2VecPathStorage("$outputDir/gold")
+            val storageGold = XCode2VecPathStorage("astminer_gold", "$outputPath/gold")
 
+            // val LIMIT = 1800
             val executionTime = measureTimeMillis {
                 ProjectRootManager.getInstance(project).contentRoots.forEach { root ->
-                    var total = 0
-                    VfsUtilCore.iterateChildrenRecursively(root, null) { _ -> total += 1; true }
+                    var total = 0L
+                    VfsUtilCore.iterateChildrenRecursively(root, null) { total += 1; true }
 
-                    var index = 0
+                    var index = 0L
                     VfsUtilCore.iterateChildrenRecursively(root, null) { vFile ->
                         val psi = PsiManager.getInstance(project).findFile(vFile)
                         index += 1
+                        //if (index > LIMIT) {
+                        //    println("[LIMIT REACHED] terminating")
+                        //    return@iterateChildrenRecursively false
+                        //}
                         println("processing ${vFile.canonicalPath} $index / $total")
 
                         // verify path
@@ -111,8 +118,8 @@ class Runner : ApplicationStarter {
                                         pathContexts = paths.map {
                                             toXPathContext(
                                                 path = it,
-                                                getTokenType = {node -> "unknown" },
-                                                getToken = { node -> node.getNormalizedToken() }
+                                                getToken = { node -> node.getNormalizedToken() },
+                                                getTokenType = { node -> "unknown" }
                                             )
                                         }
                                     ), dataset)
@@ -152,13 +159,16 @@ class Runner : ApplicationStarter {
                         /**
                          * Processing END
                          */
+                        node2type.clear()
 
                         true
                     }
                 }
             } / 1000
 
+            println("saving astminer-based a.k.a. gold...")
             storageGold.save()
+            println("saving psi-based...")
             storage.save()
             println("\nCOMPUTED IN $executionTime SECONDS\n")
             println("Processing files...DONE! [$executionTime sec]")

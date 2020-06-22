@@ -19,7 +19,6 @@ data class XPathContextId(
 )
 
 data class XLabeledPathContexts<T>(val label: T, val pathContexts: Collection<XPathContext>)
-//data class XLabeledPathContextIds<T>(val label: T, val pathContexts: () -> Collection<XPathContextId>?)
 data class XLabeledPathContextIds<T>(val label: T, val pathContexts: Collection<XPathContextId>)
 
 enum class Dataset {
@@ -57,7 +56,7 @@ abstract class XCountingPathStorage<LabelType>(
         ChronicleMap
             .of(CharSequence::class.java, java.lang.Long::class.java)
             .name("tokensTypesMap")
-            .entries(10_000_000)
+            .entries(400_000)
             .averageKey("List<DaemonInitialConnectException>")
             .create()
             // .createPersistedTo(File("$outputFolderPath/${databaseName}_${startTimeFormatted}__chronicle__token_type.dat"))
@@ -67,7 +66,7 @@ abstract class XCountingPathStorage<LabelType>(
         ChronicleMap
             .of(CharSequence::class.java, java.lang.Long::class.java)
             .name("tokensMap")
-            .entries(10_000_000)
+            .entries(5_000_000)
             .averageKey("pluggablescmmaterialconfigvalidateconcretematerial")
             .create()
         // .createPersistedTo(File("$outputFolderPath/${databaseName}_${startTimeFormatted}__chronicle__token_type.dat"))
@@ -77,7 +76,7 @@ abstract class XCountingPathStorage<LabelType>(
         ChronicleMap
             .of(CharSequence::class.java, java.lang.Long::class.java)
             .name("orientedNodeTypesMap")
-            .entries(10_000_000)
+            .entries(1_000)
             .averageKey("NAME_VALUE_PAIR|LITERAL_EXPRESSION|STRING_LITERAL DOWN")
             .create()
         // .createPersistedTo(File("$outputFolderPath/${databaseName}_${startTimeFormatted}__chronicle__token_type.dat"))
@@ -87,7 +86,7 @@ abstract class XCountingPathStorage<LabelType>(
         ChronicleMap
             .of(CharSequence::class.java, java.lang.Long::class.java)
             .name("pathsMap")
-            .entries(10_000_000)
+            .entries(1_000_000)
             .averageKey("16 192 73 76 12 13 77 83 8")
             .create()
         // .createPersistedTo(File("$outputFolderPath/${databaseName}_${startTimeFormatted}__chronicle__token_type.dat"))
@@ -171,9 +170,6 @@ abstract class XCountingPathStorage<LabelType>(
 
         File(outputFolderPath).mkdirs()
     }
-
-    // private val cache = mutableMapOf<LabelType, Collection<XPathContextId>>()
-    // private val postponed = mutableMapOf<LabelType, Collection<XPathContext>>()
 
     override fun store(labeledPathContexts: XLabeledPathContexts<LabelType>, dataset: Dataset) {
         val labeledPathContextIds = XLabeledPathContextIds(
@@ -259,19 +255,3 @@ fun <K, V> xDumpIdStorageToCsv(storage: ChronicleMap<K, V>, typeHeader: String, 
     storage.close()
 }
 
-//class XRankedIncrementalIdStorage<T>(private val collectionName: String, private val averageKey = ) {
-//    private var keyCounter = 0L
-//    private val idPerItem = ChronicleMap
-//        .of(CharSequence::class.java, java.lang.Long::class.java)
-//        .name("tokenType")
-//        .entries(100_000_000)
-//        .averageKey("List<DaemonInitialConnectException>")
-//        .create()
-//        // .createPersistedTo(File("$outputFolderPath/${databaseName}_${startTimeFormatted}__chronicle__token_type.dat"))
-//
-//    fun record(item: T): Long {
-//        return idPerItem.getOrCreate(item) {
-//            java.lang.Long(++keyCounter)
-//        }.toLong()
-//    }
-//}

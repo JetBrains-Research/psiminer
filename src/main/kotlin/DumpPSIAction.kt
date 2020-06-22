@@ -6,7 +6,7 @@ import com.intellij.psi.*
 class DumpPSIAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         println("Dumping! :)")
-        // e.psiFile()?.runPlugin()
+        e.psiFile()?.runPlugin()
         println("Dumping DONE.")
     }
 

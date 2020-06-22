@@ -31,7 +31,7 @@ class Runner : ApplicationStarter {
     override fun getCommandName(): String = "code2vec"
 
     override fun main(args: Array<out String>) {
-        println("code2vec plugin started ;)")
+        println("code2vec plugin started")
 
         // System.setProperty("org.litote.mongo.test.mapping.service", "org.litote.kmongo.jackson.JacksonClassMappingTypeService")
 
@@ -86,13 +86,10 @@ class Runner : ApplicationStarter {
 
                         // determine if it's train / val / test
                         // val dataset = Dataset.valueOf()
-                        val dataset = if (chunks.startsWith("$datasetName/training")) {
-                            Dataset.Train
-                        } else if (chunks.startsWith("$datasetName/test")) {
-                            Dataset.Test
-                        } else {
-                            // assert(chunks.startsWith("$datasetName/validation"))
-                            Dataset.Val
+                        val dataset = when {
+                            chunks.startsWith("$datasetName/training") -> Dataset.Train
+                            chunks.startsWith("$datasetName/test") -> Dataset.Test
+                            else -> Dataset.Val
                         }
                         println(">>> dataset type: $dataset")
                         // File(outputPath).appendText("${vFile.canonicalPath}\n")
@@ -177,6 +174,9 @@ class Runner : ApplicationStarter {
     }
 }
 
+fun PsiElement.runPlugin() {
+    // debug it here in IntelliJ
+}
 
 // conversion
 
@@ -272,7 +272,7 @@ class JavaMethodSplitterFromPsi : TreeMethodSplitter<SimpleNode> {
 
         private const val METHOD_PARAMETER_NODE = "PARAMETER_LIST" // "formalParameters"
         private const val METHOD_PARAMETER_INNER_NODE = "PARAMETER"
-        private val METHOD_SINGLE_PARAMETER_NODE = listOf("formalParameter", "lastFormalParameter")
+        private val METHOD_SINGLE_PARAMETER_NODE = listOf("PARAMETER")
         private const val PARAMETER_RETURN_TYPE_NODE = "TYPE" // "typeType"
         private const val PARAMETER_NAME_NODE = "IDENTIFIER" // "variableDeclaratorId"
     }
@@ -290,7 +290,6 @@ class JavaMethodSplitterFromPsi : TreeMethodSplitter<SimpleNode> {
         val methodReturnTypeNode = methodNode.getChildOfType("TYPE")?.let {
             it.getChildren().firstOrNull() ?: it
         } as? SimpleNode
-        // TODO: do we really need it? examples?
         methodReturnTypeNode?.setToken(collectParameterToken(methodReturnTypeNode))
 
         // 2. Extract Class Info
@@ -300,14 +299,12 @@ class JavaMethodSplitterFromPsi : TreeMethodSplitter<SimpleNode> {
         val parametersRoot = methodNode.getChildOfType(METHOD_PARAMETER_NODE) as? SimpleNode
         val innerParametersRoot = parametersRoot?.getChildOfType(METHOD_PARAMETER_INNER_NODE) as? SimpleNode
 
-        /* TODO: verify
+        // TODO: verify
         val parametersList = when {
             innerParametersRoot != null -> getListOfParameters(innerParametersRoot)
             parametersRoot != null -> getListOfParameters(parametersRoot)
             else -> emptyList()
         }
-         */
-        val parametersList = emptyList<ParameterNode<SimpleNode>>()
 
         return MethodInfo(
             MethodNode(methodNode, methodReturnTypeNode, methodName),
@@ -340,8 +337,7 @@ class JavaMethodSplitterFromPsi : TreeMethodSplitter<SimpleNode> {
     }
 
     private fun getParameterInfoFromNode(parameterRoot: SimpleNode): ParameterNode<SimpleNode> {
-        val returnTypeNode = parameterRoot.getChildOfType(PARAMETER_RETURN_TYPE_NODE) as? SimpleNode
-        returnTypeNode?.setToken(collectParameterToken(returnTypeNode))
+        val returnTypeNode = SimpleNode("IDENTIFIER", parameterRoot, node2type[parameterRoot] ?: "unknown")
         return ParameterNode(
             parameterRoot,
             returnTypeNode,

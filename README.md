@@ -43,3 +43,12 @@ Refs for `java-med`:
   3.158.038 train_path_contexts.csv
   436.146   val_path_contexts.csv  
 ```
+
+The files above take around 30Gb (compressed ~4Gb).
+Download it [here](https://drive.google.com/file/d/1JAywKNUrGt_P8bRToBwqlQ-evQy9G15c/view?usp=sharing)
+
+The preprocessed version of the typed dataset takes around 8Gb (compressed ~2Gb). 
+Download it [here](https://drive.google.com/file/d/1Pl78yQNEvzFXg0myqz51TOiAJmJZA_Kh/view?usp=sharing)
+
+Then train the networks: https://github.com/dimart/code2vec
+Branches: `psi_with_types` and `psi`.

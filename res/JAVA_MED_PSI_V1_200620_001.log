@@ -1,0 +1,808 @@
+2020-06-20 11:25:55.525377: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libnvinfer.so.6
+2020-06-20 11:25:55.533192: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libnvinfer_plugin.so.6
+2020-06-20 11:25:56.864743: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcuda.so.1
+2020-06-20 11:25:57.819791: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1555] Found device 0 with properties: 
+pciBusID: 0000:11:00.0 name: Tesla P100-PCIE-16GB computeCapability: 6.0
+coreClock: 1.3285GHz coreCount: 56 deviceMemorySize: 15.90GiB deviceMemoryBandwidth: 681.88GiB/s
+2020-06-20 11:25:57.822721: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcudart.so.10.1
+2020-06-20 11:25:57.822788: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcublas.so.10
+2020-06-20 11:25:57.825484: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcufft.so.10
+2020-06-20 11:25:57.826104: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcurand.so.10
+2020-06-20 11:25:57.829193: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcusolver.so.10
+2020-06-20 11:25:57.830945: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcusparse.so.10
+2020-06-20 11:25:57.831020: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcudnn.so.7
+2020-06-20 11:25:57.843595: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1697] Adding visible gpu devices: 0
+2020-06-20 11:25:57.847481: I tensorflow/core/platform/cpu_feature_guard.cc:142] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 FMA
+2020-06-20 11:25:57.871835: I tensorflow/core/platform/profile_utils/cpu_utils.cc:94] CPU Frequency: 2394475000 Hz
+2020-06-20 11:25:57.875003: I tensorflow/compiler/xla/service/service.cc:168] XLA service 0x49e3bc0 initialized for platform Host (this does not guarantee that XLA will be used). Devices:
+2020-06-20 11:25:57.875053: I tensorflow/compiler/xla/service/service.cc:176]   StreamExecutor device (0): Host, Default Version
+2020-06-20 11:25:58.443750: I tensorflow/compiler/xla/service/service.cc:168] XLA service 0x4a499c0 initialized for platform CUDA (this does not guarantee that XLA will be used). Devices:
+2020-06-20 11:25:58.445379: I tensorflow/compiler/xla/service/service.cc:176]   StreamExecutor device (0): Tesla P100-PCIE-16GB, Compute Capability 6.0
+2020-06-20 11:25:58.451082: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1555] Found device 0 with properties: 
+pciBusID: 0000:11:00.0 name: Tesla P100-PCIE-16GB computeCapability: 6.0
+coreClock: 1.3285GHz coreCount: 56 deviceMemorySize: 15.90GiB deviceMemoryBandwidth: 681.88GiB/s
+2020-06-20 11:25:58.451208: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcudart.so.10.1
+2020-06-20 11:25:58.451229: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcublas.so.10
+2020-06-20 11:25:58.451264: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcufft.so.10
+2020-06-20 11:25:58.451284: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcurand.so.10
+2020-06-20 11:25:58.451303: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcusolver.so.10
+2020-06-20 11:25:58.451321: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcusparse.so.10
+2020-06-20 11:25:58.451338: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcudnn.so.7
+2020-06-20 11:25:58.460828: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1697] Adding visible gpu devices: 0
+2020-06-20 11:25:58.460972: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcudart.so.10.1
+2020-06-20 11:25:59.226536: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1096] Device interconnect StreamExecutor with strength 1 edge matrix:
+2020-06-20 11:25:59.226599: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1102]      0 
+2020-06-20 11:25:59.226610: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1115] 0:   N 
+2020-06-20 11:25:59.236788: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1241] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 15167 MB memory) -> physical GPU (device: 0, name: Tesla P100-PCIE-16GB, pci bus id: 0000:11:00.0, compute capability: 6.0)
+2020-06-20 11:25:59,245 INFO     
+2020-06-20 11:25:59,246 INFO     
+2020-06-20 11:25:59,246 INFO     ---------------------------------------------------------------------
+2020-06-20 11:25:59,246 INFO     ---------------------------------------------------------------------
+2020-06-20 11:25:59,246 INFO     ---------------------- Creating code2vec model ----------------------
+2020-06-20 11:25:59,246 INFO     ---------------------------------------------------------------------
+2020-06-20 11:25:59,246 INFO     ---------------------------------------------------------------------
+2020-06-20 11:25:59,246 INFO     Checking number of examples ...
+2020-06-20 11:25:59,246 INFO         Number of train examples: 3275140
+2020-06-20 11:25:59,246 INFO         Number of test examples: 454352
+2020-06-20 11:25:59,247 INFO     ---------------------------------------------------------------------
+2020-06-20 11:25:59,247 INFO     ----------------- Configuration - Hyper Parameters ------------------
+2020-06-20 11:25:59,247 INFO     CODE_VECTOR_SIZE                          384
+2020-06-20 11:25:59,247 INFO     CSV_BUFFER_SIZE                           104857600
+2020-06-20 11:25:59,247 INFO     DEFAULT_EMBEDDINGS_SIZE                   128
+2020-06-20 11:25:59,247 INFO     DL_FRAMEWORK                              tensorflow
+2020-06-20 11:25:59,247 INFO     DROPOUT_KEEP_RATE                         0.75
+2020-06-20 11:25:59,247 INFO     EXPORT_CODE_VECTORS                       False
+2020-06-20 11:25:59,251 INFO     LOGS_PATH                                 None
+2020-06-20 11:25:59,251 INFO     MAX_CONTEXTS                              200
+2020-06-20 11:25:59,251 INFO     MAX_PATH_VOCAB_SIZE                       911417
+2020-06-20 11:25:59,251 INFO     MAX_TARGET_VOCAB_SIZE                     261245
+2020-06-20 11:25:59,251 INFO     MAX_TOKEN_VOCAB_SIZE                      1301136
+2020-06-20 11:25:59,251 INFO     MAX_TO_KEEP                               20
+2020-06-20 11:25:59,251 INFO     MODEL_LOAD_PATH                           None
+2020-06-20 11:25:59,251 INFO     MODEL_SAVE_PATH                           models/JAVA_MED_PSI_V1_200620_001/saved_model
+2020-06-20 11:25:59,251 INFO     NUM_BATCHES_TO_LOG_PROGRESS               100
+2020-06-20 11:25:59,251 INFO     NUM_TEST_EXAMPLES                         454352
+2020-06-20 11:25:59,251 INFO     NUM_TRAIN_BATCHES_TO_EVALUATE             1800
+2020-06-20 11:25:59,251 INFO     NUM_TRAIN_EPOCHS                          20
+2020-06-20 11:25:59,251 INFO     NUM_TRAIN_EXAMPLES                        3275140
+2020-06-20 11:25:59,252 INFO     PATH_EMBEDDINGS_SIZE                      128
+2020-06-20 11:25:59,252 INFO     PREDICT                                   False
+2020-06-20 11:25:59,252 INFO     READER_NUM_PARALLEL_BATCHES               6
+2020-06-20 11:25:59,252 INFO     RELEASE                                   False
+2020-06-20 11:25:59,252 INFO     SAVE_EVERY_EPOCHS                         1
+2020-06-20 11:25:59,252 INFO     SAVE_T2V                                  None
+2020-06-20 11:25:59,252 INFO     SAVE_W2V                                  None
+2020-06-20 11:25:59,252 INFO     SEPARATE_OOV_AND_PAD                      False
+2020-06-20 11:25:59,252 INFO     SHUFFLE_BUFFER_SIZE                       10000
+2020-06-20 11:25:59,252 INFO     TARGET_EMBEDDINGS_SIZE                    384
+2020-06-20 11:25:59,252 INFO     TEST_BATCH_SIZE                           1024
+2020-06-20 11:25:59,252 INFO     TEST_DATA_PATH                            data/JAVA_MED_WITH_TYPES_PREPROCESSED_V1/JAVA_MED_WITH_TYPES_PREPROCESSED_V1.val.c2v
+2020-06-20 11:25:59,252 INFO     TOKEN_EMBEDDINGS_SIZE                     128
+2020-06-20 11:25:59,252 INFO     TOP_K_WORDS_CONSIDERED_DURING_PREDICTION  10
+2020-06-20 11:25:59,252 INFO     TRAIN_BATCH_SIZE                          1024
+2020-06-20 11:25:59,252 INFO     TRAIN_DATA_PATH_PREFIX                    data/JAVA_MED_WITH_TYPES_PREPROCESSED_V1/JAVA_MED_WITH_TYPES_PREPROCESSED_V1
+2020-06-20 11:25:59,252 INFO     USE_TENSORBOARD                           True
+2020-06-20 11:25:59,252 INFO     VERBOSE_MODE                              1
+2020-06-20 11:25:59,253 INFO     _Config__logger                           <Logger code2vec (INFO)>
+2020-06-20 11:25:59,253 INFO     context_vector_size                       384
+2020-06-20 11:25:59,253 INFO     entire_model_load_path                    None
+2020-06-20 11:25:59,253 INFO     entire_model_save_path                    models/JAVA_MED_PSI_V1_200620_001/saved_model__entire-model
+2020-06-20 11:25:59,253 INFO     is_loading                                False
+2020-06-20 11:25:59,253 INFO     is_saving                                 True
+2020-06-20 11:25:59,253 INFO     is_testing                                True
+2020-06-20 11:25:59,253 INFO     is_training                               True
+2020-06-20 11:25:59,253 INFO     model_load_dir                            None
+2020-06-20 11:25:59,253 INFO     model_weights_load_path                   None
+2020-06-20 11:25:59,253 INFO     model_weights_save_path                   models/JAVA_MED_PSI_V1_200620_001/saved_model__only-weights
+2020-06-20 11:25:59,253 INFO     test_steps                                444
+2020-06-20 11:25:59,253 INFO     train_data_path                           data/JAVA_MED_WITH_TYPES_PREPROCESSED_V1/JAVA_MED_WITH_TYPES_PREPROCESSED_V1.train.c2v
+2020-06-20 11:25:59,253 INFO     train_steps_per_epoch                     3199
+2020-06-20 11:25:59,253 INFO     word_freq_dict_path                       data/JAVA_MED_WITH_TYPES_PREPROCESSED_V1/JAVA_MED_WITH_TYPES_PREPROCESSED_V1.dict.c2v
+2020-06-20 11:25:59,253 INFO     ---------------------------------------------------------------------
+2020-06-20 11:25:59,254 INFO     Loading word frequencies dictionaries from: data/JAVA_MED_WITH_TYPES_PREPROCESSED_V1/JAVA_MED_WITH_TYPES_PREPROCESSED_V1.dict.c2v ... 
+2020-06-20 11:26:00,280 INFO     Done loading word frequencies dictionaries.
+2020-06-20 11:26:00,281 INFO     Word frequencies dictionaries loaded. Now creating vocabularies.
+2020-06-20 11:26:02,062 INFO     Created token vocab. size: 1084658
+2020-06-20 11:26:02,988 INFO     Created path vocab. size: 681149
+2020-06-20 11:26:03,192 INFO     Created target vocab. size: 154604
+2020-06-20 11:26:04,217 INFO     Done creating code2vec model
+2020-06-20 11:26:04,217 INFO     Starting training
+WARNING:tensorflow:AutoGraph could not transform <bound method PathContextReader._map_raw_dataset_row_to_expected_model_input_form of <path_context_reader.PathContextReader object at 0x7fa0d0096320>> and will run it as-is.
+Please report this to the TensorFlow team. When filing the bug, set the verbosity to 10 (on Linux, `export AUTOGRAPH_VERBOSITY=10`) and attach the full output.
+Cause: expected exactly one node node, found [<gast.gast.FunctionDef object at 0x7fa1801a2eb8>, <gast.gast.Return object at 0x7fa1801a2ef0>]
+WARNING:tensorflow:From /usr/local/lib/python3.6/dist-packages/tensorflow_core/python/ops/resource_variable_ops.py:1635: calling BaseResourceVariable.__init__ (from tensorflow.python.ops.resource_variable_ops) with constraint is deprecated and will be removed in a future version.
+Instructions for updating:
+If using Keras pass *_constraint arguments to layers.
+2020-06-20 11:26:18,237 INFO     Number of trainable params: 285539072
+2020-06-20 11:26:18,237 INFO     variable name: model/WORDS_VOCAB:0 -- shape: (1084658, 128) -- #params: 138836224
+2020-06-20 11:26:18,237 INFO     variable name: model/TARGET_WORDS_VOCAB:0 -- shape: (154604, 384) -- #params: 59367936
+2020-06-20 11:26:18,237 INFO     variable name: model/ATTENTION:0 -- shape: (384, 1) -- #params: 384
+2020-06-20 11:26:18,237 INFO     variable name: model/PATHS_VOCAB:0 -- shape: (681149, 128) -- #params: 87187072
+2020-06-20 11:26:18,237 INFO     variable name: model/TRANSFORM:0 -- shape: (384, 384) -- #params: 147456
+2020-06-20 11:26:48,143 INFO     Initalized variables
+2020-06-20 11:26:50,213 INFO     Started reader...
+2020-06-20 11:26:50,213 INFO     RAW LOG PATHS:
+2020-06-20 11:26:50,214 INFO     logs/scalars/train_20200620-112650
+2020-06-20 11:26:52.327473: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcublas.so.10
+2020-06-20 11:27:57,440 INFO     Average loss at batch 100: 0.009778, 	throughput: 904 samples/sec
+2020-06-20 11:29:02,903 INFO     Average loss at batch 200: 0.009664, 	throughput: 1564 samples/sec
+2020-06-20 11:29:54,127 INFO     Average loss at batch 300: 0.007970, 	throughput: 1999 samples/sec
+2020-06-20 11:30:51,673 INFO     Average loss at batch 400: 0.008269, 	throughput: 1779 samples/sec
+2020-06-20 11:31:52,226 INFO     Average loss at batch 500: 0.008723, 	throughput: 1691 samples/sec
+2020-06-20 11:32:45,553 INFO     Average loss at batch 600: 0.008206, 	throughput: 1920 samples/sec
+2020-06-20 11:33:40,337 INFO     Average loss at batch 700: 0.008146, 	throughput: 1869 samples/sec
+2020-06-20 11:34:26,758 INFO     Average loss at batch 800: 0.007916, 	throughput: 2205 samples/sec
+2020-06-20 11:35:21,679 INFO     Average loss at batch 900: 0.008270, 	throughput: 1864 samples/sec
+2020-06-20 11:36:12,383 INFO     Average loss at batch 1000: 0.006095, 	throughput: 2019 samples/sec
+2020-06-20 11:37:01,631 INFO     Average loss at batch 1100: 0.004518, 	throughput: 2079 samples/sec
+2020-06-20 11:37:57,401 INFO     Average loss at batch 1200: 0.006507, 	throughput: 1836 samples/sec
+2020-06-20 11:38:51,222 INFO     Average loss at batch 1300: 0.007590, 	throughput: 1902 samples/sec
+2020-06-20 11:39:48,469 INFO     Average loss at batch 1400: 0.007884, 	throughput: 1788 samples/sec
+2020-06-20 11:40:48,456 INFO     Average loss at batch 1500: 0.007394, 	throughput: 1707 samples/sec
+2020-06-20 11:41:47,888 INFO     Average loss at batch 1600: 0.007193, 	throughput: 1723 samples/sec
+2020-06-20 11:42:58,286 INFO     Average loss at batch 1700: 0.007412, 	throughput: 1454 samples/sec
+2020-06-20 11:43:59,815 INFO     Average loss at batch 1800: 0.006955, 	throughput: 1664 samples/sec
+2020-06-20 11:44:50,082 INFO     Average loss at batch 1900: 0.007064, 	throughput: 2037 samples/sec
+2020-06-20 11:45:41,432 INFO     Average loss at batch 2000: 0.006967, 	throughput: 1994 samples/sec
+2020-06-20 11:46:27,054 INFO     Average loss at batch 2100: 0.006173, 	throughput: 2244 samples/sec
+2020-06-20 11:47:23,870 INFO     Average loss at batch 2200: 0.006721, 	throughput: 1802 samples/sec
+2020-06-20 11:48:24,651 INFO     Average loss at batch 2300: 0.006801, 	throughput: 1684 samples/sec
+2020-06-20 11:49:20,772 INFO     Average loss at batch 2400: 0.005807, 	throughput: 1824 samples/sec
+2020-06-20 11:50:16,295 INFO     Average loss at batch 2500: 0.006713, 	throughput: 1844 samples/sec
+2020-06-20 11:51:07,594 INFO     Average loss at batch 2600: 0.005365, 	throughput: 1996 samples/sec
+2020-06-20 11:52:19,442 INFO     Average loss at batch 2700: 0.005414, 	throughput: 1425 samples/sec
+2020-06-20 11:53:21,582 INFO     Average loss at batch 2800: 0.005702, 	throughput: 1647 samples/sec
+2020-06-20 11:54:22,397 INFO     Average loss at batch 2900: 0.005499, 	throughput: 1683 samples/sec
+2020-06-20 11:55:17,202 INFO     Average loss at batch 3000: 0.005348, 	throughput: 1868 samples/sec
+2020-06-20 11:56:10,141 INFO     Average loss at batch 3100: 0.004975, 	throughput: 1934 samples/sec
+2020-06-20 11:57:19,894 INFO     Saved after 1 epochs in: models/JAVA_MED_PSI_V1_200620_001/saved_model_iter1
+WARNING:tensorflow:AutoGraph could not transform <bound method PathContextReader._map_raw_dataset_row_to_expected_model_input_form of <path_context_reader.PathContextReader object at 0x7fa1c4116ef0>> and will run it as-is.
+Please report this to the TensorFlow team. When filing the bug, set the verbosity to 10 (on Linux, `export AUTOGRAPH_VERBOSITY=10`) and attach the full output.
+Cause: expected exactly one node node, found [<gast.gast.FunctionDef object at 0x7fa098105390>, <gast.gast.Return object at 0x7fa0981053c8>]
+2020-06-20 11:57:22,779 INFO     Starting evaluation
+2020-06-20 11:58:08,718 INFO     Evaluated 102400 examples...
+2020-06-20 11:58:08,720 INFO     Prediction throughput: 2119 samples/sec
+2020-06-20 11:58:47,628 INFO     Evaluated 204800 examples...
+2020-06-20 11:58:47,628 INFO     Prediction throughput: 2347 samples/sec
+2020-06-20 11:59:30,914 INFO     Evaluated 307200 examples...
+2020-06-20 11:59:30,914 INFO     Prediction throughput: 2353 samples/sec
+2020-06-20 12:00:20,611 INFO     Evaluated 409600 examples...
+2020-06-20 12:00:20,611 INFO     Prediction throughput: 2272 samples/sec
+2020-06-20 12:00:40,824 INFO     Done evaluating, epoch reached
+2020-06-20 12:00:40,826 INFO     Evaluation time: 0H:3M:20S
+Losses: train: 0.006954595446586609, validation: None
+2020-06-20 12:00:45,416 INFO     After 1 epochs -- top10_acc: [0.14288921 0.17096436 0.18839138 0.19943568 0.20802594 0.21417975
+ 0.2194532  0.22416761 0.2281491  0.23183787], precision: 0.3104117641902038, recall: 0.18698841681365055, F1: 0.23338714605658198
+2020-06-20 12:00:45,630 INFO     Average loss at batch 3200: 0.005495, 	throughput: 371 samples/sec
+2020-06-20 12:01:16,941 INFO     Average loss at batch 3300: 0.003681, 	throughput: 3270 samples/sec
+2020-06-20 12:02:00,527 INFO     Average loss at batch 3400: 0.002519, 	throughput: 2349 samples/sec
+2020-06-20 12:02:46,017 INFO     Average loss at batch 3500: 0.003619, 	throughput: 2251 samples/sec
+2020-06-20 12:03:50,132 INFO     Average loss at batch 3600: 0.004874, 	throughput: 1597 samples/sec
+2020-06-20 12:04:50,492 INFO     Average loss at batch 3700: 0.005085, 	throughput: 1696 samples/sec
+2020-06-20 12:05:41,390 INFO     Average loss at batch 3800: 0.004681, 	throughput: 2011 samples/sec
+2020-06-20 12:06:33,925 INFO     Average loss at batch 3900: 0.004673, 	throughput: 1949 samples/sec
+2020-06-20 12:07:27,775 INFO     Average loss at batch 4000: 0.004795, 	throughput: 1901 samples/sec
+2020-06-20 12:08:20,542 INFO     Average loss at batch 4100: 0.004123, 	throughput: 1940 samples/sec
+2020-06-20 12:09:12,718 INFO     Average loss at batch 4200: 0.004226, 	throughput: 1962 samples/sec
+2020-06-20 12:10:09,691 INFO     Average loss at batch 4300: 0.004420, 	throughput: 1797 samples/sec
+2020-06-20 12:11:00,059 INFO     Average loss at batch 4400: 0.004111, 	throughput: 2033 samples/sec
+2020-06-20 12:12:12,490 INFO     Average loss at batch 4500: 0.004434, 	throughput: 1413 samples/sec
+2020-06-20 12:13:18,174 INFO     Average loss at batch 4600: 0.004351, 	throughput: 1558 samples/sec
+2020-06-20 12:14:16,238 INFO     Average loss at batch 4700: 0.003571, 	throughput: 1763 samples/sec
+2020-06-20 12:15:15,065 INFO     Average loss at batch 4800: 0.004449, 	throughput: 1740 samples/sec
+2020-06-20 12:16:09,254 INFO     Average loss at batch 4900: 0.003600, 	throughput: 1889 samples/sec
+2020-06-20 12:17:06,861 INFO     Average loss at batch 5000: 0.003076, 	throughput: 1777 samples/sec
+2020-06-20 12:17:58,772 INFO     Average loss at batch 5100: 0.003660, 	throughput: 1972 samples/sec
+2020-06-20 12:18:59,978 INFO     Average loss at batch 5200: 0.003498, 	throughput: 1673 samples/sec
+2020-06-20 12:19:55,011 INFO     Average loss at batch 5300: 0.003506, 	throughput: 1860 samples/sec
+2020-06-20 12:20:44,379 INFO     Average loss at batch 5400: 0.003179, 	throughput: 2074 samples/sec
+2020-06-20 12:21:45,768 INFO     Average loss at batch 5500: 0.003410, 	throughput: 1668 samples/sec
+2020-06-20 12:22:42,610 INFO     Average loss at batch 5600: 0.002310, 	throughput: 1801 samples/sec
+2020-06-20 12:23:32,175 INFO     Average loss at batch 5700: 0.001052, 	throughput: 2065 samples/sec
+2020-06-20 12:24:23,523 INFO     Average loss at batch 5800: 0.001653, 	throughput: 1994 samples/sec
+2020-06-20 12:25:18,263 INFO     Average loss at batch 5900: 0.002583, 	throughput: 1870 samples/sec
+2020-06-20 12:26:11,099 INFO     Average loss at batch 6000: 0.003330, 	throughput: 1938 samples/sec
+2020-06-20 12:27:01,209 INFO     Average loss at batch 6100: 0.002924, 	throughput: 2043 samples/sec
+2020-06-20 12:27:55,655 INFO     Average loss at batch 6200: 0.003135, 	throughput: 1880 samples/sec
+2020-06-20 12:28:50,566 INFO     Average loss at batch 6300: 0.003176, 	throughput: 1864 samples/sec
+2020-06-20 12:29:49,326 INFO     Saved after 2 epochs in: models/JAVA_MED_PSI_V1_200620_001/saved_model_iter2
+2020-06-20 12:29:49,458 INFO     Starting evaluation
+2020-06-20 12:30:34,079 INFO     Evaluated 102400 examples...
+2020-06-20 12:30:34,079 INFO     Prediction throughput: 2288 samples/sec
+2020-06-20 12:31:12,271 INFO     Evaluated 204800 examples...
+2020-06-20 12:31:12,272 INFO     Prediction throughput: 2469 samples/sec
+2020-06-20 12:31:50,795 INFO     Evaluated 307200 examples...
+2020-06-20 12:31:50,795 INFO     Prediction throughput: 2529 samples/sec
+2020-06-20 12:32:35,871 INFO     Evaluated 409600 examples...
+2020-06-20 12:32:35,871 INFO     Prediction throughput: 2459 samples/sec
+2020-06-20 12:32:53,288 INFO     Done evaluating, epoch reached
+2020-06-20 12:32:53,290 INFO     Evaluation time: 0H:3M:3S
+Losses: train: 0.003571676090359688, validation: None
+2020-06-20 12:32:57,739 INFO     After 2 epochs -- top10_acc: [0.18581408 0.21750537 0.23234849 0.24409048 0.25204027 0.25819409
+ 0.2638703  0.26865074 0.27248917 0.27605469], precision: 0.33406741198894235, recall: 0.23315749800232854, F1: 0.2746364645539053
+2020-06-20 12:32:58,140 INFO     Average loss at batch 6400: 0.002535, 	throughput: 413 samples/sec
+2020-06-20 12:33:31,255 INFO     Average loss at batch 6500: 0.002699, 	throughput: 3092 samples/sec
+2020-06-20 12:34:31,839 INFO     Average loss at batch 6600: 0.002922, 	throughput: 1690 samples/sec
+2020-06-20 12:35:28,931 INFO     Average loss at batch 6700: 0.002839, 	throughput: 1793 samples/sec
+2020-06-20 12:36:21,419 INFO     Average loss at batch 6800: 0.003213, 	throughput: 1950 samples/sec
+2020-06-20 12:37:29,033 INFO     Average loss at batch 6900: 0.002891, 	throughput: 1514 samples/sec
+2020-06-20 12:38:38,562 INFO     Average loss at batch 7000: 0.002347, 	throughput: 1472 samples/sec
+2020-06-20 12:39:35,829 INFO     Average loss at batch 7100: 0.002806, 	throughput: 1788 samples/sec
+2020-06-20 12:40:37,317 INFO     Average loss at batch 7200: 0.002517, 	throughput: 1665 samples/sec
+2020-06-20 12:41:29,697 INFO     Average loss at batch 7300: 0.001794, 	throughput: 1954 samples/sec
+2020-06-20 12:42:27,346 INFO     Average loss at batch 7400: 0.002261, 	throughput: 1776 samples/sec
+2020-06-20 12:43:28,046 INFO     Average loss at batch 7500: 0.002362, 	throughput: 1686 samples/sec
+2020-06-20 12:44:17,047 INFO     Average loss at batch 7600: 0.002408, 	throughput: 2089 samples/sec
+2020-06-20 12:45:12,334 INFO     Average loss at batch 7700: 0.002109, 	throughput: 1852 samples/sec
+2020-06-20 12:46:00,240 INFO     Average loss at batch 7800: 0.002137, 	throughput: 2137 samples/sec
+2020-06-20 12:46:45,557 INFO     Average loss at batch 7900: 0.001622, 	throughput: 2259 samples/sec
+2020-06-20 12:47:27,886 INFO     Average loss at batch 8000: 0.000342, 	throughput: 2419 samples/sec
+2020-06-20 12:48:21,842 INFO     Average loss at batch 8100: 0.000732, 	throughput: 1897 samples/sec
+2020-06-20 12:49:18,733 INFO     Average loss at batch 8200: 0.001667, 	throughput: 1799 samples/sec
+2020-06-20 12:50:22,206 INFO     Average loss at batch 8300: 0.002247, 	throughput: 1613 samples/sec
+2020-06-20 12:51:15,602 INFO     Average loss at batch 8400: 0.002015, 	throughput: 1917 samples/sec
+2020-06-20 12:52:08,110 INFO     Average loss at batch 8500: 0.002220, 	throughput: 1950 samples/sec
+2020-06-20 12:53:08,202 INFO     Average loss at batch 8600: 0.002137, 	throughput: 1704 samples/sec
+2020-06-20 12:53:59,579 INFO     Average loss at batch 8700: 0.001834, 	throughput: 1993 samples/sec
+2020-06-20 12:54:48,837 INFO     Average loss at batch 8800: 0.001801, 	throughput: 2078 samples/sec
+2020-06-20 12:55:42,286 INFO     Average loss at batch 8900: 0.002001, 	throughput: 1915 samples/sec
+2020-06-20 12:56:47,186 INFO     Average loss at batch 9000: 0.002218, 	throughput: 1577 samples/sec
+2020-06-20 12:58:03,949 INFO     Average loss at batch 9100: 0.002460, 	throughput: 1333 samples/sec
+2020-06-20 12:59:04,251 INFO     Average loss at batch 9200: 0.002084, 	throughput: 1698 samples/sec
+2020-06-20 13:00:01,498 INFO     Average loss at batch 9300: 0.001716, 	throughput: 1788 samples/sec
+2020-06-20 13:00:55,969 INFO     Average loss at batch 9400: 0.001996, 	throughput: 1879 samples/sec
+2020-06-20 13:01:59,736 INFO     Average loss at batch 9500: 0.001925, 	throughput: 1605 samples/sec
+2020-06-20 13:03:01,074 INFO     Saved after 3 epochs in: models/JAVA_MED_PSI_V1_200620_001/saved_model_iter3
+2020-06-20 13:03:01,184 INFO     Starting evaluation
+2020-06-20 13:03:42,204 INFO     Evaluated 102400 examples...
+2020-06-20 13:03:42,204 INFO     Prediction throughput: 2489 samples/sec
+2020-06-20 13:04:16,794 INFO     Evaluated 204800 examples...
+2020-06-20 13:04:16,794 INFO     Prediction throughput: 2704 samples/sec
+2020-06-20 13:04:52,639 INFO     Evaluated 307200 examples...
+2020-06-20 13:04:52,639 INFO     Prediction throughput: 2753 samples/sec
+2020-06-20 13:05:26,995 INFO     Evaluated 409600 examples...
+2020-06-20 13:05:26,995 INFO     Prediction throughput: 2807 samples/sec
+2020-06-20 13:05:41,810 INFO     Done evaluating, epoch reached
+2020-06-20 13:05:41,811 INFO     Evaluation time: 0H:2M:40S
+Losses: train: 0.002112038666382432, validation: None
+2020-06-20 13:05:45,717 INFO     After 3 epochs -- top10_acc: [0.20444501 0.23535497 0.25081875 0.26086823 0.269278   0.27540101
+ 0.28034652 0.28498829 0.28845917 0.29161971], precision: 0.35158288425455025, recall: 0.25181447963800907, F1: 0.2934506060054787
+2020-06-20 13:05:46,310 INFO     Average loss at batch 9600: 0.001247, 	throughput: 451 samples/sec
+2020-06-20 13:06:16,041 INFO     Average loss at batch 9700: 0.001543, 	throughput: 3444 samples/sec
+2020-06-20 13:07:14,401 INFO     Average loss at batch 9800: 0.001739, 	throughput: 1754 samples/sec
+2020-06-20 13:08:04,606 INFO     Average loss at batch 9900: 0.001813, 	throughput: 2039 samples/sec
+2020-06-20 13:08:57,793 INFO     Average loss at batch 10000: 0.001530, 	throughput: 1925 samples/sec
+2020-06-20 13:09:52,094 INFO     Average loss at batch 10100: 0.001552, 	throughput: 1885 samples/sec
+2020-06-20 13:10:42,669 INFO     Average loss at batch 10200: 0.001366, 	throughput: 2024 samples/sec
+2020-06-20 13:11:29,235 INFO     Average loss at batch 10300: 0.000199, 	throughput: 2199 samples/sec
+2020-06-20 13:12:15,973 INFO     Average loss at batch 10400: 0.000342, 	throughput: 2190 samples/sec
+2020-06-20 13:13:15,585 INFO     Average loss at batch 10500: 0.001292, 	throughput: 1717 samples/sec
+2020-06-20 13:14:20,786 INFO     Average loss at batch 10600: 0.001651, 	throughput: 1570 samples/sec
+2020-06-20 13:15:20,249 INFO     Average loss at batch 10700: 0.001576, 	throughput: 1722 samples/sec
+2020-06-20 13:16:27,817 INFO     Average loss at batch 10800: 0.001660, 	throughput: 1515 samples/sec
+2020-06-20 13:17:26,906 INFO     Average loss at batch 10900: 0.001634, 	throughput: 1733 samples/sec
+2020-06-20 13:18:25,563 INFO     Average loss at batch 11000: 0.001426, 	throughput: 1745 samples/sec
+2020-06-20 13:19:19,447 INFO     Average loss at batch 11100: 0.001386, 	throughput: 1900 samples/sec
+2020-06-20 13:20:18,906 INFO     Average loss at batch 11200: 0.001506, 	throughput: 1722 samples/sec
+2020-06-20 13:21:17,471 INFO     Average loss at batch 11300: 0.001850, 	throughput: 1748 samples/sec
+2020-06-20 13:22:19,431 INFO     Average loss at batch 11400: 0.001967, 	throughput: 1652 samples/sec
+2020-06-20 13:23:14,754 INFO     Average loss at batch 11500: 0.001673, 	throughput: 1851 samples/sec
+2020-06-20 13:24:05,613 INFO     Average loss at batch 11600: 0.001359, 	throughput: 2013 samples/sec
+2020-06-20 13:25:02,197 INFO     Average loss at batch 11700: 0.001591, 	throughput: 1809 samples/sec
+2020-06-20 13:26:00,618 INFO     Average loss at batch 11800: 0.001595, 	throughput: 1752 samples/sec
+2020-06-20 13:26:54,609 INFO     Average loss at batch 11900: 0.000941, 	throughput: 1896 samples/sec
+2020-06-20 13:27:42,323 INFO     Average loss at batch 12000: 0.001215, 	throughput: 2146 samples/sec
+2020-06-20 13:28:39,612 INFO     Average loss at batch 12100: 0.001394, 	throughput: 1787 samples/sec
+2020-06-20 13:29:28,452 INFO     Average loss at batch 12200: 0.001474, 	throughput: 2096 samples/sec
+2020-06-20 13:30:21,311 INFO     Average loss at batch 12300: 0.001231, 	throughput: 1937 samples/sec
+2020-06-20 13:31:18,935 INFO     Average loss at batch 12400: 0.001250, 	throughput: 1777 samples/sec
+2020-06-20 13:32:23,303 INFO     Average loss at batch 12500: 0.001273, 	throughput: 1590 samples/sec
+2020-06-20 13:33:09,826 INFO     Average loss at batch 12600: 0.000160, 	throughput: 2201 samples/sec
+2020-06-20 13:33:50,338 INFO     Average loss at batch 12700: 0.000129, 	throughput: 2527 samples/sec
+2020-06-20 13:34:58,771 INFO     Saved after 4 epochs in: models/JAVA_MED_PSI_V1_200620_001/saved_model_iter4
+2020-06-20 13:34:58,875 INFO     Starting evaluation
+2020-06-20 13:35:42,793 INFO     Evaluated 102400 examples...
+2020-06-20 13:35:42,793 INFO     Prediction throughput: 2326 samples/sec
+2020-06-20 13:36:18,203 INFO     Evaluated 204800 examples...
+2020-06-20 13:36:18,203 INFO     Prediction throughput: 2578 samples/sec
+2020-06-20 13:36:56,290 INFO     Evaluated 307200 examples...
+2020-06-20 13:36:56,290 INFO     Prediction throughput: 2614 samples/sec
+2020-06-20 13:37:39,245 INFO     Evaluated 409600 examples...
+2020-06-20 13:37:39,246 INFO     Prediction throughput: 2552 samples/sec
+2020-06-20 13:37:58,475 INFO     Done evaluating, epoch reached
+2020-06-20 13:37:58,477 INFO     Evaluation time: 0H:2M:59S
+Losses: train: 0.0013251731870695949, validation: None
+2020-06-20 13:38:04,237 INFO     After 4 epochs -- top10_acc: [0.21449889 0.24494665 0.26046325 0.27002632 0.27735984 0.28276314
+ 0.2871276  0.29105627 0.29423443 0.29707584], precision: 0.38414860762574454, recall: 0.26438558645838756, F1: 0.313208943617027
+2020-06-20 13:38:05,050 INFO     Average loss at batch 12800: 0.001089, 	throughput: 402 samples/sec
+2020-06-20 13:38:45,308 INFO     Average loss at batch 12900: 0.001326, 	throughput: 2543 samples/sec
+2020-06-20 13:39:40,212 INFO     Average loss at batch 13000: 0.001334, 	throughput: 1865 samples/sec
+2020-06-20 13:40:42,252 INFO     Average loss at batch 13100: 0.001336, 	throughput: 1650 samples/sec
+2020-06-20 13:41:43,142 INFO     Average loss at batch 13200: 0.001351, 	throughput: 1681 samples/sec
+2020-06-20 13:42:35,973 INFO     Average loss at batch 13300: 0.001170, 	throughput: 1938 samples/sec
+2020-06-20 13:43:31,584 INFO     Average loss at batch 13400: 0.001182, 	throughput: 1841 samples/sec
+2020-06-20 13:44:23,486 INFO     Average loss at batch 13500: 0.001206, 	throughput: 1972 samples/sec
+2020-06-20 13:45:13,905 INFO     Average loss at batch 13600: 0.001615, 	throughput: 2031 samples/sec
+2020-06-20 13:46:14,918 INFO     Average loss at batch 13700: 0.001663, 	throughput: 1678 samples/sec
+2020-06-20 13:47:37,638 INFO     Average loss at batch 13800: 0.001463, 	throughput: 1237 samples/sec
+2020-06-20 13:48:35,673 INFO     Average loss at batch 13900: 0.001184, 	throughput: 1764 samples/sec
+2020-06-20 13:49:34,535 INFO     Average loss at batch 14000: 0.001335, 	throughput: 1739 samples/sec
+2020-06-20 13:50:32,511 INFO     Average loss at batch 14100: 0.001388, 	throughput: 1766 samples/sec
+2020-06-20 13:51:30,009 INFO     Average loss at batch 14200: 0.000840, 	throughput: 1780 samples/sec
+2020-06-20 13:52:22,164 INFO     Average loss at batch 14300: 0.001004, 	throughput: 1963 samples/sec
+2020-06-20 13:53:12,999 INFO     Average loss at batch 14400: 0.001140, 	throughput: 2014 samples/sec
+2020-06-20 13:54:09,163 INFO     Average loss at batch 14500: 0.001325, 	throughput: 1823 samples/sec
+2020-06-20 13:55:05,149 INFO     Average loss at batch 14600: 0.001047, 	throughput: 1829 samples/sec
+2020-06-20 13:55:56,193 INFO     Average loss at batch 14700: 0.001105, 	throughput: 2006 samples/sec
+2020-06-20 13:56:59,880 INFO     Average loss at batch 14800: 0.001205, 	throughput: 1607 samples/sec
+2020-06-20 13:57:50,482 INFO     Average loss at batch 14900: 0.000141, 	throughput: 2023 samples/sec
+2020-06-20 13:58:40,374 INFO     Average loss at batch 15000: 0.000059, 	throughput: 2052 samples/sec
+2020-06-20 13:59:46,690 INFO     Average loss at batch 15100: 0.000904, 	throughput: 1544 samples/sec
+2020-06-20 14:00:46,210 INFO     Average loss at batch 15200: 0.001155, 	throughput: 1720 samples/sec
+2020-06-20 14:01:42,933 INFO     Average loss at batch 15300: 0.001162, 	throughput: 1805 samples/sec
+2020-06-20 14:02:35,809 INFO     Average loss at batch 15400: 0.001142, 	throughput: 1936 samples/sec
+2020-06-20 14:03:35,851 INFO     Average loss at batch 15500: 0.001171, 	throughput: 1705 samples/sec
+2020-06-20 14:04:37,847 INFO     Average loss at batch 15600: 0.001020, 	throughput: 1651 samples/sec
+2020-06-20 14:05:36,610 INFO     Average loss at batch 15700: 0.001049, 	throughput: 1742 samples/sec
+2020-06-20 14:06:29,653 INFO     Average loss at batch 15800: 0.001046, 	throughput: 1930 samples/sec
+2020-06-20 14:07:39,410 INFO     Average loss at batch 15900: 0.001440, 	throughput: 1467 samples/sec
+2020-06-20 14:08:48,826 INFO     Saved after 5 epochs in: models/JAVA_MED_PSI_V1_200620_001/saved_model_iter5
+2020-06-20 14:08:48,955 INFO     Starting evaluation
+2020-06-20 14:09:32,101 INFO     Evaluated 102400 examples...
+2020-06-20 14:09:32,101 INFO     Prediction throughput: 2366 samples/sec
+2020-06-20 14:10:08,437 INFO     Evaluated 204800 examples...
+2020-06-20 14:10:08,437 INFO     Prediction throughput: 2572 samples/sec
+2020-06-20 14:10:43,702 INFO     Evaluated 307200 examples...
+2020-06-20 14:10:43,702 INFO     Prediction throughput: 2674 samples/sec
+2020-06-20 14:11:18,789 INFO     Evaluated 409600 examples...
+2020-06-20 14:11:18,789 INFO     Prediction throughput: 2731 samples/sec
+2020-06-20 14:11:32,914 INFO     Done evaluating, epoch reached
+2020-06-20 14:11:32,915 INFO     Evaluation time: 0H:2M:44S
+Losses: train: 0.0011557394172996283, validation: None
+2020-06-20 14:11:36,901 INFO     After 5 epochs -- top10_acc: [0.21083653 0.24409709 0.2591647  0.26871456 0.27627478 0.28150201
+ 0.28649813 0.29056767 0.29388228 0.29677871], precision: 0.37642627187315214, recall: 0.25940392033758125, F1: 0.3071463162277543
+2020-06-20 14:11:37,882 INFO     Average loss at batch 16000: 0.001482, 	throughput: 429 samples/sec
+2020-06-20 14:12:14,523 INFO     Average loss at batch 16100: 0.001326, 	throughput: 2794 samples/sec
+2020-06-20 14:13:15,885 INFO     Average loss at batch 16200: 0.001053, 	throughput: 1668 samples/sec
+2020-06-20 14:14:18,375 INFO     Average loss at batch 16300: 0.001179, 	throughput: 1638 samples/sec
+2020-06-20 14:15:18,775 INFO     Average loss at batch 16400: 0.001270, 	throughput: 1695 samples/sec
+2020-06-20 14:16:12,057 INFO     Average loss at batch 16500: 0.000739, 	throughput: 1921 samples/sec
+2020-06-20 14:17:02,832 INFO     Average loss at batch 16600: 0.000900, 	throughput: 2016 samples/sec
+2020-06-20 14:17:54,222 INFO     Average loss at batch 16700: 0.000979, 	throughput: 1992 samples/sec
+2020-06-20 14:18:45,505 INFO     Average loss at batch 16800: 0.001197, 	throughput: 1996 samples/sec
+2020-06-20 14:19:44,313 INFO     Average loss at batch 16900: 0.000978, 	throughput: 1741 samples/sec
+2020-06-20 14:20:43,525 INFO     Average loss at batch 17000: 0.001005, 	throughput: 1729 samples/sec
+2020-06-20 14:21:46,596 INFO     Average loss at batch 17100: 0.001146, 	throughput: 1623 samples/sec
+2020-06-20 14:22:36,354 INFO     Average loss at batch 17200: 0.000146, 	throughput: 2057 samples/sec
+2020-06-20 14:23:15,865 INFO     Average loss at batch 17300: 0.000059, 	throughput: 2591 samples/sec
+2020-06-20 14:24:12,144 INFO     Average loss at batch 17400: 0.000755, 	throughput: 1819 samples/sec
+2020-06-20 14:25:07,546 INFO     Average loss at batch 17500: 0.001008, 	throughput: 1848 samples/sec
+2020-06-20 14:26:06,840 INFO     Average loss at batch 17600: 0.001043, 	throughput: 1727 samples/sec
+2020-06-20 14:27:02,843 INFO     Average loss at batch 17700: 0.001052, 	throughput: 1828 samples/sec
+2020-06-20 14:27:58,285 INFO     Average loss at batch 17800: 0.001003, 	throughput: 1847 samples/sec
+2020-06-20 14:28:53,582 INFO     Average loss at batch 17900: 0.000963, 	throughput: 1851 samples/sec
+2020-06-20 14:29:46,284 INFO     Average loss at batch 18000: 0.000951, 	throughput: 1943 samples/sec
+2020-06-20 14:30:39,491 INFO     Average loss at batch 18100: 0.000946, 	throughput: 1924 samples/sec
+2020-06-20 14:31:30,974 INFO     Average loss at batch 18200: 0.001305, 	throughput: 1989 samples/sec
+2020-06-20 14:32:22,958 INFO     Average loss at batch 18300: 0.001341, 	throughput: 1969 samples/sec
+2020-06-20 14:33:13,390 INFO     Average loss at batch 18400: 0.001237, 	throughput: 2030 samples/sec
+2020-06-20 14:34:12,079 INFO     Average loss at batch 18500: 0.000967, 	throughput: 1744 samples/sec
+2020-06-20 14:35:09,007 INFO     Average loss at batch 18600: 0.001058, 	throughput: 1798 samples/sec
+2020-06-20 14:36:08,472 INFO     Average loss at batch 18700: 0.001210, 	throughput: 1722 samples/sec
+2020-06-20 14:36:59,900 INFO     Average loss at batch 18800: 0.000665, 	throughput: 1991 samples/sec
+2020-06-20 14:37:57,639 INFO     Average loss at batch 18900: 0.000859, 	throughput: 1773 samples/sec
+2020-06-20 14:38:55,607 INFO     Average loss at batch 19000: 0.000853, 	throughput: 1766 samples/sec
+2020-06-20 14:39:46,421 INFO     Average loss at batch 19100: 0.001095, 	throughput: 2015 samples/sec
+2020-06-20 14:40:45,125 INFO     Saved after 6 epochs in: models/JAVA_MED_PSI_V1_200620_001/saved_model_iter6
+2020-06-20 14:40:45,229 INFO     Starting evaluation
+2020-06-20 14:41:27,754 INFO     Evaluated 102400 examples...
+2020-06-20 14:41:27,754 INFO     Prediction throughput: 2402 samples/sec
+2020-06-20 14:42:05,583 INFO     Evaluated 204800 examples...
+2020-06-20 14:42:05,583 INFO     Prediction throughput: 2545 samples/sec
+2020-06-20 14:42:45,177 INFO     Evaluated 307200 examples...
+2020-06-20 14:42:45,177 INFO     Prediction throughput: 2559 samples/sec
+2020-06-20 14:43:22,772 INFO     Evaluated 409600 examples...
+2020-06-20 14:43:22,773 INFO     Prediction throughput: 2598 samples/sec
+2020-06-20 14:43:39,002 INFO     Done evaluating, epoch reached
+2020-06-20 14:43:39,003 INFO     Evaluation time: 0H:2M:53S
+Losses: train: 0.0009775543585419655, validation: None
+2020-06-20 14:43:44,038 INFO     After 6 epochs -- top10_acc: [0.22472444 0.2570408  0.27262343 0.2819576  0.28870347 0.29447213
+ 0.29903467 0.30282248 0.30614149 0.30949792], precision: 0.3970785390889845, recall: 0.26549041148810565, F1: 0.31821758216713963
+2020-06-20 14:43:45,200 INFO     Average loss at batch 19200: 0.000942, 	throughput: 428 samples/sec
+2020-06-20 14:44:21,098 INFO     Average loss at batch 19300: 0.000914, 	throughput: 2852 samples/sec
+2020-06-20 14:45:16,905 INFO     Average loss at batch 19400: 0.001079, 	throughput: 1834 samples/sec
+2020-06-20 14:46:01,645 INFO     Average loss at batch 19500: 0.000180, 	throughput: 2288 samples/sec
+2020-06-20 14:46:54,995 INFO     Average loss at batch 19600: 0.000063, 	throughput: 1919 samples/sec
+2020-06-20 14:47:56,606 INFO     Average loss at batch 19700: 0.000636, 	throughput: 1662 samples/sec
+2020-06-20 14:48:53,324 INFO     Average loss at batch 19800: 0.000901, 	throughput: 1805 samples/sec
+2020-06-20 14:49:58,111 INFO     Average loss at batch 19900: 0.000954, 	throughput: 1580 samples/sec
+2020-06-20 14:51:04,081 INFO     Average loss at batch 20000: 0.000964, 	throughput: 1552 samples/sec
+2020-06-20 14:52:01,871 INFO     Average loss at batch 20100: 0.000946, 	throughput: 1771 samples/sec
+2020-06-20 14:53:03,428 INFO     Average loss at batch 20200: 0.000887, 	throughput: 1663 samples/sec
+2020-06-20 14:54:06,950 INFO     Average loss at batch 20300: 0.000882, 	throughput: 1612 samples/sec
+2020-06-20 14:55:04,755 INFO     Average loss at batch 20400: 0.000875, 	throughput: 1771 samples/sec
+2020-06-20 14:55:59,169 INFO     Average loss at batch 20500: 0.001166, 	throughput: 1881 samples/sec
+2020-06-20 14:56:53,657 INFO     Average loss at batch 20600: 0.001252, 	throughput: 1879 samples/sec
+2020-06-20 14:57:43,969 INFO     Average loss at batch 20700: 0.001206, 	throughput: 2035 samples/sec
+2020-06-20 14:58:46,165 INFO     Average loss at batch 20800: 0.000856, 	throughput: 1646 samples/sec
+2020-06-20 14:59:42,339 INFO     Average loss at batch 20900: 0.000982, 	throughput: 1822 samples/sec
+2020-06-20 15:00:41,962 INFO     Average loss at batch 21000: 0.001148, 	throughput: 1717 samples/sec
+2020-06-20 15:01:36,554 INFO     Average loss at batch 21100: 0.000645, 	throughput: 1875 samples/sec
+2020-06-20 15:02:39,434 INFO     Average loss at batch 21200: 0.000812, 	throughput: 1628 samples/sec
+2020-06-20 15:03:43,559 INFO     Average loss at batch 21300: 0.000799, 	throughput: 1596 samples/sec
+2020-06-20 15:04:47,181 INFO     Average loss at batch 21400: 0.001005, 	throughput: 1609 samples/sec
+2020-06-20 15:05:48,802 INFO     Average loss at batch 21500: 0.000916, 	throughput: 1661 samples/sec
+2020-06-20 15:07:04,047 INFO     Average loss at batch 21600: 0.000819, 	throughput: 1360 samples/sec
+2020-06-20 15:08:12,122 INFO     Average loss at batch 21700: 0.001030, 	throughput: 1504 samples/sec
+2020-06-20 15:08:57,685 INFO     Average loss at batch 21800: 0.000233, 	throughput: 2247 samples/sec
+2020-06-20 15:09:47,904 INFO     Average loss at batch 21900: 0.000063, 	throughput: 2039 samples/sec
+2020-06-20 15:10:50,331 INFO     Average loss at batch 22000: 0.000554, 	throughput: 1640 samples/sec
+2020-06-20 15:11:48,419 INFO     Average loss at batch 22100: 0.000787, 	throughput: 1762 samples/sec
+2020-06-20 15:12:45,859 INFO     Average loss at batch 22200: 0.000877, 	throughput: 1782 samples/sec
+2020-06-20 15:13:44,675 INFO     Average loss at batch 22300: 0.000907, 	throughput: 1741 samples/sec
+WARNING:tensorflow:From /usr/local/lib/python3.6/dist-packages/tensorflow_core/python/training/saver.py:963: remove_checkpoint (from tensorflow.python.training.checkpoint_management) is deprecated and will be removed in a future version.
+Instructions for updating:
+Use standard file APIs to delete files with this prefix.
+2020-06-20 15:14:49,944 INFO     Saved after 7 epochs in: models/JAVA_MED_PSI_V1_200620_001/saved_model_iter7
+2020-06-20 15:14:50,048 INFO     Starting evaluation
+2020-06-20 15:15:31,789 INFO     Evaluated 102400 examples...
+2020-06-20 15:15:31,789 INFO     Prediction throughput: 2447 samples/sec
+2020-06-20 15:16:14,199 INFO     Evaluated 204800 examples...
+2020-06-20 15:16:14,203 INFO     Prediction throughput: 2430 samples/sec
+2020-06-20 15:17:00,415 INFO     Evaluated 307200 examples...
+2020-06-20 15:17:00,415 INFO     Prediction throughput: 2354 samples/sec
+2020-06-20 15:17:44,669 INFO     Evaluated 409600 examples...
+2020-06-20 15:17:44,670 INFO     Prediction throughput: 2344 samples/sec
+2020-06-20 15:18:02,173 INFO     Done evaluating, epoch reached
+2020-06-20 15:18:02,175 INFO     Evaluation time: 0H:3M:12S
+Losses: train: 0.0008199001313187182, validation: None
+2020-06-20 15:18:07,006 INFO     After 7 epochs -- top10_acc: [0.21266991 0.24712998 0.26205233 0.27285453 0.27951236 0.28491346
+ 0.28957064 0.29326161 0.29693057 0.29952988], precision: 0.3705455009749204, recall: 0.2583954956409672, F1: 0.3044714493001024
+2020-06-20 15:18:08,398 INFO     Average loss at batch 22400: 0.000911, 	throughput: 388 samples/sec
+2020-06-20 15:18:48,739 INFO     Average loss at batch 22500: 0.000812, 	throughput: 2538 samples/sec
+2020-06-20 15:19:54,882 INFO     Average loss at batch 22600: 0.000852, 	throughput: 1548 samples/sec
+2020-06-20 15:20:58,707 INFO     Average loss at batch 22700: 0.000816, 	throughput: 1604 samples/sec
+2020-06-20 15:22:00,912 INFO     Average loss at batch 22800: 0.001036, 	throughput: 1646 samples/sec
+2020-06-20 15:23:02,532 INFO     Average loss at batch 22900: 0.001190, 	throughput: 1661 samples/sec
+2020-06-20 15:23:57,180 INFO     Average loss at batch 23000: 0.001195, 	throughput: 1873 samples/sec
+2020-06-20 15:25:04,015 INFO     Average loss at batch 23100: 0.000824, 	throughput: 1532 samples/sec
+2020-06-20 15:26:09,942 INFO     Average loss at batch 23200: 0.000835, 	throughput: 1553 samples/sec
+2020-06-20 15:27:17,390 INFO     Average loss at batch 23300: 0.001134, 	throughput: 1518 samples/sec
+2020-06-20 15:28:09,410 INFO     Average loss at batch 23400: 0.000653, 	throughput: 1968 samples/sec
+2020-06-20 15:29:03,142 INFO     Average loss at batch 23500: 0.000733, 	throughput: 1905 samples/sec
+2020-06-20 15:30:07,296 INFO     Average loss at batch 23600: 0.000797, 	throughput: 1596 samples/sec
+2020-06-20 15:31:17,028 INFO     Average loss at batch 23700: 0.000906, 	throughput: 1468 samples/sec
+2020-06-20 15:32:16,161 INFO     Average loss at batch 23800: 0.000911, 	throughput: 1731 samples/sec
+2020-06-20 15:33:12,026 INFO     Average loss at batch 23900: 0.000749, 	throughput: 1833 samples/sec
+2020-06-20 15:34:11,526 INFO     Average loss at batch 24000: 0.000960, 	throughput: 1721 samples/sec
+2020-06-20 15:35:08,179 INFO     Average loss at batch 24100: 0.000294, 	throughput: 1807 samples/sec
+2020-06-20 15:35:56,722 INFO     Average loss at batch 24200: 0.000060, 	throughput: 2109 samples/sec
+2020-06-20 15:36:46,969 INFO     Average loss at batch 24300: 0.000439, 	throughput: 2037 samples/sec
+2020-06-20 15:37:49,812 INFO     Average loss at batch 24400: 0.000756, 	throughput: 1629 samples/sec
+2020-06-20 15:39:09,382 INFO     Average loss at batch 24500: 0.000797, 	throughput: 1286 samples/sec
+2020-06-20 15:40:38,735 INFO     Average loss at batch 24600: 0.000890, 	throughput: 1146 samples/sec
+2020-06-20 15:42:00,948 INFO     Average loss at batch 24700: 0.000872, 	throughput: 1245 samples/sec
+2020-06-20 15:43:17,301 INFO     Average loss at batch 24800: 0.000790, 	throughput: 1341 samples/sec
+2020-06-20 15:44:14,881 INFO     Average loss at batch 24900: 0.000785, 	throughput: 1778 samples/sec
+2020-06-20 15:45:06,339 INFO     Average loss at batch 25000: 0.000763, 	throughput: 1989 samples/sec
+2020-06-20 15:46:07,740 INFO     Average loss at batch 25100: 0.000912, 	throughput: 1667 samples/sec
+2020-06-20 15:47:09,598 INFO     Average loss at batch 25200: 0.001204, 	throughput: 1655 samples/sec
+2020-06-20 15:48:07,866 INFO     Average loss at batch 25300: 0.001143, 	throughput: 1757 samples/sec
+2020-06-20 15:49:21,066 INFO     Average loss at batch 25400: 0.000805, 	throughput: 1398 samples/sec
+2020-06-20 15:50:27,479 INFO     Average loss at batch 25500: 0.000731, 	throughput: 1541 samples/sec
+2020-06-20 15:51:38,283 INFO     Saved after 8 epochs in: models/JAVA_MED_PSI_V1_200620_001/saved_model_iter8
+2020-06-20 15:51:38,395 INFO     Starting evaluation
+2020-06-20 15:52:25,466 INFO     Evaluated 102400 examples...
+2020-06-20 15:52:25,466 INFO     Prediction throughput: 2170 samples/sec
+2020-06-20 15:53:06,005 INFO     Evaluated 204800 examples...
+2020-06-20 15:53:06,006 INFO     Prediction throughput: 2334 samples/sec
+2020-06-20 15:53:40,668 INFO     Evaluated 307200 examples...
+2020-06-20 15:53:40,668 INFO     Prediction throughput: 2510 samples/sec
+2020-06-20 15:54:16,318 INFO     Evaluated 409600 examples...
+2020-06-20 15:54:16,319 INFO     Prediction throughput: 2591 samples/sec
+2020-06-20 15:54:34,051 INFO     Done evaluating, epoch reached
+2020-06-20 15:54:34,052 INFO     Evaluation time: 0H:2M:55S
+Losses: train: 0.0008351464639417827, validation: None
+2020-06-20 15:54:39,578 INFO     After 8 epochs -- top10_acc: [0.21039414 0.24373393 0.25999445 0.26906451 0.27593144 0.28136775
+ 0.28596331 0.28995801 0.2932418  0.296048  ], precision: 0.36878036640478734, recall: 0.24594752415340487, F1: 0.2950919243025851
+2020-06-20 15:54:41,146 INFO     Average loss at batch 25600: 0.001107, 	throughput: 403 samples/sec
+2020-06-20 15:55:22,188 INFO     Average loss at batch 25700: 0.000691, 	throughput: 2495 samples/sec
+2020-06-20 15:56:24,957 INFO     Average loss at batch 25800: 0.000635, 	throughput: 1631 samples/sec
+2020-06-20 15:57:21,264 INFO     Average loss at batch 25900: 0.000821, 	throughput: 1818 samples/sec
+2020-06-20 15:58:23,638 INFO     Average loss at batch 26000: 0.000796, 	throughput: 1641 samples/sec
+2020-06-20 15:59:22,236 INFO     Average loss at batch 26100: 0.000895, 	throughput: 1747 samples/sec
+2020-06-20 16:00:15,717 INFO     Average loss at batch 26200: 0.000722, 	throughput: 1914 samples/sec
+2020-06-20 16:01:09,042 INFO     Average loss at batch 26300: 0.000890, 	throughput: 1920 samples/sec
+2020-06-20 16:02:00,577 INFO     Average loss at batch 26400: 0.000367, 	throughput: 1987 samples/sec
+2020-06-20 16:02:45,348 INFO     Average loss at batch 26500: 0.000071, 	throughput: 2287 samples/sec
+2020-06-20 16:03:39,342 INFO     Average loss at batch 26600: 0.000323, 	throughput: 1896 samples/sec
+2020-06-20 16:04:41,096 INFO     Average loss at batch 26700: 0.000741, 	throughput: 1658 samples/sec
+2020-06-20 16:05:44,401 INFO     Average loss at batch 26800: 0.000777, 	throughput: 1617 samples/sec
+2020-06-20 16:06:44,307 INFO     Average loss at batch 26900: 0.000807, 	throughput: 1709 samples/sec
+2020-06-20 16:07:38,065 INFO     Average loss at batch 27000: 0.000847, 	throughput: 1904 samples/sec
+2020-06-20 16:08:45,907 INFO     Average loss at batch 27100: 0.000794, 	throughput: 1509 samples/sec
+2020-06-20 16:09:42,660 INFO     Average loss at batch 27200: 0.000720, 	throughput: 1804 samples/sec
+2020-06-20 16:10:37,010 INFO     Average loss at batch 27300: 0.000743, 	throughput: 1884 samples/sec
+2020-06-20 16:11:50,124 INFO     Average loss at batch 27400: 0.000836, 	throughput: 1400 samples/sec
+2020-06-20 16:12:51,980 INFO     Average loss at batch 27500: 0.001133, 	throughput: 1655 samples/sec
+2020-06-20 16:13:52,627 INFO     Average loss at batch 27600: 0.001128, 	throughput: 1688 samples/sec
+2020-06-20 16:14:58,050 INFO     Average loss at batch 27700: 0.000797, 	throughput: 1565 samples/sec
+2020-06-20 16:15:55,741 INFO     Average loss at batch 27800: 0.000704, 	throughput: 1774 samples/sec
+2020-06-20 16:16:55,406 INFO     Average loss at batch 27900: 0.001012, 	throughput: 1716 samples/sec
+2020-06-20 16:17:56,003 INFO     Average loss at batch 28000: 0.000736, 	throughput: 1689 samples/sec
+2020-06-20 16:18:57,344 INFO     Average loss at batch 28100: 0.000505, 	throughput: 1669 samples/sec
+2020-06-20 16:19:46,391 INFO     Average loss at batch 28200: 0.000836, 	throughput: 2087 samples/sec
+2020-06-20 16:20:47,539 INFO     Average loss at batch 28300: 0.000732, 	throughput: 1674 samples/sec
+2020-06-20 16:21:41,297 INFO     Average loss at batch 28400: 0.000866, 	throughput: 1904 samples/sec
+2020-06-20 16:22:35,810 INFO     Average loss at batch 28500: 0.000744, 	throughput: 1878 samples/sec
+2020-06-20 16:23:32,829 INFO     Average loss at batch 28600: 0.000766, 	throughput: 1795 samples/sec
+2020-06-20 16:24:29,997 INFO     Average loss at batch 28700: 0.000497, 	throughput: 1791 samples/sec
+2020-06-20 16:25:23,770 INFO     Saved after 9 epochs in: models/JAVA_MED_PSI_V1_200620_001/saved_model_iter9
+2020-06-20 16:25:23,875 INFO     Starting evaluation
+2020-06-20 16:26:07,364 INFO     Evaluated 102400 examples...
+2020-06-20 16:26:07,364 INFO     Prediction throughput: 2349 samples/sec
+2020-06-20 16:26:46,795 INFO     Evaluated 204800 examples...
+2020-06-20 16:26:46,795 INFO     Prediction throughput: 2467 samples/sec
+2020-06-20 16:27:24,783 INFO     Evaluated 307200 examples...
+2020-06-20 16:27:24,783 INFO     Prediction throughput: 2538 samples/sec
+2020-06-20 16:28:05,425 INFO     Evaluated 409600 examples...
+2020-06-20 16:28:05,425 INFO     Prediction throughput: 2533 samples/sec
+2020-06-20 16:28:23,409 INFO     Done evaluating, epoch reached
+2020-06-20 16:28:23,410 INFO     Evaluation time: 0H:2M:59S
+Losses: train: 0.000721930293366313, validation: None
+2020-06-20 16:28:28,370 INFO     After 9 epochs -- top10_acc: [0.22078477 0.25195883 0.26642779 0.27590282 0.28282037 0.28784951
+ 0.29225798 0.29630991 0.29949466 0.30229426], precision: 0.3873417638212947, recall: 0.2664746976714704, F1: 0.3157362516512771
+2020-06-20 16:28:30,143 INFO     Average loss at batch 28800: 0.000073, 	throughput: 426 samples/sec
+2020-06-20 16:29:08,099 INFO     Average loss at batch 28900: 0.000249, 	throughput: 2697 samples/sec
+2020-06-20 16:30:05,028 INFO     Average loss at batch 29000: 0.000706, 	throughput: 1798 samples/sec
+2020-06-20 16:31:11,386 INFO     Average loss at batch 29100: 0.000758, 	throughput: 1543 samples/sec
+2020-06-20 16:32:08,006 INFO     Average loss at batch 29200: 0.000748, 	throughput: 1808 samples/sec
+2020-06-20 16:33:04,320 INFO     Average loss at batch 29300: 0.000815, 	throughput: 1818 samples/sec
+2020-06-20 16:34:07,297 INFO     Average loss at batch 29400: 0.000766, 	throughput: 1626 samples/sec
+2020-06-20 16:35:03,178 INFO     Average loss at batch 29500: 0.000695, 	throughput: 1832 samples/sec
+2020-06-20 16:36:02,670 INFO     Average loss at batch 29600: 0.000720, 	throughput: 1721 samples/sec
+2020-06-20 16:37:00,779 INFO     Average loss at batch 29700: 0.000765, 	throughput: 1762 samples/sec
+2020-06-20 16:37:54,167 INFO     Average loss at batch 29800: 0.001106, 	throughput: 1918 samples/sec
+2020-06-20 16:38:46,487 INFO     Average loss at batch 29900: 0.001077, 	throughput: 1957 samples/sec
+2020-06-20 16:39:45,060 INFO     Average loss at batch 30000: 0.000810, 	throughput: 1748 samples/sec
+2020-06-20 16:40:41,100 INFO     Average loss at batch 30100: 0.000707, 	throughput: 1827 samples/sec
+2020-06-20 16:41:38,159 INFO     Average loss at batch 30200: 0.000908, 	throughput: 1794 samples/sec
+2020-06-20 16:42:36,887 INFO     Average loss at batch 30300: 0.000782, 	throughput: 1743 samples/sec
+2020-06-20 16:43:38,809 INFO     Average loss at batch 30400: 0.000478, 	throughput: 1653 samples/sec
+2020-06-20 16:44:40,179 INFO     Average loss at batch 30500: 0.000761, 	throughput: 1668 samples/sec
+2020-06-20 16:45:45,219 INFO     Average loss at batch 30600: 0.000689, 	throughput: 1574 samples/sec
+2020-06-20 16:46:37,606 INFO     Average loss at batch 30700: 0.000849, 	throughput: 1954 samples/sec
+2020-06-20 16:47:40,066 INFO     Average loss at batch 30800: 0.000725, 	throughput: 1639 samples/sec
+2020-06-20 16:48:43,149 INFO     Average loss at batch 30900: 0.000703, 	throughput: 1623 samples/sec
+2020-06-20 16:49:42,961 INFO     Average loss at batch 31000: 0.000595, 	throughput: 1712 samples/sec
+2020-06-20 16:50:28,200 INFO     Average loss at batch 31100: 0.000077, 	throughput: 2263 samples/sec
+2020-06-20 16:51:18,320 INFO     Average loss at batch 31200: 0.000167, 	throughput: 2043 samples/sec
+2020-06-20 16:52:19,867 INFO     Average loss at batch 31300: 0.000682, 	throughput: 1663 samples/sec
+2020-06-20 16:53:18,179 INFO     Average loss at batch 31400: 0.000730, 	throughput: 1756 samples/sec
+2020-06-20 16:54:18,927 INFO     Average loss at batch 31500: 0.000730, 	throughput: 1685 samples/sec
+2020-06-20 16:55:19,190 INFO     Average loss at batch 31600: 0.000780, 	throughput: 1699 samples/sec
+2020-06-20 16:56:20,633 INFO     Average loss at batch 31700: 0.000726, 	throughput: 1666 samples/sec
+2020-06-20 16:57:18,879 INFO     Average loss at batch 31800: 0.000703, 	throughput: 1758 samples/sec
+2020-06-20 16:58:15,922 INFO     Average loss at batch 31900: 0.000681, 	throughput: 1795 samples/sec
+2020-06-20 16:59:35,003 INFO     Saved after 10 epochs in: models/JAVA_MED_PSI_V1_200620_001/saved_model_iter10
+2020-06-20 16:59:35,126 INFO     Starting evaluation
+2020-06-20 17:00:28,797 INFO     Evaluated 102400 examples...
+2020-06-20 17:00:28,798 INFO     Prediction throughput: 1903 samples/sec
+2020-06-20 17:01:07,487 INFO     Evaluated 204800 examples...
+2020-06-20 17:01:07,488 INFO     Prediction throughput: 2214 samples/sec
+2020-06-20 17:01:53,338 INFO     Evaluated 307200 examples...
+2020-06-20 17:01:53,338 INFO     Prediction throughput: 2220 samples/sec
+2020-06-20 17:02:37,378 INFO     Evaluated 409600 examples...
+2020-06-20 17:02:37,379 INFO     Prediction throughput: 2246 samples/sec
+2020-06-20 17:02:54,597 INFO     Done evaluating, epoch reached
+2020-06-20 17:02:54,598 INFO     Evaluation time: 0H:3M:19S
+Losses: train: 0.0006978856981731951, validation: None
+2020-06-20 17:02:59,829 INFO     After 10 epochs -- top10_acc: [0.21706078 0.248587   0.26247491 0.27139531 0.27776702 0.28311309
+ 0.28723985 0.29068872 0.29371721 0.29654761], precision: 0.3581270570362311, recall: 0.257605327464911, F1: 0.29966082708677816
+2020-06-20 17:03:01,787 INFO     Average loss at batch 32000: 0.000731, 	throughput: 358 samples/sec
+2020-06-20 17:03:38,472 INFO     Average loss at batch 32100: 0.001060, 	throughput: 2791 samples/sec
+2020-06-20 17:04:38,695 INFO     Average loss at batch 32200: 0.001032, 	throughput: 1700 samples/sec
+2020-06-20 17:05:42,235 INFO     Average loss at batch 32300: 0.000812, 	throughput: 1611 samples/sec
+2020-06-20 17:06:37,207 INFO     Average loss at batch 32400: 0.000696, 	throughput: 1862 samples/sec
+2020-06-20 17:07:34,178 INFO     Average loss at batch 32500: 0.000875, 	throughput: 1797 samples/sec
+2020-06-20 17:08:42,167 INFO     Average loss at batch 32600: 0.000790, 	throughput: 1506 samples/sec
+2020-06-20 17:09:38,965 INFO     Average loss at batch 32700: 0.000452, 	throughput: 1802 samples/sec
+2020-06-20 17:10:32,960 INFO     Average loss at batch 32800: 0.000702, 	throughput: 1896 samples/sec
+2020-06-20 17:11:36,029 INFO     Average loss at batch 32900: 0.000693, 	throughput: 1623 samples/sec
+2020-06-20 17:12:24,143 INFO     Average loss at batch 33000: 0.000813, 	throughput: 2128 samples/sec
+2020-06-20 17:13:37,066 INFO     Average loss at batch 33100: 0.000677, 	throughput: 1404 samples/sec
+2020-06-20 17:14:33,151 INFO     Average loss at batch 33200: 0.000676, 	throughput: 1825 samples/sec
+2020-06-20 17:15:36,047 INFO     Average loss at batch 33300: 0.000672, 	throughput: 1628 samples/sec
+2020-06-20 17:16:50,209 INFO     Average loss at batch 33400: 0.000076, 	throughput: 1380 samples/sec
+2020-06-20 17:18:04,966 INFO     Average loss at batch 33500: 0.000098, 	throughput: 1369 samples/sec
+2020-06-20 17:19:10,380 INFO     Average loss at batch 33600: 0.000667, 	throughput: 1565 samples/sec
+2020-06-20 17:20:10,620 INFO     Average loss at batch 33700: 0.000695, 	throughput: 1699 samples/sec
+2020-06-20 17:21:03,792 INFO     Average loss at batch 33800: 0.000713, 	throughput: 1925 samples/sec
+2020-06-20 17:22:06,255 INFO     Average loss at batch 33900: 0.000733, 	throughput: 1639 samples/sec
+2020-06-20 17:23:07,902 INFO     Average loss at batch 34000: 0.000719, 	throughput: 1661 samples/sec
+2020-06-20 17:24:07,968 INFO     Average loss at batch 34100: 0.000657, 	throughput: 1704 samples/sec
+2020-06-20 17:25:06,444 INFO     Average loss at batch 34200: 0.000674, 	throughput: 1751 samples/sec
+2020-06-20 17:26:04,802 INFO     Average loss at batch 34300: 0.000688, 	throughput: 1754 samples/sec
+2020-06-20 17:26:54,950 INFO     Average loss at batch 34400: 0.001029, 	throughput: 2041 samples/sec
+2020-06-20 17:27:54,763 INFO     Average loss at batch 34500: 0.000980, 	throughput: 1712 samples/sec
+2020-06-20 17:28:55,823 INFO     Average loss at batch 34600: 0.000827, 	throughput: 1677 samples/sec
+2020-06-20 17:30:04,339 INFO     Average loss at batch 34700: 0.000689, 	throughput: 1494 samples/sec
+2020-06-20 17:31:13,026 INFO     Average loss at batch 34800: 0.000846, 	throughput: 1490 samples/sec
+2020-06-20 17:32:17,863 INFO     Average loss at batch 34900: 0.000779, 	throughput: 1579 samples/sec
+2020-06-20 17:33:16,642 INFO     Average loss at batch 35000: 0.000445, 	throughput: 1742 samples/sec
+2020-06-20 17:34:07,510 INFO     Average loss at batch 35100: 0.000645, 	throughput: 2013 samples/sec
+2020-06-20 17:35:10,034 INFO     Saved after 11 epochs in: models/JAVA_MED_PSI_V1_200620_001/saved_model_iter11
+2020-06-20 17:35:10,147 INFO     Starting evaluation
+2020-06-20 17:35:55,559 INFO     Evaluated 102400 examples...
+2020-06-20 17:35:55,560 INFO     Prediction throughput: 2249 samples/sec
+2020-06-20 17:36:37,845 INFO     Evaluated 204800 examples...
+2020-06-20 17:36:37,845 INFO     Prediction throughput: 2332 samples/sec
+2020-06-20 17:37:23,508 INFO     Evaluated 307200 examples...
+2020-06-20 17:37:23,509 INFO     Prediction throughput: 2301 samples/sec
+2020-06-20 17:38:09,037 INFO     Evaluated 409600 examples...
+2020-06-20 17:38:09,037 INFO     Prediction throughput: 2288 samples/sec
+2020-06-20 17:38:26,381 INFO     Done evaluating, epoch reached
+2020-06-20 17:38:26,382 INFO     Evaluation time: 0H:3M:16S
+Losses: train: 0.0007058306946419179, validation: None
+2020-06-20 17:38:31,317 INFO     After 11 epochs -- top10_acc: [0.22097185 0.25254648 0.26632655 0.27507087 0.28104201 0.2859567
+ 0.29027934 0.29374142 0.29697019 0.29967734], precision: 0.3696635189406274, recall: 0.2570221083494017, F1: 0.30321964596136425
+2020-06-20 17:38:33,492 INFO     Average loss at batch 35200: 0.000673, 	throughput: 384 samples/sec
+2020-06-20 17:39:09,066 INFO     Average loss at batch 35300: 0.000809, 	throughput: 2878 samples/sec
+2020-06-20 17:40:07,918 INFO     Average loss at batch 35400: 0.000644, 	throughput: 1739 samples/sec
+2020-06-20 17:41:08,206 INFO     Average loss at batch 35500: 0.000664, 	throughput: 1698 samples/sec
+2020-06-20 17:42:08,082 INFO     Average loss at batch 35600: 0.000718, 	throughput: 1710 samples/sec
+2020-06-20 17:42:55,056 INFO     Average loss at batch 35700: 0.000077, 	throughput: 2179 samples/sec
+2020-06-20 17:43:42,944 INFO     Average loss at batch 35800: 0.000043, 	throughput: 2138 samples/sec
+2020-06-20 17:44:56,256 INFO     Average loss at batch 35900: 0.000637, 	throughput: 1396 samples/sec
+2020-06-20 17:46:19,187 INFO     Average loss at batch 36000: 0.000681, 	throughput: 1234 samples/sec
+2020-06-20 17:47:41,388 INFO     Average loss at batch 36100: 0.000694, 	throughput: 1245 samples/sec
+2020-06-20 17:49:01,043 INFO     Average loss at batch 36200: 0.000696, 	throughput: 1285 samples/sec
+2020-06-20 17:50:10,714 INFO     Average loss at batch 36300: 0.000711, 	throughput: 1469 samples/sec
+2020-06-20 17:51:20,315 INFO     Average loss at batch 36400: 0.000618, 	throughput: 1471 samples/sec
+2020-06-20 17:52:21,131 INFO     Average loss at batch 36500: 0.000677, 	throughput: 1683 samples/sec
+2020-06-20 17:53:18,895 INFO     Average loss at batch 36600: 0.000645, 	throughput: 1772 samples/sec
+2020-06-20 17:54:13,486 INFO     Average loss at batch 36700: 0.000998, 	throughput: 1875 samples/sec
+2020-06-20 17:55:10,883 INFO     Average loss at batch 36800: 0.000957, 	throughput: 1784 samples/sec
+2020-06-20 17:56:10,778 INFO     Average loss at batch 36900: 0.000842, 	throughput: 1709 samples/sec
+2020-06-20 17:57:21,224 INFO     Average loss at batch 37000: 0.000675, 	throughput: 1453 samples/sec
+2020-06-20 17:58:31,706 INFO     Average loss at batch 37100: 0.000804, 	throughput: 1452 samples/sec
+2020-06-20 17:59:37,306 INFO     Average loss at batch 37200: 0.000786, 	throughput: 1560 samples/sec
+2020-06-20 18:00:40,185 INFO     Average loss at batch 37300: 0.000447, 	throughput: 1628 samples/sec
+2020-06-20 18:01:45,145 INFO     Average loss at batch 37400: 0.000609, 	throughput: 1576 samples/sec
+2020-06-20 18:02:48,851 INFO     Average loss at batch 37500: 0.000629, 	throughput: 1607 samples/sec
+2020-06-20 18:03:48,632 INFO     Average loss at batch 37600: 0.000799, 	throughput: 1712 samples/sec
+2020-06-20 18:04:51,117 INFO     Average loss at batch 37700: 0.000640, 	throughput: 1638 samples/sec
+2020-06-20 18:05:56,315 INFO     Average loss at batch 37800: 0.000665, 	throughput: 1570 samples/sec
+2020-06-20 18:06:58,584 INFO     Average loss at batch 37900: 0.000746, 	throughput: 1644 samples/sec
+2020-06-20 18:07:52,736 INFO     Average loss at batch 38000: 0.000080, 	throughput: 1890 samples/sec
+2020-06-20 18:08:41,928 INFO     Average loss at batch 38100: 0.000033, 	throughput: 2081 samples/sec
+2020-06-20 18:09:45,669 INFO     Average loss at batch 38200: 0.000568, 	throughput: 1606 samples/sec
+2020-06-20 18:10:53,674 INFO     Average loss at batch 38300: 0.000680, 	throughput: 1505 samples/sec
+2020-06-20 18:12:02,137 INFO     Saved after 12 epochs in: models/JAVA_MED_PSI_V1_200620_001/saved_model_iter12
+2020-06-20 18:12:02,241 INFO     Starting evaluation
+2020-06-20 18:12:45,351 INFO     Evaluated 102400 examples...
+2020-06-20 18:12:45,354 INFO     Prediction throughput: 2370 samples/sec
+2020-06-20 18:13:26,667 INFO     Evaluated 204800 examples...
+2020-06-20 18:13:26,671 INFO     Prediction throughput: 2423 samples/sec
+2020-06-20 18:14:16,403 INFO     Evaluated 307200 examples...
+2020-06-20 18:14:16,403 INFO     Prediction throughput: 2288 samples/sec
+2020-06-20 18:15:06,802 INFO     Evaluated 409600 examples...
+2020-06-20 18:15:06,802 INFO     Prediction throughput: 2218 samples/sec
+2020-06-20 18:15:27,583 INFO     Done evaluating, epoch reached
+2020-06-20 18:15:27,585 INFO     Evaluation time: 0H:3M:25S
+Losses: train: 0.0006233776221051812, validation: None
+2020-06-20 18:15:33,909 INFO     After 12 epochs -- top10_acc: [0.22000563 0.2495224  0.26460542 0.27382954 0.2800868  0.28631325
+ 0.29033657 0.29368419 0.29711105 0.29973897], precision: 0.37313464231742216, recall: 0.2543491844996061, F1: 0.3024986076961084
+2020-06-20 18:15:36,283 INFO     Average loss at batch 38400: 0.000665, 	throughput: 362 samples/sec
+2020-06-20 18:16:20,532 INFO     Average loss at batch 38500: 0.000672, 	throughput: 2314 samples/sec
+2020-06-20 18:17:18,443 INFO     Average loss at batch 38600: 0.000679, 	throughput: 1768 samples/sec
+2020-06-20 18:18:19,013 INFO     Average loss at batch 38700: 0.000598, 	throughput: 1690 samples/sec
+2020-06-20 18:19:21,009 INFO     Average loss at batch 38800: 0.000665, 	throughput: 1651 samples/sec
+2020-06-20 18:20:21,370 INFO     Average loss at batch 38900: 0.000621, 	throughput: 1696 samples/sec
+2020-06-20 18:21:22,558 INFO     Average loss at batch 39000: 0.000969, 	throughput: 1673 samples/sec
+2020-06-20 18:22:26,977 INFO     Average loss at batch 39100: 0.000928, 	throughput: 1589 samples/sec
+2020-06-20 18:23:34,183 INFO     Average loss at batch 39200: 0.000846, 	throughput: 1523 samples/sec
+2020-06-20 18:24:38,995 INFO     Average loss at batch 39300: 0.000659, 	throughput: 1579 samples/sec
+2020-06-20 18:25:45,069 INFO     Average loss at batch 39400: 0.000764, 	throughput: 1549 samples/sec
+2020-06-20 18:26:47,253 INFO     Average loss at batch 39500: 0.000804, 	throughput: 1646 samples/sec
+2020-06-20 18:27:45,929 INFO     Average loss at batch 39600: 0.000437, 	throughput: 1745 samples/sec
+2020-06-20 18:28:42,330 INFO     Average loss at batch 39700: 0.000588, 	throughput: 1815 samples/sec
+2020-06-20 18:29:44,289 INFO     Average loss at batch 39800: 0.000599, 	throughput: 1652 samples/sec
+2020-06-20 18:30:58,399 INFO     Average loss at batch 39900: 0.000770, 	throughput: 1381 samples/sec
+2020-06-20 18:32:17,456 INFO     Average loss at batch 40000: 0.000647, 	throughput: 1295 samples/sec
+2020-06-20 18:33:26,627 INFO     Average loss at batch 40100: 0.000653, 	throughput: 1480 samples/sec
+2020-06-20 18:34:29,843 INFO     Average loss at batch 40200: 0.000758, 	throughput: 1619 samples/sec
+2020-06-20 18:35:24,758 INFO     Average loss at batch 40300: 0.000100, 	throughput: 1864 samples/sec
+2020-06-20 18:36:12,967 INFO     Average loss at batch 40400: 0.000037, 	throughput: 2124 samples/sec
+2020-06-20 18:37:21,067 INFO     Average loss at batch 40500: 0.000504, 	throughput: 1503 samples/sec
+2020-06-20 18:38:34,006 INFO     Average loss at batch 40600: 0.000649, 	throughput: 1403 samples/sec
+2020-06-20 18:39:41,809 INFO     Average loss at batch 40700: 0.000642, 	throughput: 1510 samples/sec
+2020-06-20 18:40:46,692 INFO     Average loss at batch 40800: 0.000691, 	throughput: 1578 samples/sec
+2020-06-20 18:41:50,229 INFO     Average loss at batch 40900: 0.000636, 	throughput: 1611 samples/sec
+2020-06-20 18:43:05,107 INFO     Average loss at batch 41000: 0.000611, 	throughput: 1367 samples/sec
+2020-06-20 18:44:10,904 INFO     Average loss at batch 41100: 0.000640, 	throughput: 1556 samples/sec
+2020-06-20 18:45:05,125 INFO     Average loss at batch 41200: 0.000616, 	throughput: 1888 samples/sec
+2020-06-20 18:46:05,511 INFO     Average loss at batch 41300: 0.000897, 	throughput: 1695 samples/sec
+2020-06-20 18:47:13,478 INFO     Average loss at batch 41400: 0.000914, 	throughput: 1506 samples/sec
+2020-06-20 18:48:22,237 INFO     Average loss at batch 41500: 0.000852, 	throughput: 1489 samples/sec
+2020-06-20 18:49:30,446 INFO     Saved after 13 epochs in: models/JAVA_MED_PSI_V1_200620_001/saved_model_iter13
+2020-06-20 18:49:30,554 INFO     Starting evaluation
+2020-06-20 18:50:15,128 INFO     Evaluated 102400 examples...
+2020-06-20 18:50:15,128 INFO     Prediction throughput: 2292 samples/sec
+2020-06-20 18:50:53,630 INFO     Evaluated 204800 examples...
+2020-06-20 18:50:53,630 INFO     Prediction throughput: 2462 samples/sec
+2020-06-20 18:51:39,380 INFO     Evaluated 307200 examples...
+2020-06-20 18:51:39,381 INFO     Prediction throughput: 2382 samples/sec
+2020-06-20 18:52:34,643 INFO     Evaluated 409600 examples...
+2020-06-20 18:52:34,643 INFO     Prediction throughput: 2223 samples/sec
+2020-06-20 18:52:58,969 INFO     Done evaluating, epoch reached
+2020-06-20 18:52:58,975 INFO     Evaluation time: 0H:3M:28S
+Losses: train: 0.0006583990762010217, validation: None
+2020-06-20 18:53:05,222 INFO     After 13 epochs -- top10_acc: [0.2192089  0.2495246  0.26405298 0.27427633 0.28092976 0.28646072
+ 0.29053025 0.29428505 0.29742138 0.29995026], precision: 0.3640053664664211, recall: 0.25719059859893706, F1: 0.3014145724042954
+2020-06-20 18:53:07,822 INFO     Average loss at batch 41600: 0.000624, 	throughput: 358 samples/sec
+2020-06-20 18:54:01,867 INFO     Average loss at batch 41700: 0.000734, 	throughput: 1894 samples/sec
+2020-06-20 18:55:06,178 INFO     Average loss at batch 41800: 0.000833, 	throughput: 1592 samples/sec
+2020-06-20 18:55:58,434 INFO     Average loss at batch 41900: 0.000423, 	throughput: 1959 samples/sec
+2020-06-20 18:56:53,962 INFO     Average loss at batch 42000: 0.000600, 	throughput: 1844 samples/sec
+2020-06-20 18:57:50,544 INFO     Average loss at batch 42100: 0.000564, 	throughput: 1809 samples/sec
+2020-06-20 18:58:50,675 INFO     Average loss at batch 42200: 0.000741, 	throughput: 1702 samples/sec
+2020-06-20 18:59:48,238 INFO     Average loss at batch 42300: 0.000663, 	throughput: 1778 samples/sec
+2020-06-20 19:00:41,247 INFO     Average loss at batch 42400: 0.000616, 	throughput: 1931 samples/sec
+2020-06-20 19:01:41,903 INFO     Average loss at batch 42500: 0.000767, 	throughput: 1688 samples/sec
+2020-06-20 19:02:35,315 INFO     Average loss at batch 42600: 0.000129, 	throughput: 1917 samples/sec
+2020-06-20 19:03:28,786 INFO     Average loss at batch 42700: 0.000045, 	throughput: 1915 samples/sec
+2020-06-20 19:04:35,605 INFO     Average loss at batch 42800: 0.000438, 	throughput: 1532 samples/sec
+2020-06-20 19:05:41,918 INFO     Average loss at batch 42900: 0.000618, 	throughput: 1544 samples/sec
+2020-06-20 19:06:47,266 INFO     Average loss at batch 43000: 0.000628, 	throughput: 1567 samples/sec
+2020-06-20 19:07:49,116 INFO     Average loss at batch 43100: 0.000659, 	throughput: 1655 samples/sec
+2020-06-20 19:08:59,390 INFO     Average loss at batch 43200: 0.000657, 	throughput: 1457 samples/sec
+2020-06-20 19:10:22,704 INFO     Average loss at batch 43300: 0.000586, 	throughput: 1229 samples/sec
+2020-06-20 19:11:33,339 INFO     Average loss at batch 43400: 0.000627, 	throughput: 1449 samples/sec
+2020-06-20 19:12:29,063 INFO     Average loss at batch 43500: 0.000606, 	throughput: 1837 samples/sec
+2020-06-20 19:13:25,821 INFO     Average loss at batch 43600: 0.000821, 	throughput: 1804 samples/sec
+2020-06-20 19:14:19,619 INFO     Average loss at batch 43700: 0.000911, 	throughput: 1903 samples/sec
+2020-06-20 19:15:18,374 INFO     Average loss at batch 43800: 0.000895, 	throughput: 1742 samples/sec
+2020-06-20 19:16:22,229 INFO     Average loss at batch 43900: 0.000586, 	throughput: 1603 samples/sec
+2020-06-20 19:17:19,053 INFO     Average loss at batch 44000: 0.000700, 	throughput: 1802 samples/sec
+2020-06-20 19:18:20,766 INFO     Average loss at batch 44100: 0.000839, 	throughput: 1659 samples/sec
+2020-06-20 19:19:16,582 INFO     Average loss at batch 44200: 0.000444, 	throughput: 1834 samples/sec
+2020-06-20 19:20:11,869 INFO     Average loss at batch 44300: 0.000584, 	throughput: 1852 samples/sec
+2020-06-20 19:21:06,171 INFO     Average loss at batch 44400: 0.000568, 	throughput: 1885 samples/sec
+2020-06-20 19:22:08,951 INFO     Average loss at batch 44500: 0.000708, 	throughput: 1631 samples/sec
+2020-06-20 19:23:06,936 INFO     Average loss at batch 44600: 0.000678, 	throughput: 1765 samples/sec
+2020-06-20 19:24:08,654 INFO     Average loss at batch 44700: 0.000578, 	throughput: 1659 samples/sec
+2020-06-20 19:25:24,265 INFO     Saved after 14 epochs in: models/JAVA_MED_PSI_V1_200620_001/saved_model_iter14
+2020-06-20 19:25:24,384 INFO     Starting evaluation
+2020-06-20 19:26:17,786 INFO     Evaluated 102400 examples...
+2020-06-20 19:26:17,787 INFO     Prediction throughput: 1913 samples/sec
+2020-06-20 19:27:01,741 INFO     Evaluated 204800 examples...
+2020-06-20 19:27:01,741 INFO     Prediction throughput: 2101 samples/sec
+2020-06-20 19:27:46,892 INFO     Evaluated 307200 examples...
+2020-06-20 19:27:46,892 INFO     Prediction throughput: 2154 samples/sec
+2020-06-20 19:28:31,635 INFO     Evaluated 409600 examples...
+2020-06-20 19:28:31,635 INFO     Prediction throughput: 2186 samples/sec
+2020-06-20 19:28:51,131 INFO     Done evaluating, epoch reached
+2020-06-20 19:28:51,133 INFO     Evaluation time: 0H:3M:26S
+Losses: train: 0.0006254375912249088, validation: None
+2020-06-20 19:28:57,653 INFO     After 14 epochs -- top10_acc: [0.21880832 0.24785409 0.26210295 0.27073502 0.27788367 0.2828952
+ 0.28685028 0.2908824  0.29413318 0.29685354], precision: 0.3734301386683038, recall: 0.25337470720340005, F1: 0.3019049794180218
+2020-06-20 19:29:00,382 INFO     Average loss at batch 44800: 0.000760, 	throughput: 351 samples/sec
+2020-06-20 19:29:38,063 INFO     Average loss at batch 44900: 0.000183, 	throughput: 2717 samples/sec
+2020-06-20 19:30:26,575 INFO     Average loss at batch 45000: 0.000043, 	throughput: 2110 samples/sec
+2020-06-20 19:31:26,688 INFO     Average loss at batch 45100: 0.000382, 	throughput: 1703 samples/sec
+2020-06-20 19:32:30,179 INFO     Average loss at batch 45200: 0.000590, 	throughput: 1613 samples/sec
+2020-06-20 19:33:31,675 INFO     Average loss at batch 45300: 0.000599, 	throughput: 1665 samples/sec
+2020-06-20 19:34:33,216 INFO     Average loss at batch 45400: 0.000668, 	throughput: 1663 samples/sec
+2020-06-20 19:35:34,007 INFO     Average loss at batch 45500: 0.000661, 	throughput: 1684 samples/sec
+2020-06-20 19:36:36,993 INFO     Average loss at batch 45600: 0.000571, 	throughput: 1625 samples/sec
+2020-06-20 19:37:32,160 INFO     Average loss at batch 45700: 0.000622, 	throughput: 1856 samples/sec
+2020-06-20 19:38:28,031 INFO     Average loss at batch 45800: 0.000589, 	throughput: 1832 samples/sec
+2020-06-20 19:39:33,649 INFO     Average loss at batch 45900: 0.000746, 	throughput: 1560 samples/sec
+2020-06-20 19:40:31,897 INFO     Average loss at batch 46000: 0.000926, 	throughput: 1758 samples/sec
+2020-06-20 19:41:25,200 INFO     Average loss at batch 46100: 0.000902, 	throughput: 1921 samples/sec
+2020-06-20 19:42:33,343 INFO     Average loss at batch 46200: 0.000599, 	throughput: 1502 samples/sec
+2020-06-20 19:42:38,955 INFO     Done training
+2020-06-20 19:42:47,607 INFO     Model saved in file: models/JAVA_MED_PSI_V1_200620_001/saved_model
+2020-06-20 19:42:47,609 INFO     Training time: 8H:16M:43S
+

@@ -1,18 +1,13 @@
 <idea-plugin>
-    <id>org.example.test</id>
-    <name>Code2Vec Data Preprocess</name>
-    <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
+    <id>io.github.jbr.psiminer</id>
+    <name>PSI miner</name>
+    <vendor email="spirin.egor@mail.ru" url="https://github.com/JetBrains-Research/psi-embeddings">JetBrains Research</vendor>
 
-    <description><![CDATA[
-    Enter short description for your plugin here.<br>
-    <em>most HTML tags may be used</em>
-    ]]></description>
+    <description>Extract code in different representations based on PSI trees and using astminer</description>
 
-    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+    <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
     <depends>com.intellij.modules.platform</depends>
-    <!-- https://blog.jetbrains.com/platform/2019/06/java-functionality-extracted-as-a-plugin/ -->
-    <depends>com.intellij.modules.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
@@ -24,5 +19,6 @@
         <action id="DumpPSIAction" class="DumpPSIAction" text="Dump PSI" description="Dumps PSI Info">
             <add-to-group group-id="ToolsMenu" anchor="first"/>
         </action>
+
     </actions>
 </idea-plugin>

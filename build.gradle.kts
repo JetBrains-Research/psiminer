@@ -1,9 +1,5 @@
-
 group = "org.jetbrains.research.psiminer"
 version = "1.0-SNAPSHOT"
-
-// Specify path to local build of IDEA
-val localPathToIdea = "<PATH>"
 
 plugins {
     id("java")
@@ -32,10 +28,10 @@ dependencies {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    type = "IC"
-    localPath = localPathToIdea
+    version = "2020.1"
     setPlugins("java")
 }
+
 tasks {
     compileKotlin {
         kotlinOptions.jvmTarget = "1.8"
@@ -43,9 +39,4 @@ tasks {
     compileTestKotlin {
         kotlinOptions.jvmTarget = "1.8"
     }
-}
-tasks.getByName<org.jetbrains.intellij.tasks.PatchPluginXmlTask>("patchPluginXml") {
-    changeNotes("""
-      Add change notes here.<br>
-      <em>most HTML tags may be used</em>""")
 }

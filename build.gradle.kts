@@ -1,3 +1,10 @@
+
+group = "org.jetbrains.research.psiminer"
+version = "1.0-SNAPSHOT"
+
+// Specify path to local build of IDEA
+val localPathToIdea = "<PATH>"
+
 plugins {
     id("java")
     id("idea")
@@ -5,9 +12,6 @@ plugins {
     id("org.jetbrains.intellij") version "0.4.21"
     kotlin("jvm") version "1.3.72"
 }
-
-group = "org.example"
-version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -29,7 +33,7 @@ dependencies {
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
     type = "IC"
-    localPath = "/home/spirin/.local/share/JetBrains/Toolbox/apps/IDEA-U/ch-0/201.8538.31"
+    localPath = localPathToIdea
     setPlugins("java")
 }
 tasks {

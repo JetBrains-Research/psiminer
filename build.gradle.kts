@@ -28,7 +28,7 @@ dependencies {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version = "2020.1"
+    version = "2020.1.3"
     setPlugins("java")
 }
 
@@ -38,5 +38,14 @@ tasks {
     }
     compileTestKotlin {
         kotlinOptions.jvmTarget = "1.8"
+    }
+    runIde {
+        val projectFolder: String? by project
+        val outputFolder: String? by project
+        args = listOfNotNull("psiminer", projectFolder, outputFolder)
+        jvmArgs = listOf("-Djava.awt.headless=true")
+    }
+    register("extractPSIPaths") {
+        dependsOn(runIde)
     }
 }

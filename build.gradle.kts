@@ -40,9 +40,9 @@ tasks {
         kotlinOptions.jvmTarget = "1.8"
     }
     runIde {
-        val projectFolder: String? by project
-        val outputFolder: String? by project
-        args = listOfNotNull("psiminer", projectFolder, outputFolder)
+        val dataset: String? by project
+        val output: String? by project
+        args = listOfNotNull("psiminer", dataset, output)
         jvmArgs = listOf("-Djava.awt.headless=true")
     }
     register("extractPSIPaths") {

@@ -18,63 +18,63 @@ fun convertPsiElement(node: PsiElement, parent: SimpleNode?): SimpleNode {
     val children: MutableList<Node> = ArrayList()
 
     node.children
-            .filter {
-                !(it is PsiWhiteSpace || it is PsiDocComment || it is PsiImportStatement || it is PsiPackageStatement)
-                        && !(it is PsiMethod && it.isConstructor)
-            }
-            .forEach {
-                when (it) {
-                    is PsiJavaToken -> {
-                        val n = SimpleNode(it.tokenType.toString(), currentNode, it.text)
-                        children.add(n)
-                    }
-                    is PsiThisExpression -> {
-                        val token = "this"
-                        val tokenType = it.type?.presentableText ?: "null"
-                        val n = SimpleNode(it.elementType.toString(), currentNode, token)
-                        node2type[n] = tokenType
-                        children.add(n)
-                    }
-                    is PsiReferenceExpression -> {
-                        val token = it.element.text
-                        val tokenType = it.type?.presentableText ?: "null"
-                        val n = SimpleNode(it.elementType.toString(), currentNode, token)
-                        node2type[n] = tokenType
-                        children.add(n)
-                    }
-                    is PsiVariable -> {
-                        val token = it.name
-                        val tokenType = it.type.presentableText ?: "null"
-                        val n = SimpleNode(it.elementType.toString(), currentNode, token)
-                        node2type[n] = tokenType
-                        children.add(n)
-                        it.children.forEach { kid -> convertPsiElement(kid, n) }
-                    }
-                    /* TODO: consider creating ParameterNode at this point
-                    is PsiParameterList -> {
-                        it.parameters.forEach {
-                            val returnTypeNodePsi = SimpleNode(it.type.canonicalText, null, it.elementType.toString())
-                            val nameNodePsi = it.nameIdentifier
+        .filter {
+            !(it is PsiWhiteSpace || it is PsiDocComment || it is PsiImportStatement || it is PsiPackageStatement)
+                    && !(it is PsiMethod && it.isConstructor)
+        }
+        .forEach {
+            when (it) {
+                is PsiJavaToken -> {
+                    val n = SimpleNode(it.tokenType.toString(), currentNode, it.text)
+                    children.add(n)
+                }
+                is PsiThisExpression -> {
+                    val token = "this"
+                    val tokenType = it.type?.presentableText ?: "null"
+                    val n = SimpleNode(it.elementType.toString(), currentNode, token)
+                    node2type[n] = tokenType
+                    children.add(n)
+                }
+                is PsiReferenceExpression -> {
+                    val token = it.element.text
+                    val tokenType = it.type?.presentableText ?: "null"
+                    val n = SimpleNode(it.elementType.toString(), currentNode, token)
+                    node2type[n] = tokenType
+                    children.add(n)
+                }
+                is PsiVariable -> {
+                    val token = it.name
+                    val tokenType = it.type.presentableText
+                    val n = SimpleNode(it.elementType.toString(), currentNode, token)
+                    node2type[n] = tokenType
+                    children.add(n)
+                    it.children.forEach { kid -> convertPsiElement(kid, n) }
+                }
+                /* TODO: consider creating ParameterNode at this point
+                is PsiParameterList -> {
+                    it.parameters.forEach {
+                        val returnTypeNodePsi = SimpleNode(it.type.canonicalText, null, it.elementType.toString())
+                        val nameNodePsi = it.nameIdentifier
 
-        //                    val returnTypeNode = psi.convertPsiElement(returnTypeNodePsi as PsiElement, null)
-                            val nameNode = psi.convertPsiElement(nameNodePsi as PsiElement, null)
+//                        val returnTypeNode = psi.convertPsiElement(returnTypeNodePsi as PsiElement, null)
+                        val nameNode = psi.convertPsiElement(nameNodePsi as PsiElement, null)
 
-                            children.add(
-                                ParameterNode(it.asSimpleNode(), returnTypeNodePsi, nameNode) as Node
-                            )
-                        }
-                    }
-                    */
-//            is PsiMethod -> {
-//                if (!it.isConstructor) {
-//                    children.add(psi.convertPsiElement(it, currentNode))
-//                }
-//            }
-                    else -> {
-                        children.add(convertPsiElement(it, currentNode))
+                        children.add(
+                            ParameterNode(it.asSimpleNode(), returnTypeNodePsi, nameNode) as Node
+                        )
                     }
                 }
+                */
+//                is PsiMethod -> {
+//                    if (!it.isConstructor) {
+//                        children.add(psi.convertPsiElement(it, currentNode))
+//                    }
+//                }
+                else -> {
+                    children.add(convertPsiElement(it, currentNode))
+                }
             }
+        }
     currentNode.setChildren(children)
 
     return currentNode

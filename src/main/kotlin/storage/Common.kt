@@ -1,5 +1,6 @@
 package storage
 
+import Dataset
 import astminer.common.model.PathContext
 
 
@@ -16,3 +17,9 @@ data class XLabeledPathContexts<T>(val label: T, val xPathContexts: Collection<X
 data class XLabeledPathContextIds<T>(val label: T, val xPathContexts: Collection<XPathContextId>)
 
 val tokenTypeToCsvString: (String) -> String = { tokenType -> tokenType }
+
+interface XPathContextsStorage<LabelType> {
+    val directoryPath: String
+    fun store(xLabeledPathContexts: XLabeledPathContexts<LabelType>, dataset: Dataset)
+    fun close()
+}

@@ -12,6 +12,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
 import psi.PsiMethodSplitter
 import psi.convertPSITree
+import storage.XCode2SeqPathStorage
 import storage.XCode2VecPathStorage
 import storage.XLabeledPathContexts
 import java.io.File
@@ -49,7 +50,8 @@ class Runner : ApplicationStarter {
 
         println("Processing data...")
         val miner = PathMiner(PathRetrievalSettings(5, 5))
-        val storage = XCode2VecPathStorage(outputPath)
+        val storage = XCode2SeqPathStorage<String>(outputPath)
+//        val storage = XCode2VecPathStorage(outputPath)
 
         val executionTime = measureTimeMillis {
             ProjectRootManager.getInstance(project).contentRoots.forEach { root ->

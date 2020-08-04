@@ -8,8 +8,8 @@ import java.io.PrintWriter
 
 
 abstract class XCountingPathStorage<LabelType>(
-    private val directoryPath: String
-) {
+    final override val directoryPath: String
+) : XPathContextsStorage<LabelType> {
 
     protected val typesMap: RankedIncrementalIdStorage<String> = RankedIncrementalIdStorage()
     protected val tokensMap: RankedIncrementalIdStorage<String> = RankedIncrementalIdStorage()
@@ -20,6 +20,7 @@ abstract class XCountingPathStorage<LabelType>(
     private val datasetFileWriters = mutableMapOf<Dataset, PrintWriter>()
 
     init {
+        File(directoryPath).mkdir()
         Dataset.values().forEach {
             val file = File("$directoryPath/path_contexts.${it.folderName}.csv")
             file.createNewFile()
@@ -51,7 +52,7 @@ abstract class XCountingPathStorage<LabelType>(
         return XPathContextId(startTypeId, startTokenId, pathId, endTypeId, endTokenId)
     }
 
-    fun store(xLabeledPathContexts: XLabeledPathContexts<LabelType>, dataset: Dataset) {
+    override fun store(xLabeledPathContexts: XLabeledPathContexts<LabelType>, dataset: Dataset) {
         val xLabeledPathContextIds = XLabeledPathContextIds(
             xLabeledPathContexts.label,
             xLabeledPathContexts.xPathContexts.map { storeXPathContext(it) }
@@ -59,7 +60,7 @@ abstract class XCountingPathStorage<LabelType>(
         dumpXPathContexts(xLabeledPathContextIds, dataset)
     }
 
-    fun close() {
+    override fun close() {
         dumpIdStorageToCsv(tokensMap, "token", tokenToCsvString, File("$directoryPath/tokens.csv"), Long.MAX_VALUE)
         dumpIdStorageToCsv(orientedNodeTypesMap, "node_type", orientedNodeToCsvString, File("$directoryPath/node_types.csv"), Long.MAX_VALUE)
         dumpIdStorageToCsv(pathsMap, "path", pathToCsvString, File("$directoryPath/paths.csv"), Long.MAX_VALUE)

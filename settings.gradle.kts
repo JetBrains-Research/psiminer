@@ -1,2 +1,2 @@
-rootProject.name = "psi-miner"
+rootProject.name = "psiminer"
 

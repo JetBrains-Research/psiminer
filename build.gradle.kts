@@ -13,14 +13,12 @@ repositories {
     mavenCentral()
     jcenter()
     maven(url = "https://dl.bintray.com/egor-bogomolov/astminer")
-    maven(url = "https://oss.sonatype.org/content/repositories/snapshots/")
     maven(url = "https://dl.bintray.com/jetbrains/intellij-plugin-service")
 }
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation("io.github.vovak.astminer:astminer-dev:1.319")
-    implementation("net.openhft:chronicle-map:3.19.31")
 
     testImplementation("junit:junit:4.11")
     testImplementation(kotlin("test-junit"))

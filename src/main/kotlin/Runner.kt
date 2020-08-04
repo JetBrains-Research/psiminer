@@ -12,6 +12,8 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
 import psi.PsiMethodSplitter
 import psi.convertPSITree
+import storage.XCode2VecPathStorage
+import storage.XLabeledPathContexts
 import java.io.File
 import kotlin.system.exitProcess
 import kotlin.system.measureTimeMillis
@@ -47,7 +49,7 @@ class Runner : ApplicationStarter {
 
         println("Processing data...")
         val miner = PathMiner(PathRetrievalSettings(5, 5))
-        val storage = XCode2VecPathStorage("astminer_withTypes", "$outputPath/withTypes")
+        val storage = XCode2VecPathStorage(outputPath)
 
         val executionTime = measureTimeMillis {
             ProjectRootManager.getInstance(project).contentRoots.forEach { root ->
@@ -61,20 +63,20 @@ class Runner : ApplicationStarter {
 
                     vFile.canonicalPath ?: return@iterateChildrenRecursively true
 
-                    val filename = File(vFile.canonicalPath ?: "").relativeTo(absoluteProjectPath)
-                    println("processing $filename $index / $total")
-                    if (filename.extension != "java") {
-                        println("skip $filename")
+                    val processingFile = File(vFile.canonicalPath ?: "").relativeTo(absoluteProjectPath)
+                    println("processing $processingFile $index / $total")
+                    if (processingFile.extension != "java") {
+                        println("skip $processingFile")
                         return@iterateChildrenRecursively true
                     }
 
                     // determine if it's train / val / test
-                    val dataset = when {
-                        filename.startsWith("training") -> Dataset.Train
-                        filename.startsWith("test") -> Dataset.Test
-                        filename.startsWith("validation") -> Dataset.Val
+                    val dataset = when (processingFile.path.split(File.separator)[0]) {
+                        Dataset.Train.folderName -> Dataset.Train
+                        Dataset.Test.folderName -> Dataset.Test
+                        Dataset.Val.folderName -> Dataset.Val
                         else -> {
-                            println("skip $filename")
+                            println("skip $processingFile")
                             return@iterateChildrenRecursively true
                         }
                     }
@@ -98,7 +100,7 @@ class Runner : ApplicationStarter {
                             val paths = miner.retrievePaths(methodRoot)
                             storage.store(XLabeledPathContexts(
                                     label = label,
-                                    pathContexts = paths.map { it ->
+                                    xPathContexts = paths.map {
                                         toXPathContext(
                                                 path = it,
                                                 getToken = { node -> node.getNormalizedToken() },
@@ -115,7 +117,7 @@ class Runner : ApplicationStarter {
         } / 1000
 
         println("saving psi-based...")
-        storage.save()
+        storage.close()
         println("\nCOMPUTED IN $executionTime SECONDS\n")
         println("Processing files...DONE! [$executionTime sec]")
         exitProcess(0)

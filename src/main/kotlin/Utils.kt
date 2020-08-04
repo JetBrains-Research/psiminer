@@ -1,10 +1,16 @@
 import astminer.common.model.*
+import storage.XPathContext
 
 object Config {
     const val psiTypeMetadataKey = "psiType"
     const val unknownType = "<UNKNOWN>"
 }
 
+enum class Dataset(val folderName: String) {
+    Train("train"),
+    Test("test"),
+    Val("val")
+}
 
 fun toXPathContext(
     path: ASTPath,
@@ -23,7 +29,3 @@ fun toXPathContext(
         endTokenType = endTokenType
     )
 }
-
-//interface XNode: Node {
-//    fun getTokenType(): String
-//}

@@ -1,5 +1,4 @@
 import astminer.common.getNormalizedToken
-import astminer.common.model.Node
 import astminer.common.preOrder
 import astminer.common.setNormalizedToken
 import astminer.common.splitToSubtokens
@@ -22,9 +21,6 @@ fun PsiElement.runPlugin() {
     // debug it here in IntelliJ
 }
 
-val node2type: MutableMap<Node, String> = hashMapOf()
-
-//val mapper = ObjectMapper().registerModule(KotlinModule())
 
 class Runner : ApplicationStarter {
 
@@ -32,8 +28,6 @@ class Runner : ApplicationStarter {
 
     override fun main(args: Array<out String>) {
         println("Start mining PSI paths from input data")
-
-        // System.setProperty("org.litote.mongo.test.mapping.service", "org.litote.kmongo.jackson.JacksonClassMappingTypeService")
 
         if (args.size != 3) {
             println("You should specify path to the folder with input data and to the output folder")
@@ -55,7 +49,6 @@ class Runner : ApplicationStarter {
         val miner = PathMiner(PathRetrievalSettings(5, 5))
         val storage = XCode2VecPathStorage("astminer_withTypes", "$outputPath/withTypes")
 
-        // val LIMIT = 1800
         val executionTime = measureTimeMillis {
             ProjectRootManager.getInstance(project).contentRoots.forEach { root ->
                 var total = 0L
@@ -65,24 +58,9 @@ class Runner : ApplicationStarter {
                 VfsUtilCore.iterateChildrenRecursively(root, null) { vFile ->
                     val psi = PsiManager.getInstance(project).findFile(vFile)
                     index += 1
-                    //if (index > LIMIT) {
-                    //    println("[LIMIT REACHED] terminating")
-                    //    return@iterateChildrenRecursively false
-                    //}
+
                     vFile.canonicalPath ?: return@iterateChildrenRecursively true
 
-                    // verify path
-//                    val chunks = vFile.canonicalPath?.split("/")
-//                            ?.drop(4)
-//                            ?.joinToString("/", prefix = "/")
-//                            ?: ""
-//                    val datasetName = "/java-med"
-//                    if (!chunks.startsWith(datasetName)) {
-//                        println("skipping! chunks: $chunks")
-//                        return@iterateChildrenRecursively true
-//                    } else {
-//                        println("👍🏻 chunks: $chunks")
-//                    }
                     val filename = File(vFile.canonicalPath ?: "").relativeTo(absoluteProjectPath)
                     println("processing $filename $index / $total")
                     if (filename.extension != "java") {
@@ -91,7 +69,6 @@ class Runner : ApplicationStarter {
                     }
 
                     // determine if it's train / val / test
-                    // val dataset = Dataset.valueOf()
                     val dataset = when {
                         filename.startsWith("training") -> Dataset.Train
                         filename.startsWith("test") -> Dataset.Test
@@ -102,7 +79,6 @@ class Runner : ApplicationStarter {
                         }
                     }
                     println(">>> dataset type: $dataset")
-                    // File(outputPath).appendText("${vFile.canonicalPath}\n")
 
                     /**
                      * Processing START
@@ -126,17 +102,12 @@ class Runner : ApplicationStarter {
                                         toXPathContext(
                                                 path = it,
                                                 getToken = { node -> node.getNormalizedToken() },
-                                                getTokenType = { node2type.getOrDefault(it, "unknown") }
+                                                getTokenType = { node -> node.getMetadata(Config.psiTypeMetadataKey)?.toString() ?: Config.unknownType }
                                         )
                                     }
                             ), dataset)
                         }
                     }
-
-                    /**
-                     * Processing END
-                     */
-                    node2type.clear()
 
                     true
                 }

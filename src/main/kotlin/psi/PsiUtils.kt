@@ -6,7 +6,6 @@ import astminer.parse.antlr.compressTree
 import com.intellij.psi.*
 import com.intellij.psi.javadoc.PsiDocComment
 import com.intellij.psi.util.elementType
-import node2type
 
 fun convertPSITree(root: PsiElement): SimpleNode {
     val tree = convertPsiElement(root, null)
@@ -31,24 +30,24 @@ fun convertPsiElement(node: PsiElement, parent: SimpleNode?): SimpleNode {
                 is PsiThisExpression -> {
                     val token = "this"
                     val tokenType = it.type?.presentableText ?: "null"
-                    val n = SimpleNode(it.elementType.toString(), currentNode, token)
-                    node2type[n] = tokenType
-                    children.add(n)
+                    val childNode = SimpleNode(it.elementType.toString(), currentNode, token)
+                    childNode.setMetadata(Config.psiTypeMetadataKey, tokenType)
+                    children.add(childNode)
                 }
                 is PsiReferenceExpression -> {
                     val token = it.element.text
                     val tokenType = it.type?.presentableText ?: "null"
-                    val n = SimpleNode(it.elementType.toString(), currentNode, token)
-                    node2type[n] = tokenType
-                    children.add(n)
+                    val childNode = SimpleNode(it.elementType.toString(), currentNode, token)
+                    childNode.setMetadata(Config.psiTypeMetadataKey, tokenType)
+                    children.add(childNode)
                 }
                 is PsiVariable -> {
                     val token = it.name
                     val tokenType = it.type.presentableText
-                    val n = SimpleNode(it.elementType.toString(), currentNode, token)
-                    node2type[n] = tokenType
-                    children.add(n)
-                    it.children.forEach { kid -> convertPsiElement(kid, n) }
+                    val childNode = SimpleNode(it.elementType.toString(), currentNode, token)
+                    childNode.setMetadata(Config.psiTypeMetadataKey, tokenType)
+                    children.add(childNode)
+                    it.children.forEach { kid -> convertPsiElement(kid, childNode) }
                 }
                 /* TODO: consider creating ParameterNode at this point
                 is PsiParameterList -> {

@@ -1,5 +1,11 @@
 import astminer.common.model.*
 
+object Config {
+    const val psiTypeMetadataKey = "psiType"
+    const val unknownType = "<UNKNOWN>"
+}
+
+
 fun toXPathContext(
     path: ASTPath,
     getToken: (Node) -> String = { node -> node.getToken()},

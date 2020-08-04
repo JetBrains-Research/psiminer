@@ -4,7 +4,6 @@ import astminer.common.model.*
 import astminer.common.preOrder
 import astminer.parse.antlr.SimpleNode
 import astminer.parse.antlr.decompressTypeLabel
-import node2type
 
 class PsiMethodSplitter : TreeMethodSplitter<SimpleNode> {
     companion object {
@@ -82,7 +81,8 @@ class PsiMethodSplitter : TreeMethodSplitter<SimpleNode> {
     }
 
     private fun getParameterInfoFromNode(parameterRoot: SimpleNode): ParameterNode<SimpleNode> {
-        val returnTypeNode = SimpleNode("IDENTIFIER", parameterRoot, node2type[parameterRoot] ?: "unknown")
+        val psiType = parameterRoot.getMetadata(Config.psiTypeMetadataKey)?.toString() ?: Config.unknownType
+        val returnTypeNode = SimpleNode("IDENTIFIER", parameterRoot, psiType)
         return ParameterNode(
                 parameterRoot,
                 returnTypeNode,

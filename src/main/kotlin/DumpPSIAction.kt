@@ -1,7 +1,6 @@
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.LangDataKeys
-import com.intellij.psi.*
 
 class DumpPSIAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {

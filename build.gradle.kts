@@ -12,7 +12,7 @@ plugins {
 repositories {
     mavenCentral()
     jcenter()
-    maven(url = "https://dl.bintray.com/egor-bogomolov/astminer")
+    maven(url = "https://dl.bintray.com/egor-bogomolov/astminer-dev")
     maven(url = "https://oss.sonatype.org/content/repositories/snapshots/")
     maven(url = "https://dl.bintray.com/jetbrains/intellij-plugin-service")
 }

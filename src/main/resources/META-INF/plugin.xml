@@ -12,7 +12,7 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
-        <appStarter implementation="Runner"/>
+        <appStarter implementation="PluginRunner"/>
     </extensions>
 
 </idea-plugin>

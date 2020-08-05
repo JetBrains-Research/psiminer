@@ -9,6 +9,7 @@ object Config {
     const val psiTypeMetadataKey = "psiType"
     const val unknownType = "<UNKNOWN>"
 
+    const val storage = "code2seq"
     const val maxPathWidth = 2
     const val maxPathHeight = 8
 }

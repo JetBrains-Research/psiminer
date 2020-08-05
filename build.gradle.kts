@@ -21,6 +21,7 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation("io.github.vovak.astminer:astminer-dev:1.319")
     implementation("me.tongfei:progressbar:0.8.1")
+    implementation("com.github.ajalt:clikt:2.8.0")
 
     testImplementation("junit:junit:4.11")
     testImplementation(kotlin("test-junit"))
@@ -49,7 +50,7 @@ tasks {
     runIde {
         val dataset: String? by project
         val output: String? by project
-        args = listOfNotNull("psiminer", dataset, output)
+        args = listOfNotNull("psiminer", "--dataset", dataset, "--output", output)
         jvmArgs = listOf("-Djava.awt.headless=true")
     }
     register("extractPSIPaths") {

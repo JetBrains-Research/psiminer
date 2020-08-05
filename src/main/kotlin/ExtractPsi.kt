@@ -45,7 +45,6 @@ fun extractPathsFromFile(psiFile: PsiFile, miner: PathMiner): List<XLabeledPathC
 }
 
 fun extractPsiFromProject(project: Project, storage: XPathContextsStorage<String>): DatasetStatistic {
-    println("Start extracting psi from ${project.name} project...")
     val miner = PathMiner(PathRetrievalSettings(Config.maxPathHeight, Config.maxPathWidth))
 
     val datasetStatistic = DatasetStatistic()
@@ -71,6 +70,5 @@ fun extractPsiFromProject(project: Project, storage: XPathContextsStorage<String
         extractedPaths.forEach { storage.store(it, dataset) }
     }
 
-    storage.close()
     return datasetStatistic
 }

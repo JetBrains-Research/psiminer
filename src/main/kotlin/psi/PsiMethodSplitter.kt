@@ -47,7 +47,6 @@ class PsiMethodSplitter : TreeMethodSplitter<SimpleNode> {
         val parametersRoot = methodNode.getChildOfType(METHOD_PARAMETER_NODE) as? SimpleNode
         val innerParametersRoot = parametersRoot?.getChildOfType(METHOD_PARAMETER_INNER_NODE) as? SimpleNode
 
-        // TODO: verify
         val parametersList = when {
             innerParametersRoot != null -> getListOfParameters(innerParametersRoot)
             parametersRoot != null -> getListOfParameters(parametersRoot)

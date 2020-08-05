@@ -59,7 +59,6 @@ fun convertPsiElement(node: PsiElement, parent: SimpleNode?): SimpleNode {
                 children.add(childNode)
                 it.children.forEach { kid -> convertPsiElement(kid, childNode) }
             }
-//                TODO: consider creating ParameterNode at this point
 //                is PsiParameterList -> {
 //                    it.parameters.forEach {
 //                        val returnTypeNodePsi = SimpleNode(it.type.canonicalText, null, it.elementType.toString())

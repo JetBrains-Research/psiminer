@@ -6,6 +6,7 @@ plugins {
     id("idea")
     id("org.jetbrains.grammarkit") version "2020.1"
     id("org.jetbrains.intellij") version "0.4.21"
+    id("io.gitlab.arturbosch.detekt") version "1.10.0"
     kotlin("jvm") version "1.3.72"
 }
 
@@ -22,12 +23,19 @@ dependencies {
 
     testImplementation("junit:junit:4.11")
     testImplementation(kotlin("test-junit"))
+
+    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.10.0")
 }
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
     version = "2020.2"
     setPlugins("java")
+}
+
+detekt {
+    failFast = true // fail build on any finding
+    buildUponDefaultConfig = true // preconfigure defaults
 }
 
 tasks {

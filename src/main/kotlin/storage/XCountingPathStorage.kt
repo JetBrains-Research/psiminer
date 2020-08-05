@@ -2,10 +2,12 @@ package storage
 
 import Dataset
 import astminer.common.model.OrientedNodeType
-import astminer.common.storage.*
+import astminer.common.storage.RankedIncrementalIdStorage
+import astminer.common.storage.dumpIdStorageToCsv
+import astminer.common.storage.orientedNodeToCsvString
+import astminer.common.storage.pathToCsvString
 import java.io.File
 import java.io.PrintWriter
-
 
 abstract class XCountingPathStorage<LabelType>(
     final override val directoryPath: String
@@ -61,10 +63,13 @@ abstract class XCountingPathStorage<LabelType>(
     }
 
     override fun close() {
-        dumpIdStorageToCsv(tokensMap, "token", tokenToCsvString, File("$directoryPath/tokens.csv"), Long.MAX_VALUE)
-        dumpIdStorageToCsv(orientedNodeTypesMap, "node_type", orientedNodeToCsvString, File("$directoryPath/node_types.csv"), Long.MAX_VALUE)
+        dumpIdStorageToCsv(tokensMap, "token", { it }, File("$directoryPath/tokens.csv"), Long.MAX_VALUE)
+        dumpIdStorageToCsv(
+            orientedNodeTypesMap, "node_type", orientedNodeToCsvString,
+            File("$directoryPath/node_types.csv"), Long.MAX_VALUE
+        )
         dumpIdStorageToCsv(pathsMap, "path", pathToCsvString, File("$directoryPath/paths.csv"), Long.MAX_VALUE)
-        dumpIdStorageToCsv(typesMap, "token_type", tokenTypeToCsvString, File("$directoryPath/token_types.csv"), Long.MAX_VALUE)
+        dumpIdStorageToCsv(typesMap, "token_type", { it }, File("$directoryPath/token_types.csv"), Long.MAX_VALUE)
 
         datasetFileWriters.forEach {
             it.value.close()

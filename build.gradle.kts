@@ -26,7 +26,7 @@ dependencies {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version = "2020.1.3"
+    version = "2020.2"
     setPlugins("java")
 }
 

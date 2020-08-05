@@ -1,9 +1,9 @@
 <idea-plugin>
     <id>io.github.jbr.psiminer</id>
-    <name>PSI miner</name>
-    <vendor email="spirin.egor@mail.ru" url="https://github.com/JetBrains-Research/psi-embeddings">JetBrains Research</vendor>
+    <name>Psiminer</name>
+    <vendor email="egor.spirin@jetbrains.com" url="https://github.com/JetBrains-Research/psiminer">JetBrains Research</vendor>
 
-    <description>Extract code in different representations based on PSI trees and using astminer</description>
+    <description>Extract code in different representations based on PSI trees</description>
 
     <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
@@ -15,11 +15,4 @@
         <appStarter implementation="Runner"/>
     </extensions>
 
-    <actions>
-        <!-- Add your actions here -->
-        <action id="DumpPSIAction" class="DumpPSIAction" text="Dump PSI" description="Dumps PSI Info">
-            <add-to-group group-id="ToolsMenu" anchor="first"/>
-        </action>
-
-    </actions>
 </idea-plugin>

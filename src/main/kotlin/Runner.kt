@@ -8,7 +8,6 @@ import com.intellij.ide.impl.ProjectUtil
 import com.intellij.openapi.application.ApplicationStarter
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VfsUtilCore
-import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
 import psi.PsiMethodSplitter
 import psi.convertPSITree
@@ -18,11 +17,6 @@ import storage.XLabeledPathContexts
 import java.io.File
 import kotlin.system.exitProcess
 import kotlin.system.measureTimeMillis
-
-
-fun PsiElement.runPlugin() {
-    // debug it here in IntelliJ
-}
 
 
 class Runner : ApplicationStarter {

@@ -20,7 +20,7 @@ data class XPathContext(val startTokenType: String, val pathContext: PathContext
             val pathContext = PathContext(startToken, astNodes, endToken)
 
             val endTokenType =
-                path.downwardNodes.last().getMetadata(Config.psiTypeMetadataKey).toString() ?: Config.unknownType
+                path.downwardNodes.last().getMetadata(Config.psiTypeMetadataKey)?.toString() ?: Config.unknownType
 
             return XPathContext(startTokenType, pathContext, endTokenType)
         }

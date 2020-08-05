@@ -116,12 +116,10 @@ class Runner : ApplicationStarter {
                     true
                 }
             }
-        } / 1000
+        }
 
-        println("saving psi-based...")
         storage.close()
-        println("\nCOMPUTED IN $executionTime SECONDS\n")
-        println("Processing files...DONE! [$executionTime sec]")
+        println("Processing files...DONE! [${executionTime / 1000} sec]")
         exitProcess(0)
     }
 }

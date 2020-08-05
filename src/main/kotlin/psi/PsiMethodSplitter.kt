@@ -1,6 +1,10 @@
 package psi
 
-import astminer.common.model.*
+import astminer.common.model.ElementNode
+import astminer.common.model.MethodInfo
+import astminer.common.model.MethodNode
+import astminer.common.model.ParameterNode
+import astminer.common.model.TreeMethodSplitter
 import astminer.common.preOrder
 import astminer.parse.antlr.SimpleNode
 import astminer.parse.antlr.decompressTypeLabel
@@ -62,10 +66,7 @@ class PsiMethodSplitter : TreeMethodSplitter<SimpleNode> {
             return node
         }
         val parentNode = node.getParent() as? SimpleNode
-        if (parentNode != null) {
-            return getEnclosingClass(parentNode)
-        }
-        return null
+        return parentNode?.let { getEnclosingClass(parentNode) }
     }
 
     private fun getListOfParameters(parametersRoot: SimpleNode): List<ParameterNode<SimpleNode>> {

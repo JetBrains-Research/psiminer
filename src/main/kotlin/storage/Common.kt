@@ -3,8 +3,8 @@ package storage
 import Dataset
 import astminer.common.model.PathContext
 
-
 data class XPathContext(val startTokenType: String, val pathContext: PathContext, val endTokenType: String)
+
 data class XPathContextId(
     val startTokenTypeId: Long,
     val startTokenId: Long,
@@ -14,9 +14,8 @@ data class XPathContextId(
 )
 
 data class XLabeledPathContexts<T>(val label: T, val xPathContexts: Collection<XPathContext>)
-data class XLabeledPathContextIds<T>(val label: T, val xPathContexts: Collection<XPathContextId>)
 
-val tokenTypeToCsvString: (String) -> String = { tokenType -> tokenType }
+data class XLabeledPathContextIds<T>(val label: T, val xPathContexts: Collection<XPathContextId>)
 
 interface XPathContextsStorage<LabelType> {
     val directoryPath: String

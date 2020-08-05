@@ -20,6 +20,7 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation("io.github.vovak.astminer:astminer-dev:1.319")
+    implementation("me.tongfei:progressbar:0.8.1")
 
     testImplementation("junit:junit:4.11")
     testImplementation(kotlin("test-junit"))

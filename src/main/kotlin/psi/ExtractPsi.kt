@@ -1,9 +1,11 @@
-import astminer.common.getNormalizedToken
+package psi
+
+import Dataset
+import DatasetStatistic
 import astminer.common.preOrder
 import astminer.common.setNormalizedToken
 import astminer.common.splitToSubtokens
 import astminer.paths.PathMiner
-import astminer.paths.PathRetrievalSettings
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VfsUtilCore
@@ -11,13 +13,12 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import me.tongfei.progressbar.ProgressBar
-import psi.PsiMethodSplitter
-import psi.convertPSITree
 import storage.XLabeledPathContexts
+import storage.XPathContext
 import storage.XPathContextsStorage
 import java.io.File
 
-fun extractPathsFromFile(psiFile: PsiFile, miner: PathMiner): List<XLabeledPathContexts<String>> {
+fun extractPathsPsiFromFile(psiFile: PsiFile, miner: PathMiner): List<XLabeledPathContexts<String>> {
     val rootNode = convertPSITree(psiFile)
     val methods = PsiMethodSplitter().splitIntoMethods(rootNode)
     return methods.map { methodInfo ->
@@ -29,24 +30,11 @@ fun extractPathsFromFile(psiFile: PsiFile, miner: PathMiner): List<XLabeledPathC
 
         // Retrieve paths from every node individually
         val paths = miner.retrievePaths(methodRoot)
-        XLabeledPathContexts(
-            label = label,
-            xPathContexts = paths.map {
-                toXPathContext(
-                    path = it,
-                    getToken = { node -> node.getNormalizedToken() },
-                    getTokenType = { node ->
-                        node.getMetadata(Config.psiTypeMetadataKey)?.toString() ?: Config.unknownType
-                    }
-                )
-            }
-        )
+        XLabeledPathContexts(label, paths.map { XPathContext.createFromASTPath(it) })
     }.filterNotNull()
 }
 
-fun extractPsiFromProject(project: Project, storage: XPathContextsStorage<String>): DatasetStatistic {
-    val miner = PathMiner(PathRetrievalSettings(Config.maxPathHeight, Config.maxPathWidth))
-
+fun extractPsiFromProject(project: Project, storage: XPathContextsStorage<String>, miner: PathMiner): DatasetStatistic {
     val datasetStatistic = DatasetStatistic()
 
     val projectJavaFiles = mutableListOf<VirtualFile>()
@@ -64,8 +52,7 @@ fun extractPsiFromProject(project: Project, storage: XPathContextsStorage<String
         val relativePath = File(vFile.canonicalPath ?: "").relativeTo(absoluteProjectPath)
         val dataset = Dataset.valueOf(relativePath.path.split(File.separator)[0].capitalize())
         val psi = PsiManager.getInstance(project).findFile(vFile)
-        val extractedPaths =
-            psi?.let { extractPathsFromFile(it, miner) } ?: return@forEach
+        val extractedPaths = psi?.let { extractPathsPsiFromFile(it, miner) } ?: return@forEach
         datasetStatistic.addFileStatistic(dataset, extractedPaths.size)
         extractedPaths.forEach { storage.store(it, dataset) }
     }

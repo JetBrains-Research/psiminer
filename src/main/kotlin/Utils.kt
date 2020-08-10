@@ -13,33 +13,27 @@ enum class Dataset(val folderName: String) {
     Test("test")
 }
 
-data class HoldoutStatistic(var nFiles: Int = 0, var nPaths: Int = 0) {
-    override fun toString(): String = "#files: $nFiles, #paths: $nPaths"
+data class ExtractingStatistic(var nFiles: Int = 0, var nSamples: Int = 0, var nPaths: Int = 0) {
+    override fun toString(): String = "#files: $nFiles, #samples: $nSamples, #paths: $nPaths"
 }
 
 data class DatasetStatistic(
-    val trainStatistic: HoldoutStatistic = HoldoutStatistic(),
-    val valStatistic: HoldoutStatistic = HoldoutStatistic(),
-    val testStatistic: HoldoutStatistic = HoldoutStatistic()
+    val trainStatistic: ExtractingStatistic = ExtractingStatistic(),
+    val valStatistic: ExtractingStatistic = ExtractingStatistic(),
+    val testStatistic: ExtractingStatistic = ExtractingStatistic()
 ) {
     override fun toString(): String = "Train holdout: $trainStatistic\n" +
             "Val holdout: $valStatistic\n" +
             "Test holdout: $testStatistic"
 
-    fun addFileStatistic(dataset: Dataset, nPaths: Int) {
-        when (dataset) {
-            Dataset.Train -> {
-                trainStatistic.nFiles += 1
-                trainStatistic.nPaths += nPaths
-            }
-            Dataset.Val -> {
-                valStatistic.nFiles += 1
-                valStatistic.nPaths += nPaths
-            }
-            Dataset.Test -> {
-                testStatistic.nFiles += 1
-                testStatistic.nPaths += nPaths
-            }
+    fun addProjectStatistic(dataset: Dataset, extractingStatistic: ExtractingStatistic) {
+        val currentStatistic = when (dataset) {
+            Dataset.Train -> { trainStatistic }
+            Dataset.Val -> { valStatistic }
+            Dataset.Test -> { testStatistic }
         }
+        currentStatistic.nFiles += extractingStatistic.nFiles
+        currentStatistic.nSamples += extractingStatistic.nSamples
+        currentStatistic.nPaths += extractingStatistic.nPaths
     }
 }

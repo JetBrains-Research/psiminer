@@ -1,15 +1,19 @@
 package psi
 
-import astminer.common.model.Node
+import Config
 import astminer.parse.antlr.SimpleNode
 import astminer.parse.antlr.compressTree
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiImportStatement
-import com.intellij.psi.PsiJavaToken
+import com.intellij.psi.PsiExpression
+import com.intellij.psi.PsiExpressionList
+import com.intellij.psi.PsiImportList
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.PsiPackageStatement
-import com.intellij.psi.PsiReferenceExpression
-import com.intellij.psi.PsiThisExpression
+import com.intellij.psi.PsiParameterList
+import com.intellij.psi.PsiReferenceList
+import com.intellij.psi.PsiReferenceParameterList
+import com.intellij.psi.PsiTypeElement
+import com.intellij.psi.PsiTypeParameter
 import com.intellij.psi.PsiVariable
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.javadoc.PsiDocComment
@@ -22,67 +26,60 @@ fun convertPSITree(root: PsiElement): SimpleNode {
 
 fun validatePsiElement(node: PsiElement): Boolean {
     val isSkipType =
-        node is PsiWhiteSpace || node is PsiDocComment || node is PsiImportStatement || node is PsiPackageStatement
+        node is PsiWhiteSpace || node is PsiDocComment || node is PsiImportList || node is PsiPackageStatement
     val isConstructor = node is PsiMethod && node.isConstructor
     return !isSkipType && !isConstructor
 }
 
 fun convertPsiElement(node: PsiElement, parent: SimpleNode?): SimpleNode {
-    val currentNode = SimpleNode(node.elementType.toString(), parent, null)
-    val children = mutableListOf<Node>()
+    val currentNode = SimpleNode(node.elementType.toString(), parent, node.text)
 
-    node.children.filter { validatePsiElement(it) }.forEach {
-        when (it) {
-            is PsiJavaToken -> {
-                val n = SimpleNode(it.tokenType.toString(), currentNode, it.text)
-                children.add(n)
-            }
-            is PsiThisExpression -> {
-                val token = "this"
-                val tokenType = it.type?.presentableText ?: "null"
-                val childNode = SimpleNode(it.elementType.toString(), currentNode, token)
-                childNode.setMetadata(Config.psiTypeMetadataKey, tokenType)
-                children.add(childNode)
-            }
-            is PsiReferenceExpression -> {
-                val token = it.element.text
-                val tokenType = it.type?.presentableText ?: "null"
-                val childNode = SimpleNode(it.elementType.toString(), currentNode, token)
-                childNode.setMetadata(Config.psiTypeMetadataKey, tokenType)
-                children.add(childNode)
-            }
-            is PsiVariable -> {
-                val token = it.name
-                val tokenType = it.type.presentableText
-                val childNode = SimpleNode(it.elementType.toString(), currentNode, token)
-                childNode.setMetadata(Config.psiTypeMetadataKey, tokenType)
-                children.add(childNode)
-                it.children.forEach { kid -> convertPsiElement(kid, childNode) }
-            }
-//                is PsiParameterList -> {
-//                    it.parameters.forEach {
-//                        val returnTypeNodePsi = SimpleNode(it.type.canonicalText, null, it.elementType.toString())
-//                        val nameNodePsi = it.nameIdentifier
-//
-//  //                    val returnTypeNode = psi.convertPsiElement(returnTypeNodePsi as PsiElement, null)
-//                        val nameNode = psi.convertPsiElement(nameNodePsi as PsiElement, null)
-//
-//                        children.add(
-//                            ParameterNode(it.asSimpleNode(), returnTypeNodePsi, nameNode) as Node
-//                        )
-//                    }
-//                }
-//                is PsiMethod -> {
-//                    if (!it.isConstructor) {
-//                        children.add(psi.convertPsiElement(it, currentNode))
-//                    }
-//                }
-            else -> {
-                children.add(convertPsiElement(it, currentNode))
-            }
+    // Try to get the node type
+    currentNode.setMetadata(Config.psiTypeMetadataKey, when (node) {
+        is PsiExpression -> {
+            node.type?.presentableText ?: "UnknownExpression"
         }
-    }
+        is PsiVariable -> {
+            node.type.presentableText
+        }
+        is PsiTypeElement -> {
+            node.type.presentableText
+        }
+        else -> {
+//            println(node.javaClass.canonicalName)
+            Config.unknownType
+        }
+    })
+
+    // Iterate over the children
+    val children = when (node) {
+        is PsiReferenceList -> {
+            node.referenceElements
+        }
+        is PsiReferenceParameterList -> {
+            node.typeParameterElements
+        }
+        is PsiParameterList -> {
+            node.parameters
+        }
+        is PsiExpressionList -> {
+            node.expressions
+        }
+        is PsiExpression, is PsiVariable, is PsiTypeParameter -> {
+            arrayOf()
+        }
+        else -> {
+            node.children
+        }
+    }.filter { validatePsiElement(it) }.map { kid -> convertPsiElement(kid, currentNode) }
     currentNode.setChildren(children)
 
     return currentNode
+}
+
+fun printPsi(node: PsiElement, indent: Int = 0, character: String = " ", indentStep: Int = 4) {
+    println("${character.repeat(indent)}${node.elementType}")
+    node.children.forEach {
+        printPsi(it, indent + indentStep, character, indentStep)
+    }
 }

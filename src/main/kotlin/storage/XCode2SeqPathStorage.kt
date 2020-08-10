@@ -7,6 +7,8 @@ import java.io.PrintWriter
 
 class XCode2SeqPathStorage<LabelType>(override val directoryPath: String) : XPathContextsStorage<LabelType> {
 
+    private val separator = ","
+
     private val datasetPathsFiles = mutableMapOf<Dataset, File>()
     private val datasetFileWriters = mutableMapOf<Dataset, PrintWriter>()
 
@@ -22,12 +24,16 @@ class XCode2SeqPathStorage<LabelType>(override val directoryPath: String) : XPat
 
     private fun pathContextToString(pathContext: PathContext): String {
         val path = pathContext.orientedNodeTypes.joinToString("|") { it.typeLabel }
-        return "${pathContext.startToken},$path,${pathContext.endToken}"
+        return listOf(pathContext.startToken, path, pathContext.endToken).joinToString(separator)
     }
 
     override fun store(xLabeledPathContexts: XLabeledPathContexts<LabelType>, dataset: Dataset) {
         val xPathContextsString = xLabeledPathContexts.xPathContexts.joinToString(" ") {
-            "${it.startTokenType},${pathContextToString(it.pathContext)},${it.endTokenType}"
+            listOf(
+                normalizeTokenType(it.startTokenType),
+                pathContextToString(it.pathContext),
+                normalizeTokenType(it.endTokenType)
+            ).joinToString(separator)
         }
         datasetFileWriters[dataset]?.println("${xLabeledPathContexts.label} $xPathContextsString")
     }
@@ -37,4 +43,6 @@ class XCode2SeqPathStorage<LabelType>(override val directoryPath: String) : XPat
             it.value.close()
         }
     }
+
+    private fun normalizeTokenType(tokenType: String): String = tokenType.replace(",", ";").replace(" ", "_")
 }

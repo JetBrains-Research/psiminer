@@ -2,10 +2,12 @@ package psi
 
 import Dataset
 import DatasetStatistic
+import ExtractingStatistic
 import astminer.common.preOrder
 import astminer.common.setNormalizedToken
 import astminer.common.splitToSubtokens
 import astminer.paths.PathMiner
+import com.intellij.ide.impl.ProjectUtil
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VfsUtilCore
@@ -18,7 +20,7 @@ import storage.XPathContext
 import storage.XPathContextsStorage
 import java.io.File
 
-fun extractPathsPsiFromFile(psiFile: PsiFile, miner: PathMiner): List<XLabeledPathContexts<String>> {
+fun extractPathsFromPsiFile(psiFile: PsiFile, miner: PathMiner): List<XLabeledPathContexts<String>> {
     val rootNode = convertPSITree(psiFile)
     val methods = PsiMethodSplitter().splitIntoMethods(rootNode)
     return methods.map { methodInfo ->
@@ -34,8 +36,13 @@ fun extractPathsPsiFromFile(psiFile: PsiFile, miner: PathMiner): List<XLabeledPa
     }.filterNotNull()
 }
 
-fun extractPsiFromProject(project: Project, storage: XPathContextsStorage<String>, miner: PathMiner): DatasetStatistic {
-    val datasetStatistic = DatasetStatistic()
+fun extractPsiFromProject(
+    project: Project,
+    storage: XPathContextsStorage<String>,
+    miner: PathMiner,
+    dataset: Dataset
+): ExtractingStatistic {
+    val extractingStatistic = ExtractingStatistic()
 
     val projectJavaFiles = mutableListOf<VirtualFile>()
     ProjectRootManager.getInstance(project).contentRoots.map { root ->
@@ -47,15 +54,38 @@ fun extractPsiFromProject(project: Project, storage: XPathContextsStorage<String
         }
     }
 
-    val absoluteProjectPath = File(project.basePath ?: "")
-    ProgressBar.wrap(projectJavaFiles, "Extract PSI").forEach { vFile ->
-        val relativePath = File(vFile.canonicalPath ?: "").relativeTo(absoluteProjectPath)
-        val dataset = Dataset.valueOf(relativePath.path.split(File.separator)[0].capitalize())
+    ProgressBar.wrap(projectJavaFiles, "Extract PSI for ${project.name}").forEach { vFile ->
         val psi = PsiManager.getInstance(project).findFile(vFile)
-        val extractedPaths = psi?.let { extractPathsPsiFromFile(it, miner) } ?: return@forEach
-        datasetStatistic.addFileStatistic(dataset, extractedPaths.size)
+        val extractedPaths = psi?.let { extractPathsFromPsiFile(it, miner) } ?: return@forEach
+        extractingStatistic.nFiles += 1
+        extractingStatistic.nSamples += extractedPaths.size
+        extractingStatistic.nPaths += extractedPaths.map { it.xPathContexts.size }.sum()
         extractedPaths.forEach { storage.store(it, dataset) }
     }
 
+    return extractingStatistic
+}
+
+fun extractPsiFromDataset(
+    datasetPath: String,
+    storage: XPathContextsStorage<String>,
+    miner: PathMiner
+): DatasetStatistic {
+    val datasetStatistic = DatasetStatistic()
+
+    val datasetFile = File(datasetPath)
+    Dataset.values().forEach { holdout ->
+        println("Extract PSI for $holdout holdout")
+        val holdoutFile = datasetFile.resolve(holdout.folderName)
+        val holdoutProjects = holdoutFile.walk().maxDepth(1).filter { it.name != holdout.folderName }.toList()
+        holdoutProjects.forEach { projectPath ->
+            println("Extracting PSI from $projectPath)")
+            val project = ProjectUtil.openOrImport(projectPath.path, null, true)
+            if (project != null) {
+                val extractedProjectStatistic = extractPsiFromProject(project, storage, miner, holdout)
+                datasetStatistic.addProjectStatistic(holdout, extractedProjectStatistic)
+            }
+        }
+    }
     return datasetStatistic
 }

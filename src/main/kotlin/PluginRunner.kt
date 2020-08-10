@@ -3,9 +3,8 @@ import astminer.paths.PathRetrievalSettings
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
-import com.intellij.ide.impl.ProjectUtil
 import com.intellij.openapi.application.ApplicationStarter
-import psi.extractPsiFromProject
+import psi.extractPsiFromDataset
 import storage.XCode2SeqPathStorage
 import storage.XCode2VecPathStorage
 import storage.XPathContextsStorage
@@ -32,20 +31,14 @@ class PsiExtractor : CliktCommand() {
     }
 
     override fun run() {
-        println("Opening data as a project...")
-        val project = ProjectUtil.openOrImport(dataset, null, true) ?: let {
-            println("Could not load project from $dataset")
-            exitProcess(0)
-        }
-
         val storage = buildStorage()
         val miner = PathMiner(PathRetrievalSettings(
             Config.maxPathHeight,
             Config.maxPathWidth
         ))
 
-        println("Start extracting psi from ${project.name} project...")
-        val datasetStatistic = extractPsiFromProject(project, storage, miner)
+        println("Start extracting PSI from $dataset dataset...")
+        val datasetStatistic = extractPsiFromDataset(dataset, storage, miner)
         println("Extracted data statistic:\n$datasetStatistic")
 
         storage.close()

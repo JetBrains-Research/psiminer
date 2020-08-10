@@ -78,8 +78,8 @@ fun extractPsiFromDataset(
         println("Extract PSI for $holdout holdout")
         val holdoutFile = datasetFile.resolve(holdout.folderName)
         val holdoutProjects = holdoutFile.walk().maxDepth(1).filter { it.name != holdout.folderName }.toList()
-        holdoutProjects.forEachIndexed { index, projectPath ->
-            println("Extracting PSI from $projectPath (${index.toDouble() / holdoutProjects.size * 100}%)")
+        holdoutProjects.forEach { projectPath ->
+            println("Extracting PSI from $projectPath)")
             val project = ProjectUtil.openOrImport(projectPath.path, null, true)
             if (project != null) {
                 val extractedProjectStatistic = extractPsiFromProject(project, storage, miner, holdout)

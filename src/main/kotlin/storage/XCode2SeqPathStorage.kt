@@ -5,7 +5,10 @@ import astminer.common.model.PathContext
 import java.io.File
 import java.io.PrintWriter
 
-class XCode2SeqPathStorage<LabelType>(override val directoryPath: String) : XPathContextsStorage<LabelType> {
+class XCode2SeqPathStorage<LabelType>(
+    override val directoryPath: String,
+    override val noTypes: Boolean
+) : XPathContextsStorage<LabelType> {
 
     private val separator = ","
 
@@ -27,13 +30,19 @@ class XCode2SeqPathStorage<LabelType>(override val directoryPath: String) : XPat
         return listOf(pathContext.startToken, path, pathContext.endToken).joinToString(separator)
     }
 
+    private fun xPathContextToString(xPathContext: XPathContext): String {
+        val pathContextString = pathContextToString(xPathContext.pathContext)
+        return if (noTypes) pathContextString
+        else listOf(
+                normalizeTokenType(xPathContext.startTokenType),
+                pathContextString,
+                normalizeTokenType(xPathContext.endTokenType)
+        ).joinToString(separator)
+    }
+
     override fun store(xLabeledPathContexts: XLabeledPathContexts<LabelType>, dataset: Dataset) {
         val xPathContextsString = xLabeledPathContexts.xPathContexts.joinToString(" ") {
-            listOf(
-                normalizeTokenType(it.startTokenType),
-                pathContextToString(it.pathContext),
-                normalizeTokenType(it.endTokenType)
-            ).joinToString(separator)
+            xPathContextToString(it)
         }
         datasetFileWriters[dataset]?.println("${xLabeledPathContexts.label} $xPathContextsString")
     }
@@ -44,5 +53,6 @@ class XCode2SeqPathStorage<LabelType>(override val directoryPath: String) : XPat
         }
     }
 
-    private fun normalizeTokenType(tokenType: String): String = tokenType.replace(",", ";").replace(" ", "_")
+    private fun normalizeTokenType(tokenType: String): String =
+            tokenType.replace(",", ";").replace(" ", "_")
 }

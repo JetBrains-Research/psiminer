@@ -41,6 +41,7 @@ data class XLabeledPathContextIds<T>(val label: T, val xPathContexts: Collection
 
 interface XPathContextsStorage<LabelType> {
     val directoryPath: String
+    val noTypes: Boolean
     fun store(xLabeledPathContexts: XLabeledPathContexts<LabelType>, dataset: Dataset)
     fun close()
 }

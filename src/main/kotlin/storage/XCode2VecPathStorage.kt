@@ -1,10 +1,15 @@
 package storage
 
-class XCode2VecPathStorage(directoryPath: String) : XCountingPathStorage<String>(directoryPath) {
+class XCode2VecPathStorage(
+        directoryPath: String, override val noTypes: Boolean
+) : XCountingPathStorage<String>(directoryPath) {
     override fun xPathContextIdsToString(xPathContextIds: List<XPathContextId>, label: String): String {
         val joinedPathContexts = xPathContextIds.joinToString(" ") { xPathContextId ->
-            "${xPathContextId.startTokenTypeId},${xPathContextId.startTokenId},${xPathContextId.pathId}," +
-                    "${xPathContextId.endTokenId},${xPathContextId.endTokenTypeId}"
+            val pathContext = "${xPathContextId.startTokenId},${xPathContextId.pathId},${xPathContextId.endTokenId}"
+            if (noTypes) {
+                return@joinToString pathContext
+            }
+            "${xPathContextId.startTokenTypeId},${pathContext},${xPathContextId.endTokenTypeId}"
         }
         return "$label $joinedPathContexts"
     }

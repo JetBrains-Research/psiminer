@@ -10,7 +10,8 @@ import java.io.File
 import java.io.PrintWriter
 
 abstract class XCountingPathStorage<LabelType>(
-    final override val directoryPath: String
+    final override val directoryPath: String,
+    final override val noTypes: Boolean
 ) : XPathContextsStorage<LabelType> {
 
     protected val typesMap: RankedIncrementalIdStorage<String> = RankedIncrementalIdStorage()

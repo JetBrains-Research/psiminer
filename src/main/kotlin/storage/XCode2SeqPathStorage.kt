@@ -6,7 +6,8 @@ import java.io.File
 import java.io.PrintWriter
 
 class XCode2SeqPathStorage<LabelType>(
-        override val directoryPath: String, override val noTypes: Boolean
+    override val directoryPath: String,
+    override val noTypes: Boolean
 ) : XPathContextsStorage<LabelType> {
 
     private val separator = ","
@@ -31,9 +32,8 @@ class XCode2SeqPathStorage<LabelType>(
 
     private fun xPathContextToString(xPathContext: XPathContext): String {
         val pathContextString = pathContextToString(xPathContext.pathContext)
-        if (noTypes)
-            return pathContextString
-        return listOf(
+        return if (noTypes) pathContextString
+        else listOf(
                 normalizeTokenType(xPathContext.startTokenType),
                 pathContextString,
                 normalizeTokenType(xPathContext.endTokenType)

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-if [ $# -lt "2" ]; then
-    echo "usage: extract_psi_paths <path to dataset> <path to output folder> <additional parsing args>"
+if [ $# -ne "2" ]; then
+    echo "usage: extract_psi_paths <path to dataset> <path to output folder>"
     exit 1
 fi
 
@@ -12,8 +12,4 @@ if uname -s | grep -iq cygwin ; then
     PWD=$(cygpath -w "$PWD")
 fi
 
-if [ $# -ge "3" ]; then
-    "$DIR/gradlew" -p "$DIR" extractPSIPaths -Pdataset="$PWD/$1" -Poutput="$PWD/$2" -PparsingArgs="${@:3}"
-else
-    "$DIR/gradlew" -p "$DIR" extractPSIPaths -Pdataset="$PWD/$1" -Poutput="$PWD/$2"
-fi
+"$DIR/gradlew" -p "$DIR" extractPSIPaths -Pdataset="$PWD/$1" -Poutput="$PWD/$2"

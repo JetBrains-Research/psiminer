@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.fir.resolve.dfa.toEqBoolean
-
 group = "org.jetbrains.research.psiminer"
 version = "1.0-SNAPSHOT"
 
@@ -52,10 +50,7 @@ tasks {
     runIde {
         val dataset: String? by project
         val output: String? by project
-        val parsingArgs: String? by project
-        val listOfArgs = mutableListOf("psiminer", "--dataset", dataset, "--output", output)
-        parsingArgs?.split(" ")?.let { listOfArgs.addAll(it) }
-        args = listOfArgs.filterNotNull()
+        args = listOfNotNull("psiminer", "--dataset", dataset, "--output", output)
         jvmArgs = listOf("-Djava.awt.headless=true")
     }
     register("extractPSIPaths") {

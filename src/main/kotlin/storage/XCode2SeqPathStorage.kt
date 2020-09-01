@@ -16,9 +16,11 @@ class XCode2SeqPathStorage<LabelType>(
     private val datasetFileWriters = mutableMapOf<Dataset, PrintWriter>()
 
     init {
-        File(directoryPath).mkdirs()
+        val directoryPathFile = File(directoryPath)
+        directoryPathFile.mkdirs()
+        val datasetName = directoryPathFile.nameWithoutExtension
         Dataset.values().forEach {
-            val file = File("$directoryPath/java-psi.${it.folderName}.c2s")
+            val file = File("$directoryPath/$datasetName.${it.folderName}.c2s")
             file.createNewFile()
             datasetPathsFiles[it] = file
             datasetFileWriters[it] = PrintWriter(file)

@@ -5,7 +5,7 @@ object Config {
     const val storage = "code2seq"
     const val noTypes = true
     const val maxPathWidth = 2
-    const val maxPathHeight = 8
+    const val maxPathHeight = 9
 }
 
 enum class Dataset(val folderName: String) {
@@ -15,7 +15,8 @@ enum class Dataset(val folderName: String) {
 }
 
 data class ExtractingStatistic(var nFiles: Int = 0, var nSamples: Int = 0, var nPaths: Int = 0) {
-    override fun toString(): String = "#files: $nFiles, #samples: $nSamples, #paths: $nPaths"
+    override fun toString(): String =
+            "#files: $nFiles, #samples: $nSamples, #paths: $nPaths (${nPaths.toDouble() / nSamples} paths per sample)"
 }
 
 data class DatasetStatistic(
@@ -23,7 +24,8 @@ data class DatasetStatistic(
     val valStatistic: ExtractingStatistic = ExtractingStatistic(),
     val testStatistic: ExtractingStatistic = ExtractingStatistic()
 ) {
-    override fun toString(): String = "Train holdout: $trainStatistic\n" +
+    override fun toString(): String =
+            "Train holdout: $trainStatistic\n" +
             "Val holdout: $valStatistic\n" +
             "Test holdout: $testStatistic"
 

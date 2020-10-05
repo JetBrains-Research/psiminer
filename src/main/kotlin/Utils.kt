@@ -7,7 +7,7 @@ object Config {
 
     const val storage = "code2seq"
     const val noTypes = true
-    const val maxPathWidth = 3
+    const val maxPathWidth = 2
     const val maxPathHeight = 9
 
     val maxTreeSize: Int? = null

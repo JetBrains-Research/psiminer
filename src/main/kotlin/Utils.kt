@@ -1,11 +1,16 @@
+import astminer.common.preOrder
+import astminer.parse.antlr.SimpleNode
+
 object Config {
     const val psiTypeMetadataKey = "psiType"
     const val unknownType = "<UNKNOWN>"
 
     const val storage = "code2seq"
     const val noTypes = true
-    const val maxPathWidth = 2
+    const val maxPathWidth = 3
     const val maxPathHeight = 9
+
+    val maxTreeSize: Int? = null
 }
 
 enum class Dataset(val folderName: String) {
@@ -40,3 +45,5 @@ data class DatasetStatistic(
         currentStatistic.nPaths += extractingStatistic.nPaths
     }
 }
+
+fun getTreeSize(root: SimpleNode) : Int = root.preOrder().size

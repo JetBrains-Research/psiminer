@@ -3,6 +3,7 @@ package psi
 import Dataset
 import DatasetStatistic
 import ExtractingStatistic
+import astminer.cli.processNodeToken
 import astminer.common.preOrder
 import astminer.common.setNormalizedToken
 import astminer.common.splitToSubtokens
@@ -14,6 +15,8 @@ import com.intellij.openapi.vfs.VfsUtilCore
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
+import com.jetbrains.rd.util.string.printToString
+import getTreeSize
 import me.tongfei.progressbar.ProgressBar
 import storage.XLabeledPathContexts
 import storage.XPathContext
@@ -26,8 +29,14 @@ fun extractPathsFromPsiFile(psiFile: PsiFile, miner: PathMiner): List<XLabeledPa
     return methods.map { methodInfo ->
         val methodNameNode = methodInfo.method.nameNode ?: return@map null
         val methodRoot = methodInfo.method.root
+
+        val methodSize = getTreeSize(methodRoot)
+        if (Config.maxTreeSize != null && Config.maxTreeSize >= methodSize) {
+            return@map null
+        }
+
         val label = splitToSubtokens(methodNameNode.getToken()).joinToString("|")
-        methodRoot.preOrder().forEach { it.setNormalizedToken() }
+        methodRoot.preOrder().map { processNodeToken(it, true) }
         methodNameNode.setNormalizedToken("METHOD_NAME")
 
         // Retrieve paths from every node individually

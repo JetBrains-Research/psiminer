@@ -1,5 +1,6 @@
 package psi
 
+import Config
 import Dataset
 import DatasetStatistic
 import ExtractingStatistic
@@ -15,7 +16,6 @@ import com.intellij.openapi.vfs.VfsUtilCore
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
-import com.jetbrains.rd.util.string.printToString
 import getTreeSize
 import me.tongfei.progressbar.ProgressBar
 import storage.XLabeledPathContexts
@@ -31,7 +31,7 @@ fun extractPathsFromPsiFile(psiFile: PsiFile, miner: PathMiner): List<XLabeledPa
         val methodRoot = methodInfo.method.root
 
         val methodSize = getTreeSize(methodRoot)
-        if (Config.maxTreeSize != null && Config.maxTreeSize >= methodSize) {
+        if (Config.maxTreeSize != null && Config.maxTreeSize < methodSize) {
             return@map null
         }
 

@@ -46,4 +46,4 @@ data class DatasetStatistic(
     }
 }
 
-fun getTreeSize(root: SimpleNode) : Int = root.preOrder().size
+fun getTreeSize(root: SimpleNode): Int = root.preOrder().size

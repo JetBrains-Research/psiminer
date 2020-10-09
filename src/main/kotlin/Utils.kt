@@ -1,16 +1,21 @@
+import astminer.common.getNormalizedToken
+import astminer.common.model.Node
 import astminer.common.preOrder
 import astminer.parse.antlr.SimpleNode
 
 object Config {
-    const val psiTypeMetadataKey = "psiType"
-    const val unknownType = "<UNKNOWN>"
-
     const val storage = "code2seq"
     const val noTypes = true
     const val maxPathWidth = 2
     const val maxPathHeight = 9
 
     val maxTreeSize: Int? = null
+}
+
+object TypeConstants {
+    const val PSI_TYPE_METADATA_KEY = "PSI_TOKEN_TYPE"
+    const val UNKNOWN_TYPE = "<UNKNOWN>"
+    const val NO_TYPE = "<NULL>"
 }
 
 enum class Dataset(val folderName: String) {
@@ -47,3 +52,15 @@ data class DatasetStatistic(
 }
 
 fun getTreeSize(root: SimpleNode): Int = root.preOrder().size
+
+fun printTree(root: Node, withTypes: Boolean, indent: Int = 0, delimiter: String = "--", indent_step: Int = 2) {
+    print(delimiter.repeat(indent))
+    print("${root.getTypeLabel()}: ${root.getNormalizedToken()}")
+    if (withTypes) {
+        print(" / ${root.getMetadata(TypeConstants.PSI_TYPE_METADATA_KEY)}")
+    }
+    print("\n")
+    root.getChildren().forEach {
+        printTree(it, withTypes, indent + indent_step, delimiter, indent_step)
+    }
+}

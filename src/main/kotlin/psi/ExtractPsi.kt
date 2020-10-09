@@ -4,7 +4,6 @@ import Config
 import Dataset
 import DatasetStatistic
 import ExtractingStatistic
-import astminer.cli.processNodeToken
 import astminer.common.preOrder
 import astminer.common.setNormalizedToken
 import astminer.common.splitToSubtokens
@@ -13,18 +12,16 @@ import com.intellij.ide.impl.ProjectUtil
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VfsUtilCore
-import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import getTreeSize
-import me.tongfei.progressbar.ProgressBar
 import storage.XLabeledPathContexts
 import storage.XPathContext
 import storage.XPathContextsStorage
 import java.io.File
 
 fun extractPathsFromPsiFile(psiFile: PsiFile, miner: PathMiner): List<XLabeledPathContexts<String>> {
-    val rootNode = convertPSITree(psiFile)
+    val rootNode = TreeBuilder().convertPSITree(psiFile)
     val methods = PsiMethodSplitter().splitIntoMethods(rootNode)
     return methods.map { methodInfo ->
         val methodNameNode = methodInfo.method.nameNode ?: return@map null
@@ -36,8 +33,17 @@ fun extractPathsFromPsiFile(psiFile: PsiFile, miner: PathMiner): List<XLabeledPa
         }
 
         val label = splitToSubtokens(methodNameNode.getToken()).joinToString("|")
-        methodRoot.preOrder().map { processNodeToken(it, true) }
+        methodRoot.preOrder().map {
+            it.setNormalizedToken(
+                    if (it.getToken().toIntOrNull() == null)
+                        splitToSubtokens(it.getToken()).joinToString("|")
+                    else
+                        it.getToken()
+            )
+        }
         methodNameNode.setNormalizedToken("METHOD_NAME")
+
+//        printTree(methodRoot, true)
 
         // Retrieve paths from every node individually
         val paths = miner.retrievePaths(methodRoot)
@@ -46,30 +52,32 @@ fun extractPathsFromPsiFile(psiFile: PsiFile, miner: PathMiner): List<XLabeledPa
 }
 
 fun extractPsiFromProject(
-    project: Project,
-    storage: XPathContextsStorage<String>,
-    miner: PathMiner,
-    dataset: Dataset
+        project: Project,
+        storage: XPathContextsStorage<String>,
+        miner: PathMiner,
+        dataset: Dataset
 ): ExtractingStatistic {
     val extractingStatistic = ExtractingStatistic()
+    println("Extract PSI from ${project.name}...")
+    var fileCounter = 0
 
-    val projectJavaFiles = mutableListOf<VirtualFile>()
-    ProjectRootManager.getInstance(project).contentRoots.map { root ->
-        VfsUtilCore.iterateChildrenRecursively(root, null) {
-            if (it.extension == "java" && it.canonicalPath != null) {
-                projectJavaFiles.add(it)
+    ProjectRootManager.getInstance(project).contentRoots.forEach { root ->
+        VfsUtilCore.iterateChildrenRecursively(root, null) { virtualFile ->
+            if (virtualFile.extension != "java" || virtualFile.canonicalPath == null) {
+                return@iterateChildrenRecursively true
+            }
+            fileCounter += 1
+            val psi = PsiManager.getInstance(project).findFile(virtualFile) ?: return@iterateChildrenRecursively true
+            val extractedPaths = extractPathsFromPsiFile(psi, miner)
+            extractingStatistic.nFiles += 1
+            extractingStatistic.nSamples += extractedPaths.size
+            extractingStatistic.nPaths += extractedPaths.map { it.xPathContexts.size }.sum()
+            extractedPaths.forEach { storage.store(it, dataset) }
+            if (fileCounter % 100 == 0) {
+                println("processed $fileCounter files...")
             }
             true
         }
-    }
-
-    ProgressBar.wrap(projectJavaFiles, "Extract PSI for ${project.name}").forEach { vFile ->
-        val psi = PsiManager.getInstance(project).findFile(vFile)
-        val extractedPaths = psi?.let { extractPathsFromPsiFile(it, miner) } ?: return@forEach
-        extractingStatistic.nFiles += 1
-        extractingStatistic.nSamples += extractedPaths.size
-        extractingStatistic.nPaths += extractedPaths.map { it.xPathContexts.size }.sum()
-        extractedPaths.forEach { storage.store(it, dataset) }
     }
 
     return extractingStatistic

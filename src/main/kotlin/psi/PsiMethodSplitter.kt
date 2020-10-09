@@ -81,7 +81,7 @@ class PsiMethodSplitter : TreeMethodSplitter<SimpleNode> {
     }
 
     private fun getParameterInfoFromNode(parameterRoot: SimpleNode): ParameterNode<SimpleNode> {
-        val psiType = parameterRoot.getMetadata(Config.psiTypeMetadataKey)?.toString() ?: Config.unknownType
+        val psiType = parameterRoot.getMetadata(TypeConstants.PSI_TYPE_METADATA_KEY)?.toString() ?: TypeConstants.NO_TYPE
         val returnTypeNode = SimpleNode("IDENTIFIER", parameterRoot, psiType)
         return ParameterNode(
                 parameterRoot,

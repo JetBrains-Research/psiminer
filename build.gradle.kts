@@ -20,7 +20,6 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation("io.github.vovak.astminer:astminer-dev:1.331")
-    implementation("me.tongfei:progressbar:0.8.1")
     implementation("com.github.ajalt:clikt:2.8.0")
 
     testImplementation("junit:junit:4.11")
@@ -52,6 +51,7 @@ tasks {
         val output: String? by project
         args = listOfNotNull("psiminer", "--dataset", dataset, "--output", output)
         jvmArgs = listOf("-Djava.awt.headless=true")
+        maxHeapSize = "20g"
     }
     register("extractPSIPaths") {
         dependsOn(runIde)

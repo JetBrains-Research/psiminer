@@ -51,6 +51,7 @@ class DatasetPSIExtractor(val storage: XPathContextsStorage<String>, val miner: 
         val extractingStatistic = ExtractingStatistic()
         println("Extract PSI from ${project.name}...")
         var fileCounter = 0
+        val nPathContexts = if (dataset == Dataset.Train) Config.maxPathsInTrain else Config.maxPathsInTest
 
         ProjectRootManager.getInstance(project).contentRoots.forEach { root ->
             VfsUtilCore.iterateChildrenRecursively(root, null) { virtualFile ->
@@ -59,7 +60,7 @@ class DatasetPSIExtractor(val storage: XPathContextsStorage<String>, val miner: 
                 }
                 fileCounter += 1
                 val psi = PsiManager.getInstance(project).findFile(virtualFile) ?: return@iterateChildrenRecursively true
-                val extractedPaths = extractPathsFromPsiFile(psi)
+                val extractedPaths = extractPathsFromPsiFile(psi, nPathContexts)
 
                 extractingStatistic.nFiles += 1
                 extractingStatistic.nSamples += extractedPaths.size
@@ -78,7 +79,7 @@ class DatasetPSIExtractor(val storage: XPathContextsStorage<String>, val miner: 
     }
 
 
-    private fun extractPathsFromPsiFile(psiFile: PsiFile): List<XLabeledPathContexts<String>> {
+    private fun extractPathsFromPsiFile(psiFile: PsiFile, nPathContexts: Int?): List<XLabeledPathContexts<String>> {
         val rootNode = TreeBuilder().convertPSITree(psiFile)
         val methods = PsiMethodSplitter().splitIntoMethods(rootNode)
         return methods.map { methodInfo ->
@@ -104,7 +105,7 @@ class DatasetPSIExtractor(val storage: XPathContextsStorage<String>, val miner: 
 //        printTree(methodRoot, true)
 
             // Retrieve paths from every node individually
-            val paths = miner.retrievePaths(methodRoot)
+            val paths = miner.retrievePaths(methodRoot).let { it.take(nPathContexts ?: it.size) }
             XLabeledPathContexts(label, paths.map { XPathContext.createFromASTPath(it) })
         }.filterNotNull()
     }

@@ -9,6 +9,9 @@ object Config {
     const val maxPathWidth = 2
     const val maxPathHeight = 9
 
+    val maxPathsInTrain: Int? = 1000
+    val maxPathsInTest: Int? = 200
+
     val maxTreeSize: Int? = null
 }
 

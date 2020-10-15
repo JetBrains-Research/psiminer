@@ -2,7 +2,16 @@ package psi
 
 import TypeConstants
 import astminer.parse.antlr.SimpleNode
-import com.intellij.psi.*
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiParameterList
+import com.intellij.psi.PsiWhiteSpace
+import com.intellij.psi.PsiImportList
+import com.intellij.psi.PsiPackageStatement
+import com.intellij.psi.PsiJavaToken
+import com.intellij.psi.PsiMethod
+import com.intellij.psi.PsiReferenceList
+import com.intellij.psi.PsiReferenceParameterList
+import com.intellij.psi.PsiModifierList
 import com.intellij.psi.javadoc.PsiDocComment
 import com.intellij.psi.util.elementType
 
@@ -21,7 +30,9 @@ class TreeBuilder {
         currentNode.setMetadata(TypeConstants.PSI_TYPE_METADATA_KEY, nodeType)
 
         // Iterate over the children
-        val children = node.children.filter { validatePsiElement(it) }.map { kid -> convertPsiElement(kid, currentNode) }
+        val children = node.children.filter {
+            validatePsiElement(it) }.map { kid -> convertPsiElement(kid, currentNode)
+        }
         currentNode.setChildren(children)
 
         // Set token if leaf
@@ -71,4 +82,3 @@ class TreeBuilder {
         }
     }
 }
-

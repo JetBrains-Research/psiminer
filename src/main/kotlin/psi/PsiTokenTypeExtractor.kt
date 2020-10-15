@@ -1,7 +1,12 @@
 package psi
 
 import TypeConstants
-import com.intellij.psi.*
+import com.intellij.psi.PsiIdentifier
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiVariable
+import com.intellij.psi.PsiTypeElement
+import com.intellij.psi.PsiExpression
+import com.intellij.psi.PsiMethod
 import com.intellij.psi.util.parentOfType
 
 class PsiTokenTypeExtractor {
@@ -34,5 +39,4 @@ class PsiTokenTypeExtractor {
     private fun extractFromMethod(node: PsiIdentifier): String {
         return node.parentOfType<PsiMethod>()?.returnTypeElement?.type?.presentableText ?: TypeConstants.UNKNOWN_TYPE
     }
-
 }

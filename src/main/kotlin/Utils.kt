@@ -9,8 +9,8 @@ object Config {
     const val maxPathWidth = 2
     const val maxPathHeight = 9
 
-    val maxPathsInTrain: Int? = 1000
-    val maxPathsInTest: Int? = 200
+    val maxPathsInTrain: Int? = null
+    val maxPathsInTest: Int? = null
 
     val maxTreeSize: Int? = null
 }
@@ -56,7 +56,7 @@ data class DatasetStatistic(
 
 fun getTreeSize(root: SimpleNode): Int = root.preOrder().size
 
-fun printTree(root: Node, withTypes: Boolean, indent: Int = 0, delimiter: String = "--", indent_step: Int = 2) {
+fun printTree(root: Node, withTypes: Boolean, indent: Int = 0, delimiter: String = "--", indentStep: Int = 2) {
     print(delimiter.repeat(indent))
     print("${root.getTypeLabel()}: ${root.getNormalizedToken()}")
     if (withTypes) {
@@ -64,6 +64,8 @@ fun printTree(root: Node, withTypes: Boolean, indent: Int = 0, delimiter: String
     }
     print("\n")
     root.getChildren().forEach {
-        printTree(it, withTypes, indent + indent_step, delimiter, indent_step)
+        printTree(it, withTypes, indent + indentStep, delimiter, indentStep)
     }
 }
+
+fun isNumber(token: String): Boolean = token.toIntOrNull() != null

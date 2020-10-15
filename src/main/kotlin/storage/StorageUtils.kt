@@ -11,7 +11,8 @@ data class XPathContext(val startTokenType: String, val pathContext: PathContext
     companion object {
         fun createFromASTPath(path: ASTPath): XPathContext {
             val startTokenType =
-                path.upwardNodes.first().getMetadata(TypeConstants.PSI_TYPE_METADATA_KEY)?.toString() ?: TypeConstants.NO_TYPE
+                path.upwardNodes.first()
+                        .getMetadata(TypeConstants.PSI_TYPE_METADATA_KEY)?.toString() ?: TypeConstants.NO_TYPE
 
             val startToken = path.upwardNodes.first().getNormalizedToken()
             val astNodes = path.upwardNodes.map { OrientedNodeType(it.getTypeLabel(), Direction.UP) } +
@@ -20,7 +21,8 @@ data class XPathContext(val startTokenType: String, val pathContext: PathContext
             val pathContext = PathContext(startToken, astNodes, endToken)
 
             val endTokenType =
-                path.downwardNodes.last().getMetadata(TypeConstants.PSI_TYPE_METADATA_KEY)?.toString() ?: TypeConstants.NO_TYPE
+                path.downwardNodes.last()
+                        .getMetadata(TypeConstants.PSI_TYPE_METADATA_KEY)?.toString() ?: TypeConstants.NO_TYPE
 
             return XPathContext(startTokenType, pathContext, endTokenType)
         }

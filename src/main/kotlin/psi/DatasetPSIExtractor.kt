@@ -15,6 +15,7 @@ import com.intellij.openapi.vfs.VfsUtilCore
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import getTreeSize
+import isNumber
 import storage.XLabeledPathContexts
 import storage.XPathContext
 import storage.XPathContextsStorage
@@ -46,7 +47,6 @@ class DatasetPSIExtractor(val storage: XPathContextsStorage<String>, val miner: 
         return datasetStatistic
     }
 
-
     private fun extractPsiFromProject(project: Project, dataset: Dataset): ExtractingStatistic {
         val extractingStatistic = ExtractingStatistic()
         println("Extract PSI from ${project.name}...")
@@ -59,7 +59,8 @@ class DatasetPSIExtractor(val storage: XPathContextsStorage<String>, val miner: 
                     return@iterateChildrenRecursively true
                 }
                 fileCounter += 1
-                val psi = PsiManager.getInstance(project).findFile(virtualFile) ?: return@iterateChildrenRecursively true
+                val psi = PsiManager.getInstance(project)
+                        .findFile(virtualFile) ?: return@iterateChildrenRecursively true
                 val extractedPaths = extractPathsFromPsiFile(psi, nPathContexts)
 
                 extractingStatistic.nFiles += 1
@@ -78,7 +79,6 @@ class DatasetPSIExtractor(val storage: XPathContextsStorage<String>, val miner: 
         return extractingStatistic
     }
 
-
     private fun extractPathsFromPsiFile(psiFile: PsiFile, nPathContexts: Int?): List<XLabeledPathContexts<String>> {
         val rootNode = TreeBuilder().convertPSITree(psiFile)
         val methods = PsiMethodSplitter().splitIntoMethods(rootNode)
@@ -94,10 +94,8 @@ class DatasetPSIExtractor(val storage: XPathContextsStorage<String>, val miner: 
             val label = splitToSubtokens(methodNameNode.getToken()).joinToString("|")
             methodRoot.preOrder().map {
                 it.setNormalizedToken(
-                        if (it.getToken().toIntOrNull() == null)
-                            splitToSubtokens(it.getToken()).joinToString("|")
-                        else
-                            it.getToken()
+                        if (isNumber(it.getToken())) it.getToken()
+                        else splitToSubtokens(it.getToken()).joinToString("|")
                 )
             }
             methodNameNode.setNormalizedToken(methodNameToken)
@@ -109,5 +107,4 @@ class DatasetPSIExtractor(val storage: XPathContextsStorage<String>, val miner: 
             XLabeledPathContexts(label, paths.map { XPathContext.createFromASTPath(it) })
         }.filterNotNull()
     }
-
 }

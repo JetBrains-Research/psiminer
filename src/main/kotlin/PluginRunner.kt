@@ -4,7 +4,7 @@ import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
 import com.intellij.openapi.application.ApplicationStarter
-import psi.extractPsiFromDataset
+import psi.DatasetPSIExtractor
 import storage.XCode2SeqPathStorage
 import storage.XCode2VecPathStorage
 import storage.XPathContextsStorage
@@ -39,9 +39,10 @@ class PsiExtractor : CliktCommand() {
             Config.maxPathHeight,
             Config.maxPathWidth
         ))
+        val datasetPSIExtractor = DatasetPSIExtractor(storage, miner)
 
         println("Start extracting PSI from $dataset dataset...")
-        val datasetStatistic = extractPsiFromDataset(dataset, storage, miner)
+        val datasetStatistic = datasetPSIExtractor.extractPsiFromDataset(dataset)
         println("Extracted data statistic:\n$datasetStatistic")
 
         storage.close()

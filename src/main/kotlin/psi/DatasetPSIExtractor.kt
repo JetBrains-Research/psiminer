@@ -103,7 +103,7 @@ class DatasetPSIExtractor(val storage: XPathContextsStorage<String>, val miner: 
 //        printTree(methodRoot, true)
 
             // Retrieve paths from every node individually
-            val paths = miner.retrievePaths(methodRoot).let { it.take(nPathContexts ?: it.size) }
+            val paths = miner.retrievePaths(methodRoot).let { it.shuffled().take(nPathContexts ?: it.size) }
             XLabeledPathContexts(label, paths.map { XPathContext.createFromASTPath(it) })
         }.filterNotNull()
     }

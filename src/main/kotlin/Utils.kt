@@ -1,5 +1,4 @@
 import astminer.common.getNormalizedToken
-import astminer.common.model.ASTPath
 import astminer.common.model.Node
 import astminer.common.normalizeToken
 import astminer.common.preOrder
@@ -14,8 +13,8 @@ object Config {
     const val maxPathWidth = 2
     const val maxPathHeight = 9
 
-    val maxPathsInTrain: Int? = 1000
-    val maxPathsInTest: Int? = 200
+    val maxPathsInTrain: Int? = null
+    val maxPathsInTest: Int? = null
 
     val maxTreeSize: Int? = null
 }
@@ -39,9 +38,9 @@ data class ExtractingStatistic(var nFiles: Int = 0, var nSamples: Int = 0, var n
 }
 
 data class DatasetStatistic(
-        val trainStatistic: ExtractingStatistic = ExtractingStatistic(),
-        val valStatistic: ExtractingStatistic = ExtractingStatistic(),
-        val testStatistic: ExtractingStatistic = ExtractingStatistic()
+    val trainStatistic: ExtractingStatistic = ExtractingStatistic(),
+    val valStatistic: ExtractingStatistic = ExtractingStatistic(),
+    val testStatistic: ExtractingStatistic = ExtractingStatistic()
 ) {
     override fun toString(): String =
             "Train holdout: $trainStatistic\n" +
@@ -90,12 +89,3 @@ fun splitTypeToSubtypes(type: String): List<String> = type
                     .filter { it.isNotEmpty() }
                     .toList()
         }
-
-data class PathTypes(val startTokenType: String, val endTokenType: String)
-fun getTypesFromASTPath(path: ASTPath): PathTypes {
-    val startTokenType = path.upwardNodes.first()
-                    .getMetadata(TypeConstants.PSI_TYPE_METADATA_KEY)?.toString() ?: TypeConstants.NO_TYPE
-    val endTokenType = path.downwardNodes.last()
-                    .getMetadata(TypeConstants.PSI_TYPE_METADATA_KEY)?.toString() ?: TypeConstants.NO_TYPE
-    return PathTypes(startTokenType, endTokenType)
-}

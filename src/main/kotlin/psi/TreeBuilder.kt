@@ -2,7 +2,16 @@ package psi
 
 import TypeConstants
 import astminer.parse.antlr.SimpleNode
-import com.intellij.psi.*
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiParameterList
+import com.intellij.psi.PsiImportList
+import com.intellij.psi.PsiWhiteSpace
+import com.intellij.psi.PsiJavaToken
+import com.intellij.psi.PsiPackageStatement
+import com.intellij.psi.PsiMethod
+import com.intellij.psi.PsiReferenceList
+import com.intellij.psi.PsiModifierList
+import com.intellij.psi.PsiReferenceParameterList
 import com.intellij.psi.javadoc.PsiDocComment
 import com.intellij.psi.util.elementType
 import splitTypeToSubtypes
@@ -19,8 +28,9 @@ class TreeBuilder {
 
         // Try to get the node type
         val nodeType = PsiTokenTypeExtractor().extractTokenType(node) ?: TypeConstants.NO_TYPE
-        val processedNodeType = if (Config.splitTypes && nodeType !in TypeConstants.unresolvedTypes)
-            splitTypeToSubtypes(nodeType).joinToString("|") else nodeType
+        val processedNodeType =
+                if (!Config.splitTypes || nodeType in TypeConstants.unresolvedTypes) nodeType
+                else splitTypeToSubtypes(nodeType).joinToString("|")
         currentNode.setMetadata(TypeConstants.PSI_TYPE_METADATA_KEY, processedNodeType)
 
         // Iterate over the children

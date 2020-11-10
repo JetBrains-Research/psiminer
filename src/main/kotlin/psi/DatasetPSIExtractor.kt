@@ -4,7 +4,6 @@ import Config
 import Dataset
 import DatasetStatistic
 import ExtractingStatistic
-import astminer.common.model.ASTPath
 import astminer.common.preOrder
 import astminer.common.setNormalizedToken
 import astminer.common.splitToSubtokens
@@ -16,7 +15,7 @@ import com.intellij.openapi.vfs.VfsUtilCore
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import getTreeSize
-import getTypesFromASTPath
+import groupPathsByResolvedTypes
 import isNumber
 import storage.XLabeledPathContexts
 import storage.XPathContext
@@ -106,30 +105,8 @@ class DatasetPSIExtractor(val storage: XPathContextsStorage<String>, val miner: 
 
             // Retrieve paths from every node individually
             val allPaths = miner.retrievePaths(methodRoot).shuffled()
-            val paths = mutableListOf<ASTPath>()
-            if (Config.resolvedTypesFirst) {
-                val twoResolvedTypes = mutableListOf<ASTPath>()
-                val oneResolvedType = mutableListOf<ASTPath>()
-                val zeroResolvedType = mutableListOf<ASTPath>()
-                allPaths.forEach {
-                    val (startTokenType, endTokenType) = getTypesFromASTPath(it)
-                    var nResolvedTypes = 0
-                    if (startTokenType !in TypeConstants.unresolvedTypes)
-                        ++nResolvedTypes
-                    if (endTokenType !in TypeConstants.unresolvedTypes)
-                        ++nResolvedTypes
-                    when (nResolvedTypes) {
-                        2 -> twoResolvedTypes.add(it)
-                        1 -> oneResolvedType.add(it)
-                        0 -> zeroResolvedType.add(it)
-                    }
-                }
-                paths.addAll(twoResolvedTypes.let { it.take(nPathContexts ?: it.size) })
-                paths.addAll(oneResolvedType.let { it.take(nPathContexts?.minus(paths.size) ?: it.size) })
-                paths.addAll(zeroResolvedType.let { it.take(nPathContexts?.minus(paths.size) ?: it.size) })
-            } else {
-                paths.addAll(allPaths.let { it.take(nPathContexts ?: it.size) })
-            }
+            val paths = if (Config.resolvedTypesFirst) groupPathsByResolvedTypes(allPaths, nPathContexts)
+                        else allPaths.let { it.take(nPathContexts ?: it.size) }
             XLabeledPathContexts(label, paths.map { XPathContext.createFromASTPath(it) })
         }.filterNotNull()
     }

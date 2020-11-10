@@ -1,4 +1,5 @@
 import astminer.common.getNormalizedToken
+import astminer.common.model.ASTPath
 import astminer.common.model.Node
 import astminer.common.normalizeToken
 import astminer.common.preOrder
@@ -8,6 +9,8 @@ object Config {
     const val storage = "code2seq"
     const val noTypes = false
     const val splitTypes = true
+    const val resolvedTypesFirst = true
+
     const val maxPathWidth = 2
     const val maxPathHeight = 9
 
@@ -21,6 +24,7 @@ object TypeConstants {
     const val PSI_TYPE_METADATA_KEY = "PSI_TOKEN_TYPE"
     const val UNKNOWN_TYPE = "<UNK>"
     const val NO_TYPE = "<PAD>"
+    val unresolvedTypes = listOf(UNKNOWN_TYPE, NO_TYPE)
 }
 
 enum class Dataset(val folderName: String) {
@@ -86,3 +90,12 @@ fun splitTypeToSubtypes(type: String): List<String> = type
                     .filter { it.isNotEmpty() }
                     .toList()
         }
+
+data class PathTypes(val startTokenType: String, val endTokenType: String)
+fun getTypesFromASTPath(path: ASTPath): PathTypes {
+    val startTokenType = path.upwardNodes.first()
+                    .getMetadata(TypeConstants.PSI_TYPE_METADATA_KEY)?.toString() ?: TypeConstants.NO_TYPE
+    val endTokenType = path.downwardNodes.last()
+                    .getMetadata(TypeConstants.PSI_TYPE_METADATA_KEY)?.toString() ?: TypeConstants.NO_TYPE
+    return PathTypes(startTokenType, endTokenType)
+}

@@ -19,9 +19,8 @@ class TreeBuilder {
 
         // Try to get the node type
         val nodeType = PsiTokenTypeExtractor().extractTokenType(node) ?: TypeConstants.NO_TYPE
-        val processedNodeType = if (
-                Config.splitTypes && nodeType !in listOf(TypeConstants.NO_TYPE, TypeConstants.UNKNOWN_TYPE)
-        ) splitTypeToSubtypes(nodeType).joinToString("|") else nodeType
+        val processedNodeType = if (Config.splitTypes && nodeType !in TypeConstants.unresolvedTypes)
+            splitTypeToSubtypes(nodeType).joinToString("|") else nodeType
         currentNode.setMetadata(TypeConstants.PSI_TYPE_METADATA_KEY, processedNodeType)
 
         // Iterate over the children

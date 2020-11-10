@@ -1,24 +1,26 @@
 import astminer.common.getNormalizedToken
 import astminer.common.model.Node
+import astminer.common.normalizeToken
 import astminer.common.preOrder
 import astminer.parse.antlr.SimpleNode
 
 object Config {
     const val storage = "code2seq"
-    const val noTypes = true
+    const val noTypes = false
+    const val splitTypes = true
     const val maxPathWidth = 2
     const val maxPathHeight = 9
 
-    val maxPathsInTrain: Int? = null
-    val maxPathsInTest: Int? = null
+    val maxPathsInTrain: Int? = 1000
+    val maxPathsInTest: Int? = 200
 
     val maxTreeSize: Int? = null
 }
 
 object TypeConstants {
     const val PSI_TYPE_METADATA_KEY = "PSI_TOKEN_TYPE"
-    const val UNKNOWN_TYPE = "<UNKNOWN>"
-    const val NO_TYPE = "<NULL>"
+    const val UNKNOWN_TYPE = "<UNK>"
+    const val NO_TYPE = "<PAD>"
 }
 
 enum class Dataset(val folderName: String) {
@@ -33,20 +35,26 @@ data class ExtractingStatistic(var nFiles: Int = 0, var nSamples: Int = 0, var n
 }
 
 data class DatasetStatistic(
-    val trainStatistic: ExtractingStatistic = ExtractingStatistic(),
-    val valStatistic: ExtractingStatistic = ExtractingStatistic(),
-    val testStatistic: ExtractingStatistic = ExtractingStatistic()
+        val trainStatistic: ExtractingStatistic = ExtractingStatistic(),
+        val valStatistic: ExtractingStatistic = ExtractingStatistic(),
+        val testStatistic: ExtractingStatistic = ExtractingStatistic()
 ) {
     override fun toString(): String =
             "Train holdout: $trainStatistic\n" +
-            "Val holdout: $valStatistic\n" +
-            "Test holdout: $testStatistic"
+                    "Val holdout: $valStatistic\n" +
+                    "Test holdout: $testStatistic"
 
     fun addProjectStatistic(dataset: Dataset, extractingStatistic: ExtractingStatistic) {
         val currentStatistic = when (dataset) {
-            Dataset.Train -> { trainStatistic }
-            Dataset.Val -> { valStatistic }
-            Dataset.Test -> { testStatistic }
+            Dataset.Train -> {
+                trainStatistic
+            }
+            Dataset.Val -> {
+                valStatistic
+            }
+            Dataset.Test -> {
+                testStatistic
+            }
         }
         currentStatistic.nFiles += extractingStatistic.nFiles
         currentStatistic.nSamples += extractingStatistic.nSamples
@@ -69,3 +77,12 @@ fun printTree(root: Node, withTypes: Boolean, indent: Int = 0, delimiter: String
 }
 
 fun isNumber(token: String): Boolean = token.toIntOrNull() != null
+
+fun splitTypeToSubtypes(type: String): List<String> = type
+        .split("[<>]".toRegex()).flatMap {
+            it.trim()
+                    .split("(?<=[a-z])(?=[A-Z])|_|[0-9]|(?<=[A-Z])(?=[A-Z][a-z])|\\s+".toRegex())
+                    .map { s -> normalizeToken(s, "") }
+                    .filter { it.isNotEmpty() }
+                    .toList()
+        }

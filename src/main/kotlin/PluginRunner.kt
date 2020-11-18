@@ -27,7 +27,7 @@ class PsiExtractor : CliktCommand() {
 
     private fun buildStorage(): XPathContextsStorage<String> {
         return when (Config.storage) {
-            "code2seq" -> XCode2SeqPathStorage(output, Config.noTypes)
+            "code2seq" -> XCode2SeqPathStorage(output, Config.noTypes, Config.nodesToNumbers)
             "code2vec" -> XCode2VecPathStorage(output, Config.noTypes)
             else -> throw UnsupportedOperationException("Unknown storage ${Config.storage}")
         }

@@ -8,13 +8,15 @@ object Config {
     const val storage = "code2seq"
     const val noTypes = false
     const val splitTypes = true
-    const val resolvedTypesFirst = true
+    const val resolvedTypesFirst = false
+
+    const val nodesToNumbers = true
 
     const val maxPathWidth = 2
     const val maxPathHeight = 9
 
-    val maxPathsInTrain: Int? = null
-    val maxPathsInTest: Int? = null
+    val maxPathsInTrain: Int? = 1000
+    val maxPathsInTest: Int? = 200
 
     val maxTreeSize: Int? = null
 }
@@ -22,7 +24,7 @@ object Config {
 object TypeConstants {
     const val PSI_TYPE_METADATA_KEY = "PSI_TOKEN_TYPE"
     const val UNKNOWN_TYPE = "<UNK>"
-    const val NO_TYPE = "<PAD>"
+    const val NO_TYPE = "<NT>"
     val unresolvedTypes = listOf(UNKNOWN_TYPE, NO_TYPE)
 }
 

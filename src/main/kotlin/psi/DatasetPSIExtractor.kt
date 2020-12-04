@@ -5,6 +5,7 @@ import Dataset
 import DatasetStatistic
 import ExtractingStatistic
 import TreeConstants.methodNameToken
+import astminer.common.getNormalizedToken
 import astminer.common.setNormalizedToken
 import astminer.common.splitToSubtokens
 import astminer.paths.PathMiner
@@ -91,12 +92,13 @@ class DatasetPSIExtractor(private val storage: XPathContextsStorage<String>, pri
                 return@map null
             }
 
-            val label = splitToSubtokens(methodNameNode.getToken()).joinToString("|")
+            val label = methodNameNode.getNormalizedToken()
+            if (label == "") return@map null
             if (Config.hideMethodName) {
                 methodNameNode.setNormalizedToken(methodNameToken)
             }
 
-            printTree(methodRoot, true)
+//            printTree(methodRoot, true)
 
             // Retrieve paths from every node individually
             val allPaths = miner.retrievePaths(methodRoot).shuffled()

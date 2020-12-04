@@ -9,23 +9,28 @@ object Config {
     const val noTypes = false
     const val splitTypes = true
     const val resolvedTypesFirst = false
+    const val hideMethodName = true
 
     const val nodesToNumbers = true
 
     const val maxPathWidth = 2
     const val maxPathHeight = 9
 
-    val maxPathsInTrain: Int? = 1000
-    val maxPathsInTest: Int? = 200
+    val maxPathsInTrain: Int? = null
+    val maxPathsInTest: Int? = null
 
     val maxTreeSize: Int? = null
 }
 
-object TypeConstants {
-    const val PSI_TYPE_METADATA_KEY = "PSI_TOKEN_TYPE"
-    const val UNKNOWN_TYPE = "<UNK>"
+object TreeConstants {
+    const val RESOLVED_TYPE = "TOKEN_TYPE"
     const val NO_TYPE = "<NT>"
-    val unresolvedTypes = listOf(UNKNOWN_TYPE, NO_TYPE)
+
+    const val methodNameToken = "<MN>"
+    const val numberLiteralToken = "<NUM>"
+    const val stringLiteralToken = "<STR>"
+    const val booleanLiteralToken = "<BOOL>"
+    const val defaultLiteralToken = "<LIT>"
 }
 
 enum class Dataset(val folderName: String) {
@@ -73,15 +78,13 @@ fun printTree(root: Node, withTypes: Boolean, indent: Int = 0, delimiter: String
     print(delimiter.repeat(indent))
     print("${root.getTypeLabel()}: ${root.getNormalizedToken()}")
     if (withTypes) {
-        print(" / ${root.getMetadata(TypeConstants.PSI_TYPE_METADATA_KEY)}")
+        print(" / ${root.getMetadata(TreeConstants.RESOLVED_TYPE)}")
     }
     print("\n")
     root.getChildren().forEach {
         printTree(it, withTypes, indent + indentStep, delimiter, indentStep)
     }
 }
-
-fun isNumber(token: String): Boolean = token.toIntOrNull() != null
 
 fun splitTypeToSubtypes(type: String): List<String> = type
         .split("[<>]".toRegex()).flatMap {

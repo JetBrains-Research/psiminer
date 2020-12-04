@@ -4,7 +4,7 @@ import Config
 import Dataset
 import DatasetStatistic
 import ExtractingStatistic
-import astminer.common.preOrder
+import TreeConstants.methodNameToken
 import astminer.common.setNormalizedToken
 import astminer.common.splitToSubtokens
 import astminer.paths.PathMiner
@@ -16,16 +16,15 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import getTreeSize
 import groupPathsByResolvedTypes
-import isNumber
+import printTree
 import storage.XLabeledPathContexts
 import storage.XPathContext
 import storage.XPathContextsStorage
 import java.io.File
 
-class DatasetPSIExtractor(val storage: XPathContextsStorage<String>, val miner: PathMiner) {
+class DatasetPSIExtractor(private val storage: XPathContextsStorage<String>, private val miner: PathMiner) {
     private companion object {
         private const val logStep = 100
-        private const val methodNameToken = "METHOD_NAME"
     }
 
     fun extractPsiFromDataset(datasetPath: String): DatasetStatistic {
@@ -93,15 +92,11 @@ class DatasetPSIExtractor(val storage: XPathContextsStorage<String>, val miner: 
             }
 
             val label = splitToSubtokens(methodNameNode.getToken()).joinToString("|")
-            methodRoot.preOrder().map {
-                it.setNormalizedToken(
-                        if (isNumber(it.getToken())) it.getToken()
-                        else splitToSubtokens(it.getToken()).joinToString("|")
-                )
+            if (Config.hideMethodName) {
+                methodNameNode.setNormalizedToken(methodNameToken)
             }
-            methodNameNode.setNormalizedToken(methodNameToken)
 
-//        printTree(methodRoot, true)
+            printTree(methodRoot, true)
 
             // Retrieve paths from every node individually
             val allPaths = miner.retrievePaths(methodRoot).shuffled()

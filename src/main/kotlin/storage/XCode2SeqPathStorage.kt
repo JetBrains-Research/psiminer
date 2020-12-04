@@ -8,9 +8,9 @@ import java.io.File
 import java.io.PrintWriter
 
 class XCode2SeqPathStorage<LabelType>(
-        override val directoryPath: String,
-        override val noTypes: Boolean,
-        private val nodesToNumber: Boolean
+    override val directoryPath: String,
+    override val noTypes: Boolean,
+    private val nodesToNumber: Boolean
 ) : XPathContextsStorage<LabelType> {
 
     private val separator = ","
@@ -33,10 +33,8 @@ class XCode2SeqPathStorage<LabelType>(
 
     private fun pathContextToString(pathContext: PathContext): String {
         val path = pathContext.orientedNodeTypes.joinToString("|") {
-            if (nodesToNumber)
-                nodesMap.record(it.typeLabel).toString()
-            else
-                it.typeLabel
+            if (nodesToNumber) nodesMap.record(it.typeLabel).toString()
+            else it.typeLabel
         }
         return listOf(pathContext.startToken, path, pathContext.endToken).joinToString(separator)
     }
@@ -62,8 +60,9 @@ class XCode2SeqPathStorage<LabelType>(
         datasetFileWriters.forEach {
             it.value.close()
         }
-        if (nodesToNumber)
-            dumpIdStorageToCsv(nodesMap, "node", { it }, File("$directoryPath/nodes_vocabulary.csv"))
+        if (nodesToNumber) dumpIdStorageToCsv(
+            nodesMap, "node", { it }, File("$directoryPath/nodes_vocabulary.csv")
+        )
     }
 
     private fun normalizeTokenType(tokenType: String): String =

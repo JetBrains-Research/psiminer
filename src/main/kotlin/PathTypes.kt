@@ -3,9 +3,9 @@ import astminer.common.model.ASTPath
 data class PathTypes(val startTokenType: String, val endTokenType: String)
 fun getTypesFromASTPath(path: ASTPath): PathTypes {
     val startTokenType = path.upwardNodes.first()
-                    .getMetadata(TreeConstants.RESOLVED_TYPE)?.toString() ?: TreeConstants.NO_TYPE
+                    .getMetadata(TreeConstants.resolvedType)?.toString() ?: TreeConstants.noType
     val endTokenType = path.downwardNodes.last()
-                    .getMetadata(TreeConstants.RESOLVED_TYPE)?.toString() ?: TreeConstants.NO_TYPE
+                    .getMetadata(TreeConstants.resolvedType)?.toString() ?: TreeConstants.noType
     return PathTypes(startTokenType, endTokenType)
 }
 
@@ -16,8 +16,8 @@ fun groupPathsByResolvedTypes(paths: List<ASTPath>, nPathContexts: Int?): List<A
     paths.forEach {
         val (startTokenType, endTokenType) = getTypesFromASTPath(it)
         var nResolvedTypes = 0
-        if (startTokenType != TreeConstants.NO_TYPE) ++nResolvedTypes
-        if (endTokenType != TreeConstants.NO_TYPE) ++nResolvedTypes
+        if (startTokenType != TreeConstants.noType) ++nResolvedTypes
+        if (endTokenType != TreeConstants.noType) ++nResolvedTypes
         when (nResolvedTypes) {
             2 -> twoResolvedTypes.add(it)
             1 -> oneResolvedType.add(it)

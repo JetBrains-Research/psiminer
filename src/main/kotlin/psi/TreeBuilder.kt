@@ -1,15 +1,14 @@
 package psi
 
-import Config
 import TreeConstants
 import astminer.common.getNormalizedToken
 import astminer.common.setNormalizedToken
 import astminer.common.splitToSubtokens
 import astminer.parse.antlr.SimpleNode
 import com.intellij.psi.*
+import com.intellij.psi.impl.source.tree.ElementType
 import com.intellij.psi.javadoc.PsiDocComment
 import com.intellij.psi.util.elementType
-import splitTypeToSubtypes
 
 class TreeBuilder {
 
@@ -22,18 +21,13 @@ class TreeBuilder {
 
     private fun convertPsiElement(node: PsiElement, parent: SimpleNode?): SimpleNode {
         val currentNode = SimpleNode(node.elementType.toString(), parent, null)
-
-        // Try to get the node type
-        val nodeType = typeExtractor.extractTokenType(node)
-        val processedNodeType =
-                if (Config.splitTypes && nodeType != TreeConstants.NO_TYPE) {
-                    splitTypeToSubtypes(nodeType).joinToString("|")
-                } else nodeType
-        currentNode.setMetadata(TreeConstants.RESOLVED_TYPE, processedNodeType)
+        currentNode.setMetadata(TreeConstants.resolvedType, typeExtractor.extractTokenType(node))
 
         // Iterate over the children
         val children = node.children.filter {
-            validatePsiElement(it) }.map { kid -> convertPsiElement(kid, currentNode)
+            validatePsiElement(it)
+        }.map { kid ->
+            convertPsiElement(kid, currentNode)
         }
         currentNode.setChildren(children)
 
@@ -57,11 +51,25 @@ class TreeBuilder {
 
     private fun isSkipType(node: PsiElement): Boolean =
         node is PsiWhiteSpace || node is PsiDocComment || node is PsiImportList ||
-        node is PsiPackageStatement || node is PsiKeyword
+                node is PsiPackageStatement
 
     // Skip nodes for commas, semicolons, different brackets, and etc
-    private fun isSkipJavaToken(node: PsiElement): Boolean =
-        node is PsiJavaToken && node !is PsiIdentifier && node !is PsiLiteral
+    private fun isJavaSymbol(node: PsiElement): Boolean {
+        val skipElementTypes = listOf(
+            ElementType.LBRACE,
+            ElementType.RBRACE,
+            ElementType.LBRACKET,
+            ElementType.RBRACKET,
+            ElementType.LPARENTH,
+            ElementType.RPARENTH,
+            ElementType.SEMICOLON,
+            ElementType.COMMA,
+            ElementType.DOT,
+            ElementType.ELLIPSIS,
+            ElementType.AT
+        )
+        return skipElementTypes.any { node.elementType == it }
+    }
 
     private fun isConstructor(node: PsiElement): Boolean =
         node is PsiMethod && node.isConstructor
@@ -75,7 +83,7 @@ class TreeBuilder {
                 )
 
     private fun validatePsiElement(node: PsiElement): Boolean =
-        !isSkipType(node) && !isSkipJavaToken(node) && !isConstructor(node) && !isEmptyList(node)
+        !isSkipType(node) && !isJavaSymbol(node) && !isConstructor(node) && !isEmptyList(node)
 
     /**
      * Compress paths of intermediate nodes that have a single child into individual nodes.
@@ -85,13 +93,13 @@ class TreeBuilder {
         return if (root.getChildren().size == 1) {
             val child = compressTreeWithTypes(root.getChildren().first() as SimpleNode)
             val compressedNode = SimpleNode(
-                    root.getTypeLabel() + "|" + child.getTypeLabel(),
-                    root.getParent(),
-                    child.getToken()
+                root.getTypeLabel() + "|" + child.getTypeLabel(),
+                root.getParent(),
+                child.getToken()
             )
             compressedNode.setNormalizedToken(child.getNormalizedToken())
-            val childTokenType = child.getMetadata(TreeConstants.RESOLVED_TYPE)
-            compressedNode.setMetadata(TreeConstants.RESOLVED_TYPE, childTokenType ?: TreeConstants.NO_TYPE)
+            val childTokenType = child.getMetadata(TreeConstants.resolvedType)
+            compressedNode.setMetadata(TreeConstants.resolvedType, childTokenType ?: TreeConstants.noType)
             compressedNode.setChildren(child.getChildren())
             compressedNode
         } else {

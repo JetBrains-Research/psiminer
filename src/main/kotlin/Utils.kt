@@ -13,8 +13,10 @@ object Config {
 
     const val nodesToNumbers = true
 
-    const val maxPathWidth = 2
+    const val maxPathWidth = 4
     const val maxPathHeight = 9
+
+    const val batchSize = 10_000
 
     val maxPathsInTrain: Int? = null
     val maxPathsInTest: Int? = null
@@ -23,14 +25,17 @@ object Config {
 }
 
 object TreeConstants {
-    const val RESOLVED_TYPE = "TOKEN_TYPE"
-    const val NO_TYPE = "<NT>"
+    const val resolvedType = "TOKEN_TYPE"
+    const val noType = "<NT>"
 
     const val methodNameToken = "<MN>"
     const val numberLiteralToken = "<NUM>"
     const val stringLiteralToken = "<STR>"
     const val booleanLiteralToken = "<BOOL>"
     const val defaultLiteralToken = "<LIT>"
+
+    const val keywordType = "<KWRD>"
+    const val operatorType = "<OP>"
 }
 
 enum class Dataset(val folderName: String) {
@@ -78,7 +83,7 @@ fun printTree(root: Node, withTypes: Boolean, indent: Int = 0, delimiter: String
     print(delimiter.repeat(indent))
     print("${root.getTypeLabel()}: ${root.getNormalizedToken()}")
     if (withTypes) {
-        print(" / ${root.getMetadata(TreeConstants.RESOLVED_TYPE)}")
+        print(" / ${root.getMetadata(TreeConstants.resolvedType)}")
     }
     print("\n")
     root.getChildren().forEach {

@@ -1,5 +1,7 @@
+import filter.AbstractMethodFilter
 import filter.ClassConstructorFilter
 import filter.Filter
+import filter.OverrideMethodFilter
 import problem.MethodNamePrediction
 import problem.Problem
 import psi.PsiProjectParser
@@ -22,6 +24,8 @@ class Pipeline(private val outputDirectory: File, private val config: Config) {
     private fun getFilters(): List<Filter> = config.filters.map {
         when (it) {
             ClassConstructorFilter.name -> ClassConstructorFilter()
+            AbstractMethodFilter.name -> AbstractMethodFilter()
+            OverrideMethodFilter.name -> OverrideMethodFilter()
             else -> throw java.lang.IllegalArgumentException("Unknown filter")
         }
     }

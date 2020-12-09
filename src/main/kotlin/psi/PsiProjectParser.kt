@@ -4,7 +4,6 @@ import Config
 import Dataset
 import GranularityLevel
 import astminer.common.preOrder
-import astminer.parse.antlr.SimpleNode
 import com.intellij.ide.impl.ProjectUtil
 import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.roots.ProjectRootManager
@@ -17,7 +16,7 @@ import kotlin.math.ceil
 class PsiProjectParser(
     private val granularityLevel: GranularityLevel,
     private val config: Config,
-    private val storeCallback: (SimpleNode, Dataset) -> Unit
+    private val storeCallback: (PsiNode, Dataset) -> Unit
 ) {
     private val treeBuilder = PsiTreeBuilder(config)
 
@@ -48,13 +47,13 @@ class PsiProjectParser(
     private suspend fun convertPsiFilesToTrees(psiFiles: List<PsiFile>) = coroutineScope {
         val deferred = psiFiles.map {
             async(Dispatchers.Default) {
-                ReadAction.compute<List<SimpleNode>, Throwable> {
-                    val fileTree = treeBuilder.convertPSITree(it)
+                ReadAction.compute<List<PsiNode>, Throwable> {
+                    val fileTree = treeBuilder.buildPsiTree(it)
                     when (granularityLevel) {
                         GranularityLevel.File -> listOf(fileTree)
                         GranularityLevel.Method -> fileTree.preOrder()
                             .filter { node -> node.getTypeLabel() == methodNode }
-                            .map { node -> node as SimpleNode }
+                            .map { node -> node as PsiNode }
                     }
                 }
             }

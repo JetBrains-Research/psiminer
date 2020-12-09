@@ -1,8 +1,5 @@
 import astminer.common.getNormalizedToken
-import astminer.common.model.Node
-import astminer.common.preOrder
-import astminer.parse.antlr.SimpleNode
-import psi.PsiTreeBuilder.Companion.RESOLVED_TYPE
+import psi.PsiNode
 
 enum class GranularityLevel {
     File,
@@ -15,16 +12,14 @@ enum class Dataset(val folderName: String) {
     Test("test")
 }
 
-fun getTreeSize(root: SimpleNode): Int = root.preOrder().size
-
-fun printTree(root: Node, withTypes: Boolean, indent: Int = 0, delimiter: String = "--", indentStep: Int = 2) {
+fun printTree(root: PsiNode, withTypes: Boolean, indent: Int = 0, delimiter: String = "--", indentStep: Int = 2) {
     print(delimiter.repeat(indent))
     print("${root.getTypeLabel()}: ${root.getNormalizedToken()}")
     if (withTypes) {
-        print(" / ${root.getMetadata(RESOLVED_TYPE)}")
+        print(" / ${root.resolvedType}")
     }
     print("\n")
     root.getChildren().forEach {
-        printTree(it, withTypes, indent + indentStep, delimiter, indentStep)
+        printTree(it as PsiNode, withTypes, indent + indentStep, delimiter, indentStep)
     }
 }

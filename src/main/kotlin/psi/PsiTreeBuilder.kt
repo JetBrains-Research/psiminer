@@ -1,38 +1,33 @@
 package psi
 
 import Config
-import astminer.common.*
-import astminer.parse.antlr.SimpleNode
+import astminer.common.DEFAULT_TOKEN
+import astminer.common.normalizeToken
+import astminer.common.setNormalizedToken
+import astminer.common.splitToSubtokens
 import com.intellij.psi.*
 import com.intellij.psi.impl.source.tree.ElementType
 import com.intellij.psi.javadoc.PsiDocComment
 import com.intellij.psi.tree.TokenSet
 import com.intellij.psi.util.elementType
-import psi.PsiTypeResolver.Companion.NO_TYPE
 
 class PsiTreeBuilder(private val config: Config) {
-    private val typeExtractor = PsiTypeResolver(config)
+    private val typeResolver = PsiTypeResolver(config)
 
-    fun convertPSITree(root: PsiElement): SimpleNode {
-        val tree = convertPsiElement(root, null)
-        return compressTreeWithTypes(tree)
-    }
+    fun buildPsiTree(root: PsiElement): PsiNode = convertPsiElement(root, null)
 
-    private fun convertPsiElement(node: PsiElement, parent: SimpleNode?): SimpleNode {
-        val currentNode = SimpleNode(node.elementType.toString(), parent, null)
-        currentNode.setMetadata(RESOLVED_TYPE, typeExtractor.resolveType(node))
+    private fun convertPsiElement(node: PsiElement, parent: PsiNode?): PsiNode {
+        val resolvedType = typeResolver.resolveType(node)
+        val currentNode = PsiNode(node, parent, resolvedType)
 
         // Iterate over the children
-        val children = node.children.filter {
-            validatePsiElement(it)
-        }.map { kid ->
-            convertPsiElement(kid, currentNode)
-        }
+        val children = node.children
+            .filter { validatePsiElement(it) }
+            .map { kid -> convertPsiElement(kid, currentNode) }
         currentNode.setChildren(children)
 
         // Set token if leaf
         if (children.isEmpty()) {
-            currentNode.setToken(node.text)
             currentNode.setNormalizedToken(
                 when {
                     numberLiterals.contains(node.elementType) -> NUMBER_LITERAL
@@ -67,31 +62,7 @@ class PsiTreeBuilder(private val config: Config) {
     private fun validatePsiElement(node: PsiElement): Boolean =
         !isSkipType(node) && !isJavaSymbol(node) && !isConstructor(node) && !isEmptyList(node)
 
-    /**
-     * Compress paths of intermediate nodes that have a single child into individual nodes.
-     * Extend AST-miner version to keep node token's types
-     */
-    private fun compressTreeWithTypes(root: SimpleNode): SimpleNode {
-        return if (root.getChildren().size == 1) {
-            val child = compressTreeWithTypes(root.getChildren().first() as SimpleNode)
-            val compressedNode = SimpleNode(
-                root.getTypeLabel() + "|" + child.getTypeLabel(),
-                root.getParent(),
-                child.getToken()
-            )
-            compressedNode.setNormalizedToken(child.getNormalizedToken())
-            val childTokenType = child.getMetadata(RESOLVED_TYPE)
-            compressedNode.setMetadata(RESOLVED_TYPE, childTokenType ?: NO_TYPE)
-            compressedNode.setChildren(child.getChildren())
-            compressedNode
-        } else {
-            root.setChildren(root.getChildren().map { compressTreeWithTypes(it as SimpleNode) }.toMutableList())
-            root
-        }
-    }
-
     companion object {
-        const val RESOLVED_TYPE = "TOKEN_TYPE"
         private const val NUMBER_LITERAL = "<NUM>"
         private const val STRING_LITERAL = "<STR>"
         private const val BOOLEAN_LITERAL = "<BOOL>"

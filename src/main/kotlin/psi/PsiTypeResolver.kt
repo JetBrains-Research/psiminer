@@ -16,8 +16,11 @@ class PsiTypeResolver(private val config: Config) {
             node is PsiLiteralExpression -> node.type?.presentableText ?: NO_TYPE
             node is PsiIdentifier -> {
                 val resolvedType = extractFromIdentifier(node)
-                if (resolvedType == NO_TYPE || !config.splitNames) normalizeToken(resolvedType, NO_TYPE)
-                else splitTypeToSubtypes(resolvedType).joinToString("|")
+                when {
+                    resolvedType == NO_TYPE -> resolvedType
+                    config.splitNames -> splitTypeToSubtypes(resolvedType).joinToString("|")
+                    else -> normalizeToken(resolvedType, NO_TYPE)
+                }
             }
             else -> NO_TYPE
         }

@@ -16,22 +16,22 @@ public class Main {
         }
     }
 
-    public final void set(final AABB aabb) {
-        Vec2 v = aabb.lowerBound;
-        lowerBound.x = v.x;
-        lowerBound.y = v.y;
-        Vec2 v1 = aabb.upperBound;
-        upperBound.x = v1.x;
-        upperBound.y = v1.y;
-    }
-
-    public void f() {
-        int a = 5;
-        String s = "asd";
-        Boolean t = false;
-        String s1 = null;
-        Char c = 's';
-        Double d = 3.14;
-        f();
-    }
+//    public final void set(final AABB aabb) {
+//        Vec2 v = aabb.lowerBound;
+//        lowerBound.x = v.x;
+//        lowerBound.y = v.y;
+//        Vec2 v1 = aabb.upperBound;
+//        upperBound.x = v1.x;
+//        upperBound.y = v1.y;
+//    }
+//
+//    public void f() {
+//        int a = 5;
+//        String s = "asd";
+//        Boolean t = false;
+//        String s1 = null;
+//        Char c = 's';
+//        Double d = 3.14;
+//        f();
+//    }
 }

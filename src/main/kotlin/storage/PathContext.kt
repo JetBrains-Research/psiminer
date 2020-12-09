@@ -4,7 +4,7 @@ import astminer.common.getNormalizedToken
 import astminer.common.model.ASTPath
 import astminer.common.model.Direction
 import astminer.common.model.OrientedNodeType
-import psi.PsiTreeBuilder.Companion.RESOLVED_TYPE
+import psi.PsiNode
 import psi.PsiTypeResolver.Companion.NO_TYPE
 
 class PathContext(
@@ -17,16 +17,16 @@ class PathContext(
 
     companion object {
         fun createFromASTPath(path: ASTPath): PathContext {
-            val startNode = path.upwardNodes.first()
+            val startNode = path.upwardNodes.first() as PsiNode
             val astNodes = path.upwardNodes.map { OrientedNodeType(it.getTypeLabel(), Direction.UP) } +
                     path.downwardNodes.map { OrientedNodeType(it.getTypeLabel(), Direction.DOWN) }
-            val endNode = path.downwardNodes.last()
+            val endNode = path.downwardNodes.last() as PsiNode
             return PathContext(
-                startNode.getMetadata(RESOLVED_TYPE) as? String ?: NO_TYPE,
+                startNode.resolvedType,
                 startNode.getNormalizedToken(),
                 astNodes.map { it.typeLabel },
                 endNode.getNormalizedToken(),
-                endNode.getMetadata(RESOLVED_TYPE) as? String ?: NO_TYPE
+                endNode.resolvedType
             )
         }
 

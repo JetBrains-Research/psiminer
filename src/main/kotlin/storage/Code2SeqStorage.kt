@@ -4,9 +4,9 @@ import Config
 import Dataset
 import astminer.common.storage.RankedIncrementalIdStorage
 import astminer.common.storage.dumpIdStorageToCsv
-import astminer.parse.antlr.SimpleNode
 import astminer.paths.PathMiner
 import astminer.paths.PathRetrievalSettings
+import psi.PsiNode
 import java.io.File
 import java.io.PrintWriter
 
@@ -41,7 +41,7 @@ class Code2SeqStorage(
 
     private fun nodePathToIds(pathNodes: List<String>): List<Long> = pathNodes.map { nodesMap.record(it) }
 
-    private fun extractPathContexts(root: SimpleNode, holdout: Dataset): List<PathContext> {
+    private fun extractPathContexts(root: PsiNode, holdout: Dataset): List<PathContext> {
         val nPaths = if (holdout == Dataset.Train) config.maxPathsInTrain else config.maxPathsInTest
         return miner.retrievePaths(root).shuffled()
             .map { PathContext.createFromASTPath(it) }
@@ -49,7 +49,7 @@ class Code2SeqStorage(
             .let { it.take(nPaths ?: it.size) }
     }
 
-    override fun store(sample: SimpleNode, label: String, holdout: Dataset) {
+    override fun store(sample: PsiNode, label: String, holdout: Dataset) {
         val pathContexts = extractPathContexts(sample, holdout)
         val stringPathContexts = pathContexts.joinToString(" ") {
             val nodePath = if (config.nodesToNumbers) nodePathToIds(it.nodePath) else it.nodePath

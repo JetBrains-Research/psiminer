@@ -1,7 +1,4 @@
-import filter.AbstractMethodFilter
-import filter.ClassConstructorFilter
-import filter.Filter
-import filter.OverrideMethodFilter
+import filter.*
 import problem.MethodNamePrediction
 import problem.Problem
 import psi.PsiProjectParser
@@ -26,14 +23,15 @@ class Pipeline(private val outputDirectory: File, private val config: Config) {
             ClassConstructorFilter.name -> ClassConstructorFilter()
             AbstractMethodFilter.name -> AbstractMethodFilter()
             OverrideMethodFilter.name -> OverrideMethodFilter()
+            TreeSizeFilter.name -> TreeSizeFilter(config.minTreeSize, config.maxTreeSize)
+            CodeLengthFilter.name -> CodeLengthFilter(config.minCodeLength, config.maxCodeLength)
             else -> throw java.lang.IllegalArgumentException("Unknown filter")
         }
     }
 
     private fun getPsiProjectParser(problem: Problem, filters: List<Filter>): PsiProjectParser =
         PsiProjectParser(problem.granularityLevel, config) { tree, holdout ->
-            if (filters.any { it.checkTree(tree) }) return@PsiProjectParser
-            problem.processTree(tree, holdout)
+            if (filters.all { it.isGoodTree(tree) }) problem.processTree(tree, holdout)
 //            printTree(tree, true)
         }
 

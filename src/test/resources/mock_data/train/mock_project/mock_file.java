@@ -3,6 +3,14 @@ package mock_data.train.mock_project
 import java.util.Map;
 
 public class Main {
+
+    public Main() { int a = 10; }
+
+    public abstract int sumOfTwo(int n1, int n2);
+
+    @Override
+    void show() { System.out.println("Child's show()"); }
+
     public void myStrangeFunction(int x, int y) {
         int mySuperVal = 0;
         String myString = "asd";

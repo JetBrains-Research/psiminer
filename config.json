@@ -1,17 +1,14 @@
 {
   "format": "code2seq",
   "problem": "method name prediction",
-  "resolveTypes": true,
-  "splitNames": true,
-  "resolvedTypesFirst": false,
-  "nodesToNumbers": true,
 
-  "batchSize": 10000,
-  "maxTreeSize": null,
+  "resolveTypes": true,
+
   "maxPathWidth": 4,
   "maxPathLength": 9,
   "maxPathsInTrain": 1000,
   "maxPathsInTest": 200,
+  "nodesToNumbers": true,
 
   "filters": ["constructor", "abstract method", "override method"]
 }

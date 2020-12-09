@@ -14,7 +14,7 @@ private fun getCleanCode(code: String): List<String> {
         .apply { if (startsWith("{\n")) substring(3).trim() }
         .apply { if (endsWith("\n}")) substring(0, length - 2).trim() }
     return cleanCode.split("\n").map { it.trim() }
-        .filter { it != "{" &&  it != "}" && it != "" && !it.startsWith("/") && !it.startsWith("*") }
+        .filter { it != "{" && it != "}" && it != "" && !it.startsWith("/") && !it.startsWith("*") }
 }
 
 class CodeLengthFilter(private val minCodeLength: Int = 0, private val maxCodeLength: Int? = null) : Filter {

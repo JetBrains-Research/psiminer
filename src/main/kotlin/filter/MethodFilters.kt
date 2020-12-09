@@ -3,7 +3,6 @@ package filter
 import com.intellij.psi.PsiMethod
 import psi.PsiNode
 
-
 class ClassConstructorFilter : Filter {
     override fun isGoodTree(root: PsiNode) = root.wrappedNode !is PsiMethod || !root.wrappedNode.isConstructor
     companion object {

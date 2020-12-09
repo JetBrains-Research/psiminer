@@ -2,12 +2,10 @@ package psi
 
 import astminer.common.doTraversePreOrder
 import astminer.common.model.Node
-import astminer.common.preOrder
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.elementType
 
-
-class PsiNode(val wrappedNode: PsiElement, private val parent: PsiNode?, val resolvedType: String): Node {
+class PsiNode(val wrappedNode: PsiElement, private val parent: PsiNode?, val resolvedType: String) : Node {
     private val metadata = HashMap<String, Any>()
     private val children = mutableListOf<PsiNode>()
 
@@ -24,7 +22,7 @@ class PsiNode(val wrappedNode: PsiElement, private val parent: PsiNode?, val res
     override fun isLeaf(): Boolean = children.isEmpty()
 
     override fun removeChildrenOfType(typeLabel: String) {
-        children.removeIf { it.getTypeLabel() == typeLabel}
+        children.removeIf { it.getTypeLabel() == typeLabel }
     }
 
     override fun setMetadata(key: String, value: Any) {

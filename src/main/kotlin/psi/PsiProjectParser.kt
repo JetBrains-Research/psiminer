@@ -3,13 +3,13 @@ package psi
 import Config
 import Dataset
 import GranularityLevel
-import astminer.common.preOrder
 import com.intellij.ide.impl.ProjectUtil
 import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VfsUtilCore
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
+import com.intellij.psi.PsiMethod
 import kotlinx.coroutines.*
 import kotlin.math.ceil
 
@@ -51,17 +51,11 @@ class PsiProjectParser(
                     val fileTree = treeBuilder.buildPsiTree(it)
                     when (granularityLevel) {
                         GranularityLevel.File -> listOf(fileTree)
-                        GranularityLevel.Method -> fileTree.preOrder()
-                            .filter { node -> node.getTypeLabel() == methodNode }
-                            .map { node -> node as PsiNode }
+                        GranularityLevel.Method -> fileTree.preOrder().filter { it.wrappedNode is PsiMethod }
                     }
                 }
             }
         }
         deferred.awaitAll()
-    }
-
-    companion object {
-        private const val methodNode = "METHOD"
     }
 }

@@ -3,7 +3,6 @@ package problem
 import Dataset
 import GranularityLevel
 import astminer.common.getNormalizedToken
-import astminer.common.preOrder
 import astminer.common.setNormalizedToken
 import psi.PsiNode
 import storage.Storage
@@ -17,10 +16,8 @@ class MethodNamePrediction(private val storage: Storage) : Problem {
         val methodName = methodNameNode.getNormalizedToken()
         if (methodName == "") return
         methodNameNode.setNormalizedToken(methodNameToken)
-
-        root.preOrder().filter { it.getNormalizedToken() == methodName }.forEach {
-            it.setNormalizedToken(selfCallToken)
-        }
+        root.preOrder().filter { it.getNormalizedToken() == methodName }
+            .forEach { it.setNormalizedToken(selfCallToken) }
 
         storage.store(root, methodName, holdout)
     }

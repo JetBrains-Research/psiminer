@@ -20,6 +20,6 @@ fun printTree(root: PsiNode, withTypes: Boolean, indent: Int = 0, delimiter: Str
     }
     print("\n")
     root.getChildren().forEach {
-        printTree(it as PsiNode, withTypes, indent + indentStep, delimiter, indentStep)
+        printTree(it, withTypes, indent + indentStep, delimiter, indentStep)
     }
 }

@@ -1,15 +1,17 @@
 package psi
 
+import astminer.common.doTraversePreOrder
 import astminer.common.model.Node
+import astminer.common.preOrder
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.elementType
 
 
-class PsiNode(private val wrappedNode: PsiElement, private val parent: PsiNode?, val resolvedType: String): Node {
+class PsiNode(val wrappedNode: PsiElement, private val parent: PsiNode?, val resolvedType: String): Node {
     private val metadata = HashMap<String, Any>()
     private val children = mutableListOf<PsiNode>()
 
-    override fun getChildren(): List<Node> = children.toList()
+    override fun getChildren(): List<PsiNode> = children.toList()
 
     override fun getMetadata(key: String): Any? = metadata[key]
 
@@ -32,5 +34,11 @@ class PsiNode(private val wrappedNode: PsiElement, private val parent: PsiNode?,
     fun setChildren(newChildren: List<PsiNode>) {
         children.clear()
         children.addAll(newChildren)
+    }
+
+    fun preOrder(): List<PsiNode> {
+        val result = mutableListOf<Node>()
+        doTraversePreOrder(this, result)
+        return result.map { it as PsiNode }
     }
 }

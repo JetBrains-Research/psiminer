@@ -11,5 +11,7 @@
   "maxPathWidth": 4,
   "maxPathLength": 9,
   "maxPathsInTrain": 1000,
-  "maxPathsInTest": 200
+  "maxPathsInTest": 200,
+
+  "filters": ["constructor"]
 }

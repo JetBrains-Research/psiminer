@@ -3,8 +3,8 @@ import kotlinx.serialization.Serializable
 @Serializable data class Config(
     val format: String,
     val problem: String,
-
     val resolveTypes: Boolean,
+
     val splitNames: Boolean = true,
     val resolvedTypesFirst: Boolean = false,
 
@@ -18,4 +18,6 @@ import kotlinx.serialization.Serializable
     val maxPathLength: Int? = 9,
     val maxPathsInTrain: Int? = null,
     val maxPathsInTest: Int? = null,
+
+    val filters: List<String> = listOf()
 )

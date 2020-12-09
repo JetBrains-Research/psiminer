@@ -1,3 +1,5 @@
+import filter.ClassConstructorFilter
+import filter.Filter
 import problem.MethodNamePrediction
 import problem.Problem
 import psi.PsiProjectParser
@@ -17,16 +19,25 @@ class Pipeline(private val outputDirectory: File, private val config: Config) {
         else -> throw IllegalArgumentException("Unknown problem")
     }
 
-    private fun getPsiProjectParser(problem: Problem): PsiProjectParser =
+    private fun getFilters(): List<Filter> = config.filters.map {
+        when (it) {
+            ClassConstructorFilter.name -> ClassConstructorFilter()
+            else -> throw java.lang.IllegalArgumentException("Unknown filter")
+        }
+    }
+
+    private fun getPsiProjectParser(problem: Problem, filters: List<Filter>): PsiProjectParser =
         PsiProjectParser(problem.granularityLevel, config) { tree, holdout ->
+            if (filters.any { it.checkTree(tree) }) return@PsiProjectParser
             problem.processTree(tree, holdout)
-            printTree(tree, true)
+//            printTree(tree, true)
         }
 
     fun extractDataFromDataset(datasetDirectory: File) {
         val storage = getStorage()
         val problem = getProblem(storage)
-        val projectParser = getPsiProjectParser(problem)
+        val filters = getFilters()
+        val projectParser = getPsiProjectParser(problem, filters)
 
         Dataset.values().forEach { holdout ->
             val holdoutFile = datasetDirectory.resolve(holdout.folderName)

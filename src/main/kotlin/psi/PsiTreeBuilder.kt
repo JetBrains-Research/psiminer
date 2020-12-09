@@ -49,8 +49,6 @@ class PsiTreeBuilder(private val config: Config) {
     // Skip nodes for commas, semicolons, different brackets, and etc
     private fun isJavaSymbol(node: PsiElement): Boolean = skipElementTypes.any { node.elementType == it }
 
-    private fun isConstructor(node: PsiElement): Boolean = node is PsiMethod && node.isConstructor
-
     // Sometimes there are empty lists in leaves, e.g. variable declaration without modifiers
     private fun isEmptyList(node: PsiElement): Boolean =
         (node.children.isEmpty() || node.text == "()") && (
@@ -60,7 +58,7 @@ class PsiTreeBuilder(private val config: Config) {
                 )
 
     private fun validatePsiElement(node: PsiElement): Boolean =
-        !isSkipType(node) && !isJavaSymbol(node) && !isConstructor(node) && !isEmptyList(node)
+        !isSkipType(node) && !isJavaSymbol(node) && !isEmptyList(node)
 
     companion object {
         private const val NUMBER_LITERAL = "<NUM>"

@@ -644,4 +644,5 @@ style:
   WildcardImport:
     active: true
     excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/iosTest/**']
-    excludeImports: ['java.util.*', 'kotlinx.android.synthetic.*', 'com.intellij.psi.*', 'kotlinx.coroutines.*']
+    excludeImports: ['java.util.*', 'kotlinx.android.synthetic.*', 'com.intellij.psi.*', 'kotlinx.coroutines.*',
+                     'astminer.common.*']

@@ -24,4 +24,14 @@ public class Main {
         upperBound.x = v1.x;
         upperBound.y = v1.y;
     }
+
+    public void f() {
+        int a = 5;
+        String s = "asd";
+        Boolean t = false;
+        String s1 = null;
+        Char c = 's';
+        Double d = 3.14;
+        f();
+    }
 }

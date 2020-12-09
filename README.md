@@ -1,6 +1,6 @@
 Notes:
 
-1. In `build.gradle` make `localPath` point to your local Idea installation. Execute `buildPlugin` gradle task. 
+1. In `build.gradle` make `localPath` point to your local Idea installation. Execute `buildPlugin` gradle problem. 
 Then open your Idea and "install the plugin from disk" at `build/distributions/test-1.0-SNAPSHOT.zip`. 
 
 1. Download a raw dataset of java projects. For example, `java-med`. It should contain 3 folders: `train`, `test` and `val`.

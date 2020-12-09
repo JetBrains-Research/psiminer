@@ -1,18 +1,17 @@
 package psi
 
-import TreeConstants
-import astminer.common.getNormalizedToken
-import astminer.common.setNormalizedToken
-import astminer.common.splitToSubtokens
+import Config
+import astminer.common.*
 import astminer.parse.antlr.SimpleNode
 import com.intellij.psi.*
 import com.intellij.psi.impl.source.tree.ElementType
 import com.intellij.psi.javadoc.PsiDocComment
+import com.intellij.psi.tree.TokenSet
 import com.intellij.psi.util.elementType
+import psi.PsiTypeResolver.Companion.NO_TYPE
 
-class TreeBuilder {
-
-    private val typeExtractor = PsiTokenTypeExtractor()
+class PsiTreeBuilder(private val config: Config) {
+    private val typeExtractor = PsiTypeResolver(config)
 
     fun convertPSITree(root: PsiElement): SimpleNode {
         val tree = convertPsiElement(root, null)
@@ -21,7 +20,7 @@ class TreeBuilder {
 
     private fun convertPsiElement(node: PsiElement, parent: SimpleNode?): SimpleNode {
         val currentNode = SimpleNode(node.elementType.toString(), parent, null)
-        currentNode.setMetadata(TreeConstants.resolvedType, typeExtractor.extractTokenType(node))
+        currentNode.setMetadata(RESOLVED_TYPE, typeExtractor.resolveType(node))
 
         // Iterate over the children
         val children = node.children.filter {
@@ -35,14 +34,14 @@ class TreeBuilder {
         if (children.isEmpty()) {
             currentNode.setToken(node.text)
             currentNode.setNormalizedToken(
-                if (node is PsiLiteralExpression) {
-                    when (node.type?.presentableText) {
-                        "int" -> TreeConstants.numberLiteralToken
-                        "string" -> TreeConstants.stringLiteralToken
-                        "boolean" -> TreeConstants.booleanLiteralToken
-                        else -> TreeConstants.defaultLiteralToken
-                    }
-                } else splitToSubtokens(node.text).joinToString("|")
+                when {
+                    numberLiterals.contains(node.elementType) -> NUMBER_LITERAL
+                    boolLiterals.contains(node.elementType) -> BOOLEAN_LITERAL
+                    ElementType.TEXT_LITERALS.contains(node.elementType) -> STRING_LITERAL
+                    ElementType.NULL_KEYWORD == node.elementType -> NULL_LITERAL
+                    config.splitNames -> splitToSubtokens(node.text).joinToString("|")
+                    else -> normalizeToken(node.text, DEFAULT_TOKEN)
+                }
             )
         }
 
@@ -50,29 +49,12 @@ class TreeBuilder {
     }
 
     private fun isSkipType(node: PsiElement): Boolean =
-        node is PsiWhiteSpace || node is PsiDocComment || node is PsiImportList ||
-                node is PsiPackageStatement
+        node is PsiWhiteSpace || node is PsiDocComment || node is PsiImportList || node is PsiPackageStatement
 
     // Skip nodes for commas, semicolons, different brackets, and etc
-    private fun isJavaSymbol(node: PsiElement): Boolean {
-        val skipElementTypes = listOf(
-            ElementType.LBRACE,
-            ElementType.RBRACE,
-            ElementType.LBRACKET,
-            ElementType.RBRACKET,
-            ElementType.LPARENTH,
-            ElementType.RPARENTH,
-            ElementType.SEMICOLON,
-            ElementType.COMMA,
-            ElementType.DOT,
-            ElementType.ELLIPSIS,
-            ElementType.AT
-        )
-        return skipElementTypes.any { node.elementType == it }
-    }
+    private fun isJavaSymbol(node: PsiElement): Boolean = skipElementTypes.any { node.elementType == it }
 
-    private fun isConstructor(node: PsiElement): Boolean =
-        node is PsiMethod && node.isConstructor
+    private fun isConstructor(node: PsiElement): Boolean = node is PsiMethod && node.isConstructor
 
     // Sometimes there are empty lists in leaves, e.g. variable declaration without modifiers
     private fun isEmptyList(node: PsiElement): Boolean =
@@ -98,13 +80,37 @@ class TreeBuilder {
                 child.getToken()
             )
             compressedNode.setNormalizedToken(child.getNormalizedToken())
-            val childTokenType = child.getMetadata(TreeConstants.resolvedType)
-            compressedNode.setMetadata(TreeConstants.resolvedType, childTokenType ?: TreeConstants.noType)
+            val childTokenType = child.getMetadata(RESOLVED_TYPE)
+            compressedNode.setMetadata(RESOLVED_TYPE, childTokenType ?: NO_TYPE)
             compressedNode.setChildren(child.getChildren())
             compressedNode
         } else {
             root.setChildren(root.getChildren().map { compressTreeWithTypes(it as SimpleNode) }.toMutableList())
             root
         }
+    }
+
+    companion object {
+        const val RESOLVED_TYPE = "TOKEN_TYPE"
+        private const val NUMBER_LITERAL = "<NUM>"
+        private const val STRING_LITERAL = "<STR>"
+        private const val BOOLEAN_LITERAL = "<BOOL>"
+        private const val NULL_LITERAL = "<NULL>"
+
+        private val boolLiterals = listOf(ElementType.TRUE_KEYWORD, ElementType.FALSE_KEYWORD)
+        private val numberLiterals = TokenSet.orSet(ElementType.INTEGER_LITERALS, ElementType.REAL_LITERALS)
+        private val skipElementTypes = listOf(
+            ElementType.LBRACE,
+            ElementType.RBRACE,
+            ElementType.LBRACKET,
+            ElementType.RBRACKET,
+            ElementType.LPARENTH,
+            ElementType.RPARENTH,
+            ElementType.SEMICOLON,
+            ElementType.COMMA,
+            ElementType.DOT,
+            ElementType.ELLIPSIS,
+            ElementType.AT
+        )
     }
 }

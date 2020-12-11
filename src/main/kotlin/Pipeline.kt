@@ -32,7 +32,7 @@ class Pipeline(private val outputDirectory: File, private val config: Config) {
     private fun getPsiProjectParser(problem: Problem, filters: List<Filter>): PsiProjectParser =
         PsiProjectParser(problem.granularityLevel, config) { tree, holdout ->
             if (filters.all { it.isGoodTree(tree) }) problem.processTree(tree, holdout)
-//            printTree(tree, true)
+            printTree(tree, true)
         }
 
     fun extractDataFromDataset(datasetDirectory: File) {

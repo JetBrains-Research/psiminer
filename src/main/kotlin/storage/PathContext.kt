@@ -22,11 +22,11 @@ class PathContext(
                     path.downwardNodes.map { OrientedNodeType(it.getTypeLabel(), Direction.DOWN) }
             val endNode = path.downwardNodes.last() as PsiNode
             return PathContext(
-                startNode.resolvedType,
+                startNode.resolvedTokenType,
                 startNode.getNormalizedToken(),
                 astNodes.map { it.typeLabel },
                 endNode.getNormalizedToken(),
-                endNode.resolvedType
+                endNode.resolvedTokenType
             )
         }
 

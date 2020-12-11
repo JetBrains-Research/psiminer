@@ -12,11 +12,11 @@ enum class Dataset(val folderName: String) {
     Test("test")
 }
 
-fun printTree(root: PsiNode, withTypes: Boolean, indent: Int = 0, delimiter: String = "--", indentStep: Int = 2) {
+fun printTree(root: PsiNode, withTypes: Boolean, indent: Int = 0, delimiter: String = "..", indentStep: Int = 2) {
     print(delimiter.repeat(indent))
-    print("${root.getTypeLabel()}: ${root.getNormalizedToken()}")
+    print("${root.getTypeLabel()} -- ${root.getNormalizedToken()}")
     if (withTypes) {
-        print(" / ${root.resolvedType}")
+        print(" / ${root.resolvedTokenType}")
     }
     print("\n")
     root.getChildren().forEach {

@@ -13,6 +13,8 @@ import kotlinx.serialization.Serializable
     val resolveTypes: Boolean = true,
     val splitNames: Boolean = true,
     val batchSize: Int = 10_000,
+    val storeKeyword: Boolean = false,
+    val compressOperators: Boolean = true,
 
     /*
     Code2Seq storage parameters

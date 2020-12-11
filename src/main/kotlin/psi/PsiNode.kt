@@ -11,7 +11,7 @@ class PsiNode(
     private val parent: PsiNode?,
     val resolvedTokenType: String,
     private val presentableNodeType: String? = null
-    ) : Node {
+) : Node {
 
     private val metadata = HashMap<String, Any>()
     private val children = mutableListOf<PsiNode>()

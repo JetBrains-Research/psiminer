@@ -62,8 +62,6 @@ class PsiTreeBuilder(private val config: Config) {
     private fun isSkipOperator(node: PsiElement): Boolean =
         config.compressOperators && ElementType.OPERATION_BIT_SET.contains(node.elementType)
 
-
-
     private fun validatePsiElement(node: PsiElement): Boolean =
         !isSkipType(node) && !isJavaPrintableSymbol(node) && !isEmptyList(node) &&
                 !isSkipKeyword(node) && !isSkipOperator(node)
@@ -71,10 +69,10 @@ class PsiTreeBuilder(private val config: Config) {
     private fun getPrintableType(node: PsiElement): String? {
         if (!config.compressOperators) return null
         return when (node) {
-            is PsiBinaryExpression -> "${node.elementType.toString()}:${node.operationSign.elementType.toString()}"
-            is PsiPrefixExpression -> "${node.elementType.toString()}:${node.operationSign.elementType.toString()}"
-            is PsiPostfixExpression -> "${node.elementType.toString()}:${node.operationSign.elementType.toString()}"
-            is PsiAssignmentExpression -> "${node.elementType.toString()}:${node.operationSign.elementType.toString()}"
+            is PsiBinaryExpression -> "${node.elementType}:${node.operationSign.elementType}"
+            is PsiPrefixExpression -> "${node.elementType}:${node.operationSign.elementType}"
+            is PsiPostfixExpression -> "${node.elementType}:${node.operationSign.elementType}"
+            is PsiAssignmentExpression -> "${node.elementType}:${node.operationSign.elementType}"
             else -> null
         }
     }
@@ -84,7 +82,9 @@ class PsiTreeBuilder(private val config: Config) {
         return if (compressedChildren.size == 1) {
             val child = compressedChildren.first()
             val compressedNode = PsiNode(
-                node.wrappedNode, node.getParent(), child.resolvedTokenType,
+                node.wrappedNode,
+                node.getParent(),
+                child.resolvedTokenType,
                 "${node.getTypeLabel()}|${child.getTypeLabel()}"
             )
             compressedNode.setNormalizedToken(child.getNormalizedToken())
@@ -95,7 +95,6 @@ class PsiTreeBuilder(private val config: Config) {
             node
         }
     }
-
 
     companion object {
         private const val NUMBER_LITERAL = "<NUM>"

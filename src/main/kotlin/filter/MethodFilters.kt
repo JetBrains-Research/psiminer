@@ -25,3 +25,11 @@ class OverrideMethodFilter : Filter {
         const val name = "override method"
     }
 }
+
+class EmptyMethodFilter : Filter {
+    override fun isGoodTree(root: PsiNode): Boolean =
+        root.wrappedNode !is PsiMethod || !(root.wrappedNode.body?.isEmpty ?: false)
+    companion object {
+        const val name = "empty method"
+    }
+}

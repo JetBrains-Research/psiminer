@@ -10,5 +10,5 @@
   "maxPathsInTest": 200,
   "nodesToNumbers": true,
 
-  "filters": ["constructor", "abstract method", "override method"]
+  "filters": ["constructor", "abstract method", "override method", "empty method"]
 }

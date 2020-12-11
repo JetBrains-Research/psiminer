@@ -11,6 +11,8 @@ public class Main {
     @Override
     void show() { System.out.println("Child's show()"); }
 
+    void empty() {}
+
     public void myStrangeFunction(int x, int y) {
         int mySuperVal = 0;
         String myString = "asd";

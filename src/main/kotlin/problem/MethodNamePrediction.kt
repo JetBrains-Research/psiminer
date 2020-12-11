@@ -2,7 +2,6 @@ package problem
 
 import Dataset
 import GranularityLevel
-import astminer.common.getNormalizedToken
 import astminer.common.setNormalizedToken
 import psi.PsiNode
 import storage.Storage

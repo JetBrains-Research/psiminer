@@ -25,6 +25,7 @@ class CodeLengthFilter(private val minCodeLength: Int = 0, private val maxCodeLe
         )
         return (minCodeLength <= cleanCode.size) && (maxCodeLength == null || cleanCode.size <= maxCodeLength)
     }
+
     companion object {
         const val name = "code length"
     }

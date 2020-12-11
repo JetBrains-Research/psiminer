@@ -51,6 +51,7 @@ class Code2SeqStorage(
 
     override fun store(sample: PsiNode, label: String, holdout: Dataset) {
         val pathContexts = extractPathContexts(sample, holdout)
+        if (pathContexts.isEmpty()) return
         val stringPathContexts = pathContexts.joinToString(" ") {
             val nodePath = if (config.nodesToNumbers) nodePathToIds(it.nodePath) else it.nodePath
             val basePathContext = "${it.startToken},${nodePath.joinToString("|")},${it.endToken}"

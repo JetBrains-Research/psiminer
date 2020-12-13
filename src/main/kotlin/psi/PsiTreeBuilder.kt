@@ -4,15 +4,18 @@ import Config
 import astminer.common.*
 import com.intellij.psi.*
 import com.intellij.psi.impl.source.tree.ElementType
-import com.intellij.psi.javadoc.PsiDocComment
 import com.intellij.psi.tree.TokenSet
 import com.intellij.psi.util.elementType
-import psi.PsiNode.Companion.NO_TOKEN
+import psi.PsiNode.Companion.EMPTY_TOKEN
 
 class PsiTreeBuilder(private val config: Config) {
     private val typeResolver = PsiTypeResolver(config)
 
-    fun buildPsiTree(root: PsiElement): PsiNode = compressSingleChildBranches(convertPsiElement(root, null))
+    fun buildPsiTree(root: PsiElement): PsiNode {
+        val tree = convertPsiElement(root, null)
+        return if (config.compressTree) compressSingleChildBranches(tree)
+        else tree
+    }
 
     private fun convertPsiElement(node: PsiElement, parent: PsiNode?): PsiNode {
         val resolvedType = typeResolver.resolveType(node)
@@ -29,12 +32,15 @@ class PsiTreeBuilder(private val config: Config) {
         if (children.isEmpty()) {
             currentNode.setNormalizedToken(
                 when {
-                    numberLiterals.contains(node.elementType) -> NUMBER_LITERAL
-                    boolLiterals.contains(node.elementType) -> BOOLEAN_LITERAL
+                    numberLiterals.contains(node.elementType) && !numberWhiteList.contains(node.text) -> NUMBER_LITERAL
                     ElementType.TEXT_LITERALS.contains(node.elementType) -> STRING_LITERAL
-                    ElementType.NULL_KEYWORD == node.elementType -> NULL_LITERAL
-                    config.splitNames -> splitToSubtokens(node.text).joinToString("|")
-                    else -> normalizeToken(node.text, NO_TOKEN)
+                    config.splitNames -> {
+                        val splitName = splitToSubtokens(node.text).joinToString("|")
+                        // https://github.com/tech-srl/code2seq/blob/master/JavaExtractor/JPredict/src/main/java/JavaExtractor/FeaturesEntities/Property.java#L180
+                        if (splitName.isEmpty()) node.text
+                        else splitName
+                    }
+                    else -> normalizeToken(node.text, EMPTY_TOKEN)
                 }
             )
         }
@@ -43,8 +49,7 @@ class PsiTreeBuilder(private val config: Config) {
     }
 
     private fun isSkipType(node: PsiElement): Boolean =
-        node is PsiWhiteSpace || node is PsiDocComment || node is PsiImportList || node is PsiPackageStatement ||
-                node is PsiTypeElement
+        node is PsiWhiteSpace || node is PsiImportList || node is PsiPackageStatement
 
     // Skip nodes for commas, semicolons, different brackets, and etc
     private fun isJavaPrintableSymbol(node: PsiElement): Boolean = skipElementTypes.any { node.elementType == it }
@@ -62,9 +67,11 @@ class PsiTreeBuilder(private val config: Config) {
     private fun isSkipOperator(node: PsiElement): Boolean =
         config.compressOperators && ElementType.OPERATION_BIT_SET.contains(node.elementType)
 
+    private fun isSkipComment(node: PsiElement): Boolean = config.removeComments && node is PsiComment
+
     private fun validatePsiElement(node: PsiElement): Boolean =
         !isSkipType(node) && !isJavaPrintableSymbol(node) && !isEmptyList(node) &&
-                !isSkipKeyword(node) && !isSkipOperator(node)
+                !isSkipKeyword(node) && !isSkipOperator(node) && !isSkipComment(node)
 
     private fun getPrintableType(node: PsiElement): String? {
         if (!config.compressOperators) return null
@@ -99,11 +106,9 @@ class PsiTreeBuilder(private val config: Config) {
     companion object {
         private const val NUMBER_LITERAL = "<NUM>"
         private const val STRING_LITERAL = "<STR>"
-        private const val BOOLEAN_LITERAL = "<BOOL>"
-        private const val NULL_LITERAL = "<NULL>"
 
-        private val boolLiterals = listOf(ElementType.TRUE_KEYWORD, ElementType.FALSE_KEYWORD)
         private val numberLiterals = TokenSet.orSet(ElementType.INTEGER_LITERALS, ElementType.REAL_LITERALS)
+        private val numberWhiteList = listOf("0", "1", "32", "64")
         private val skipElementTypes = listOf(
             ElementType.LBRACE,
             ElementType.RBRACE,

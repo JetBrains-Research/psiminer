@@ -8,15 +8,20 @@ public class Main {
 
     public abstract int sumOfTwo(int n1, int n2);
 
-    @Override
-    void show() { System.out.println("Child's show()"); }
-
-    void empty() {}
-
+    /**
+     * This is JavaDoc
+     * @param x
+     * @param y
+     */
     public void myStrangeFunction(int x, int y) {
-        int mySuperVal = 0;
+        // test comment
+        /*
+        another comment
+         */
+        int mySuperVal = 0 + 123;
         String myString = "asd";
         boolean a = !mySuperVal;
+        boolean b = true;
         Map<String, Integer> hashMap = new HashMap();
         for (int i = 0; i <= x; ++i) {
             mySuperVal += y;

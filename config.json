@@ -3,12 +3,13 @@
   "problem": "method name prediction",
 
   "resolveTypes": true,
+  "compressOperators": true,
 
-  "maxPathWidth": 4,
+  "maxPathWidth": 2,
   "maxPathLength": 9,
   "maxPathsInTrain": 1000,
   "maxPathsInTest": 200,
   "nodesToNumbers": true,
 
-  "filters": ["constructor", "abstract method", "override method", "empty method"]
+  "filters": []
 }

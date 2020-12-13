@@ -15,6 +15,8 @@ import kotlinx.serialization.Serializable
     val batchSize: Int = 10_000,
     val storeKeyword: Boolean = false,
     val compressOperators: Boolean = true,
+    val removeComments: Boolean = true,
+    val compressTree: Boolean = false,
 
     /*
     Code2Seq storage parameters

@@ -24,7 +24,11 @@ class PsiNode(
 
     override fun getToken(): String = wrappedNode.text
 
-    fun getNormalizedToken(): String = metadata[NORMALIZED_TOKEN_KEY] as? String ?: NO_TOKEN
+    fun getNormalizedToken(): String {
+        val normalizedToken = metadata[NORMALIZED_TOKEN_KEY] as? String
+        return if (normalizedToken == null || normalizedToken == "{}" || normalizedToken == "{|}") EMPTY_TOKEN
+        else normalizedToken
+    }
 
     override fun getTypeLabel(): String =
         presentableNodeType ?: wrappedNode.elementType.toString()
@@ -51,6 +55,6 @@ class PsiNode(
     }
 
     companion object {
-        const val NO_TOKEN = "<NT>"
+        const val EMPTY_TOKEN = "<EMPTY>"
     }
 }

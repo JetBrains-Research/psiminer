@@ -32,12 +32,15 @@ class PsiTreeBuilder(private val config: Config) {
         if (children.isEmpty()) {
             currentNode.setNormalizedToken(
                 when {
-                    numberLiterals.contains(node.elementType) && !numberWhiteList.contains(node.text) -> NUMBER_LITERAL
+                    numberLiterals.contains(node.elementType) -> {
+                        if (numberWhiteList.contains(node.text)) node.text
+                        else NUMBER_LITERAL
+                    }
                     ElementType.TEXT_LITERALS.contains(node.elementType) -> STRING_LITERAL
                     config.splitNames -> {
                         val splitName = splitToSubtokens(node.text).joinToString("|")
                         // https://github.com/tech-srl/code2seq/blob/master/JavaExtractor/JPredict/src/main/java/JavaExtractor/FeaturesEntities/Property.java#L180
-                        if (splitName.isEmpty()) node.text
+                        if (splitName.isEmpty()) normalizeToken(node.text, EMPTY_TOKEN)
                         else splitName
                     }
                     else -> normalizeToken(node.text, EMPTY_TOKEN)

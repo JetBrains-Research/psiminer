@@ -8,7 +8,7 @@
   "removeComments": false,
   "compressTree": true,
 
-  "maxPathWidth": 2,
+  "maxPathWidth": 4,
   "maxPathLength": 9,
   "maxPathsInTrain": 1000,
   "maxPathsInTest": 200,

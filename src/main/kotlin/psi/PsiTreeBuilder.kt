@@ -4,6 +4,7 @@ import Config
 import astminer.common.*
 import com.intellij.psi.*
 import com.intellij.psi.impl.source.tree.ElementType
+import com.intellij.psi.javadoc.PsiDocComment
 import com.intellij.psi.tree.TokenSet
 import com.intellij.psi.util.elementType
 import psi.PsiNode.Companion.EMPTY_TOKEN
@@ -52,7 +53,7 @@ class PsiTreeBuilder(private val config: Config) {
     }
 
     private fun isSkipType(node: PsiElement): Boolean =
-        node is PsiWhiteSpace || node is PsiImportList || node is PsiPackageStatement
+        node is PsiWhiteSpace || node is PsiImportList || node is PsiPackageStatement || node is PsiDocComment
 
     // Skip nodes for commas, semicolons, different brackets, and etc
     private fun isJavaPrintableSymbol(node: PsiElement): Boolean = skipElementTypes.any { node.elementType == it }

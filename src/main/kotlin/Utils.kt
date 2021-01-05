@@ -1,8 +1,8 @@
-import astminer.common.getNormalizedToken
 import psi.PsiNode
 
 enum class GranularityLevel {
     File,
+    Class,
     Method
 }
 

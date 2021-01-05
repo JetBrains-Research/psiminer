@@ -3,7 +3,10 @@
   "problem": "method name prediction",
 
   "resolveTypes": true,
-  "compressOperators": true,
+  "compressOperators": false,
+  "storeKeyword": true,
+  "removeComments": false,
+  "compressTree": true,
 
   "maxPathWidth": 2,
   "maxPathLength": 9,
@@ -11,5 +14,5 @@
   "maxPathsInTest": 200,
   "nodesToNumbers": true,
 
-  "filters": []
+  "filters": ["constructor"]
 }

@@ -13,8 +13,8 @@ class Pipeline(private val outputDirectory: File, private val config: Config) {
         else -> throw IllegalArgumentException("Unknown storage")
     }
 
-    private fun getProblem(storage: Storage): Problem = when (config.problem) {
-        MethodNamePrediction.name -> MethodNamePrediction(storage)
+    private fun getProblem(): Problem = when (config.problem) {
+        MethodNamePrediction.name -> MethodNamePrediction()
         else -> throw IllegalArgumentException("Unknown problem")
     }
 
@@ -30,17 +30,14 @@ class Pipeline(private val outputDirectory: File, private val config: Config) {
         }
     }
 
-    private fun getPsiProjectParser(problem: Problem, filters: List<Filter>): PsiProjectParser =
-        PsiProjectParser(problem.granularityLevel, config) { tree, holdout ->
-            if (filters.all { it.isGoodTree(tree) }) problem.processTree(tree, holdout)
-//            printTree(tree, true)
-        }
-
     fun extractDataFromDataset(datasetDirectory: File) {
         val storage = getStorage()
-        val problem = getProblem(storage)
+        val problem = getProblem()
         val filters = getFilters()
-        val projectParser = getPsiProjectParser(problem, filters)
+        val projectParser = PsiProjectParser(
+            problem.granularityLevel, config, filters,
+            problem::processTree, storage::store
+        )
 
         Dataset.values().forEach { holdout ->
             val holdoutFile = datasetDirectory.resolve(holdout.folderName)

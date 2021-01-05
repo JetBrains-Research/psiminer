@@ -1,24 +1,21 @@
 package problem
 
-import Dataset
 import GranularityLevel
 import astminer.common.setNormalizedToken
 import psi.PsiNode
-import storage.Storage
 
-class MethodNamePrediction(private val storage: Storage) : Problem {
+class MethodNamePrediction : Problem {
 
     override val granularityLevel = GranularityLevel.Method
 
-    override fun processTree(root: PsiNode, holdout: Dataset) {
-        val methodNameNode = root.getChildOfType(methodNameNodeType) as? PsiNode ?: return
+    override fun processTree(root: PsiNode): Sample? {
+        val methodNameNode = root.getChildOfType(methodNameNodeType) as? PsiNode ?: return null
         val methodName = methodNameNode.getNormalizedToken()
-        if (methodName == "") return
+        if (methodName == "") return null
         methodNameNode.setNormalizedToken(methodNameToken)
         root.preOrder().filter { it.getNormalizedToken() == methodName }
             .forEach { it.setNormalizedToken(selfCallToken) }
-
-        storage.store(root, methodName, holdout)
+        return Sample(root, methodName)
     }
 
     companion object {

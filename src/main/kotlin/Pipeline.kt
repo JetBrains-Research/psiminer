@@ -35,8 +35,11 @@ class Pipeline(private val outputDirectory: File, private val config: Config) {
         val problem = getProblem()
         val filters = getFilters()
         val projectParser = PsiProjectParser(
-            problem.granularityLevel, config, filters,
-            problem::processTree, storage::store
+            problem.granularityLevel,
+            config,
+            filters,
+            problem::processTree,
+            storage::store
         )
 
         Dataset.values().forEach { holdout ->

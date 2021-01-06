@@ -4,7 +4,7 @@
 
   "resolveTypes": true,
   "compressOperators": false,
-  "storeKeyword": true,
+  "removeKeyword": false,
   "removeComments": false,
   "compressTree": true,
 

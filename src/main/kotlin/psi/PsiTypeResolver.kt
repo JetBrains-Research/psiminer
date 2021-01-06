@@ -12,12 +12,12 @@ class PsiTypeResolver(private val config: Config) {
     fun resolveType(node: PsiElement): String =
         when {
             ElementType.OPERATION_BIT_SET.contains(node.elementType) -> OPERATOR
-            ElementType.KEYWORD_BIT_SET.contains(node.elementType) -> KEYWORD
-            node is PsiLiteralExpression -> node.type?.presentableText ?: NO_TYPE
+            node is PsiKeyword -> KEYWORD
+            node.parent is PsiLiteralExpression -> extractFromLiteral(node)
             node is PsiIdentifier -> {
                 val resolvedType = extractFromIdentifier(node)
                 when {
-                    resolvedType == NO_TYPE -> resolvedType
+                    resolvedType == NO_TYPE || resolvedType == KEYWORD -> resolvedType
                     config.splitNames -> splitTypeToSubtypes(resolvedType).joinToString("|")
                     else -> normalizeToken(resolvedType, NO_TYPE)
                 }
@@ -25,12 +25,16 @@ class PsiTypeResolver(private val config: Config) {
             else -> NO_TYPE
         }
 
+    private fun extractFromLiteral(node: PsiElement) =
+        node.parentOfType<PsiLiteralExpression>()?.type?.presentableText ?: NO_TYPE
+
     private fun extractFromIdentifier(node: PsiIdentifier): String {
         return when (node.parent) {
             is PsiExpression -> extractFromExpression(node)
             is PsiVariable -> extractFromVariable(node)
             is PsiTypeElement -> extractFromTypeElement(node)
             is PsiMethod -> extractFromMethod(node)
+            is PsiJavaCodeReferenceElement -> KEYWORD
             else -> NO_TYPE
         }
     }

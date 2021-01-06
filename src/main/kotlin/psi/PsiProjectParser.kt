@@ -13,6 +13,7 @@ import com.intellij.psi.PsiManager
 import com.intellij.psi.PsiMethod
 import filter.Filter
 import kotlinx.coroutines.*
+import printTree
 import problem.Sample
 import kotlin.math.ceil
 
@@ -44,7 +45,10 @@ class PsiProjectParser(
         projectPsiFiles.chunked(config.batchSize).forEachIndexed { batch_idx, batch ->
             println("Process batch ${batch_idx + 1}/$nBatches")
             runBlocking {
-                convertPsiFilesToTrees(batch).flatten().forEach { storeCallback(it.root, it.label, holdout) }
+                convertPsiFilesToTrees(batch).flatten().forEach {
+//                    printTree(it.root, true)
+                    storeCallback(it.root, it.label, holdout)
+                }
             }
         }
     }
@@ -56,12 +60,21 @@ class PsiProjectParser(
                     val fileTree = treeBuilder.buildPsiTree(it)
                     when (granularityLevel) {
                         GranularityLevel.File -> listOf(fileTree)
-                        GranularityLevel.Class -> fileTree.preOrder().filter { it.wrappedNode is PsiClass }
-                        GranularityLevel.Method -> fileTree.preOrder().filter { it.wrappedNode is PsiMethod }
+                        GranularityLevel.Class -> fileTree.preOrder().filter {
+                            it.getTypeLabel().split("|").last() == CLASS_NODE
+                        }
+                        GranularityLevel.Method -> fileTree.preOrder().filter {
+                            it.getTypeLabel().split("|").last() == METHOD_NODE
+                        }
                     }.filter { root -> filters.all { it.isGoodTree(root) } }.mapNotNull { problemCallback(it) }
                 }
             }
         }
         deferred.awaitAll()
+    }
+
+    companion object {
+        private const val CLASS_NODE = "CLASS"
+        private const val METHOD_NODE = "METHOD"
     }
 }

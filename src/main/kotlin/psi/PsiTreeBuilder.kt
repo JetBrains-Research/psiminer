@@ -31,22 +31,16 @@ class PsiTreeBuilder(private val config: Config) {
 
         // Set token if leaf
         if (children.isEmpty()) {
-            currentNode.setNormalizedToken(
-                when {
-                    numberLiterals.contains(node.elementType) -> {
-                        if (numberWhiteList.contains(node.text)) node.text
-                        else NUMBER_LITERAL
-                    }
-                    ElementType.TEXT_LITERALS.contains(node.elementType) -> STRING_LITERAL
-                    config.splitNames -> {
-                        val splitName = splitToSubtokens(node.text).joinToString("|")
-                        // https://github.com/tech-srl/code2seq/blob/master/JavaExtractor/JPredict/src/main/java/JavaExtractor/FeaturesEntities/Property.java#L180
-                        if (splitName.isEmpty()) normalizeToken(node.text, EMPTY_TOKEN)
-                        else splitName
-                    }
-                    else -> normalizeToken(node.text, EMPTY_TOKEN)
+            var normalizedName = normalizeToken(node.text, EMPTY_TOKEN)
+            var splitName = splitToSubtokens(node.text).joinToString("|")
+            if (splitName.isEmpty()) {
+                splitName = normalizedName
+                if (numberLiterals.contains(node.elementType) && !numberWhiteList.contains(splitName)) {
+                    splitName = NUMBER_LITERAL
+                    normalizedName = NUMBER_LITERAL
                 }
-            )
+            }
+            currentNode.setNormalizedToken(if (config.splitNames) splitName else normalizedName)
         }
 
         return currentNode
@@ -66,7 +60,7 @@ class PsiTreeBuilder(private val config: Config) {
                         node is PsiExpressionListStatement || node is PsiAnnotationParameterList
                 )
 
-    private fun isSkipKeyword(node: PsiElement): Boolean = !config.storeKeyword && node is PsiKeyword
+    private fun isSkipKeyword(node: PsiElement): Boolean = config.removeKeyword && node is PsiKeyword
 
     private fun isSkipOperator(node: PsiElement): Boolean =
         config.compressOperators && ElementType.OPERATION_BIT_SET.contains(node.elementType)
@@ -109,7 +103,6 @@ class PsiTreeBuilder(private val config: Config) {
 
     companion object {
         private const val NUMBER_LITERAL = "<NUM>"
-        private const val STRING_LITERAL = "<STR>"
 
         private val numberLiterals = TokenSet.orSet(ElementType.INTEGER_LITERALS, ElementType.REAL_LITERALS)
         private val numberWhiteList = listOf("0", "1", "32", "64")

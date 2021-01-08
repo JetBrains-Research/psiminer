@@ -49,22 +49,26 @@ class PsiProjectParser(
     }
 
     private suspend fun convertPsiFilesToTreesAsync(psiFiles: List<PsiFile>, holdout: Dataset) = coroutineScope {
-        launch(Dispatchers.Default) {
-            psiFiles
-                .map { ReadAction.compute<PsiNode, Throwable> { treeBuilder.buildPsiTree(it) } }
-                .flatMap { filePsiNode ->
-                    when (granularityLevel) {
+        psiFiles.map {
+            launch(Dispatchers.Default) {
+                val samples = ReadAction.compute<List<Sample>, Throwable> {
+                    val filePsiNode = treeBuilder.buildPsiTree(it)
+                    val granularityPsiNodes = when (granularityLevel) {
                         GranularityLevel.File -> listOf(filePsiNode)
                         GranularityLevel.Class -> filePsiNode.preOrder().filter { it.wrappedNode is PsiClass }
                         GranularityLevel.Method -> filePsiNode.preOrder().filter { it.wrappedNode is PsiMethod }
                     }
+                    granularityPsiNodes
+                        .filter { root -> filters.all { it.isGoodTree(root) } }
+                        .mapNotNull { problemCallback(it) }
                 }
-                .filter { root -> filters.all { it.isGoodTree(root) } }
-                .mapNotNull { problemCallback(it) }
-                .forEach {
-                    storeCallback(it.root, it.label, holdout)
-                    if (config.printTrees) printTree(it.root, true)
+                samples.forEach {
+                    withContext(Dispatchers.IO) {
+                        storeCallback(it.root, it.label, holdout)
+                        if (config.printTrees) printTree(it.root, true)
+                    }
                 }
+            }
         }
     }
 }

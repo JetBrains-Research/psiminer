@@ -14,7 +14,7 @@
   "maxPathsInTest": 200,
   "nodesToNumbers": true,
 
-  "filters": ["constructor", "abstract", "override"],
+  "filters": ["constructor", "abstract"],
 
-  "printTrees": true
+  "printTrees": false
 }

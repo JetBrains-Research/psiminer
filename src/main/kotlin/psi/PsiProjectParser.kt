@@ -28,7 +28,6 @@ class PsiProjectParser(
 
     fun extractPsiFromProject(projectPath: String, holdout: Dataset) {
         val project = ProjectUtil.openOrImport(projectPath, null, true) ?: return
-        println("Start parsing $holdout.${project.name} project")
         val projectPsiFiles = mutableListOf<PsiFile>()
         ProjectRootManager.getInstance(project).contentRoots.mapNotNull { root ->
             VfsUtilCore.iterateChildrenRecursively(root, null) { virtualFile ->
@@ -43,7 +42,7 @@ class PsiProjectParser(
 
         val nBatches = ceil(projectPsiFiles.size.toDouble() / config.batchSize).toInt()
         projectPsiFiles.chunked(config.batchSize).forEachIndexed { batch_idx, batch ->
-            println("Process batch ${batch_idx + 1}/$nBatches")
+            println("Processing batch ${batch_idx + 1}/$nBatches")
             runBlocking { convertPsiFilesToTreesAsync(batch, holdout) }
         }
     }

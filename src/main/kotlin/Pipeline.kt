@@ -43,8 +43,12 @@ class Pipeline(private val outputDirectory: File, private val config: Config) {
         )
 
         Dataset.values().forEach { holdout ->
-            val holdoutFile = datasetDirectory.resolve(holdout.folderName)
-            holdoutFile.walk().maxDepth(1).filter { it.name != holdout.folderName }.forEach { holdoutProject ->
+            val holdoutFolder = datasetDirectory.resolve(holdout.folderName)
+            val holdoutProjects = holdoutFolder
+                .walk().maxDepth(1).toList()
+                .filter { it.name != holdout.folderName && !it.isFile }
+            holdoutProjects.forEachIndexed { index, holdoutProject ->
+                println("Start parsing $holdout.${holdoutProject.name} project (${index + 1}/${holdoutProjects.size})")
                 projectParser.extractPsiFromProject(holdoutProject.path, holdout)
             }
         }

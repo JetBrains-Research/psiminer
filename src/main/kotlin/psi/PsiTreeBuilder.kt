@@ -1,10 +1,11 @@
 package psi
 
 import Config
-import astminer.common.*
+import astminer.common.normalizeToken
+import astminer.common.setNormalizedToken
+import astminer.common.splitToSubtokens
 import com.intellij.psi.*
 import com.intellij.psi.impl.source.tree.ElementType
-import com.intellij.psi.javadoc.PsiDocComment
 import com.intellij.psi.tree.TokenSet
 import com.intellij.psi.util.elementType
 import psi.PsiNode.Companion.EMPTY_TOKEN

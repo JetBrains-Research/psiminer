@@ -37,7 +37,6 @@ import kotlinx.serialization.Serializable
     val minCodeLength: Int = 0,
     val maxCodeLength: Int? = null,
 
-
     /*
     Debugging
      */

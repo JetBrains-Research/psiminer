@@ -35,5 +35,11 @@ import kotlinx.serialization.Serializable
     val minTreeSize: Int = 0,
     val maxTreeSize: Int? = null,
     val minCodeLength: Int = 0,
-    val maxCodeLength: Int? = null
+    val maxCodeLength: Int? = null,
+
+
+    /*
+    Debugging
+     */
+    val printTrees: Boolean = false
 )

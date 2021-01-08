@@ -31,23 +31,22 @@ class PsiTreeBuilder(private val config: Config) {
 
         // Set token if leaf
         if (children.isEmpty()) {
-            var normalizedName = normalizeToken(node.text, EMPTY_TOKEN)
-            var splitName = splitToSubtokens(node.text).joinToString("|")
-            if (splitName.isEmpty()) {
-                splitName = normalizedName
-                if (numberLiterals.contains(node.elementType) && !numberWhiteList.contains(splitName)) {
-                    splitName = NUMBER_LITERAL
-                    normalizedName = NUMBER_LITERAL
+            currentNode.setNormalizedToken(
+                if (numberLiterals.contains(node.elementType)) {
+                    if (numberWhiteList.contains(node.text)) node.text else NUMBER_LITERAL
+                } else {
+                    val normalizedToken = normalizeToken(node.text, EMPTY_TOKEN)
+                    val splitToken = splitToSubtokens(node.text).joinToString("|")
+                    if (config.splitNames && splitToken.isNotEmpty()) splitToken else normalizedToken
                 }
-            }
-            currentNode.setNormalizedToken(if (config.splitNames) splitName else normalizedName)
+            )
         }
 
         return currentNode
     }
 
     private fun isSkipType(node: PsiElement): Boolean =
-        node is PsiWhiteSpace || node is PsiImportList || node is PsiPackageStatement || node is PsiDocComment
+        node is PsiWhiteSpace || node is PsiImportList || node is PsiPackageStatement
 
     // Skip nodes for commas, semicolons, different brackets, and etc
     private fun isJavaPrintableSymbol(node: PsiElement): Boolean = skipElementTypes.any { node.elementType == it }
@@ -87,7 +86,7 @@ class PsiTreeBuilder(private val config: Config) {
         return if (compressedChildren.size == 1) {
             val child = compressedChildren.first()
             val compressedNode = PsiNode(
-                node.wrappedNode,
+                child.wrappedNode,
                 node.getParent(),
                 child.resolvedTokenType,
                 "${node.getTypeLabel()}|${child.getTypeLabel()}"

@@ -10,12 +10,12 @@ class Pipeline(private val outputDirectory: File, private val config: Config) {
 
     private fun getStorage(): Storage = when (config.format) {
         Code2SeqStorage.name -> Code2SeqStorage(outputDirectory, config)
-        else -> throw IllegalArgumentException("Unknown storage")
+        else -> throw IllegalArgumentException("Unknown storage ${config.format}")
     }
 
     private fun getProblem(): Problem = when (config.problem) {
         MethodNamePrediction.name -> MethodNamePrediction()
-        else -> throw IllegalArgumentException("Unknown problem")
+        else -> throw IllegalArgumentException("Unknown problem ${config.problem}")
     }
 
     private fun getFilters(): List<Filter> = config.filters.map {
@@ -26,7 +26,7 @@ class Pipeline(private val outputDirectory: File, private val config: Config) {
             TreeSizeFilter.name -> TreeSizeFilter(config.minTreeSize, config.maxTreeSize)
             CodeLengthFilter.name -> CodeLengthFilter(config.minCodeLength, config.maxCodeLength)
             EmptyMethodFilter.name -> EmptyMethodFilter()
-            else -> throw java.lang.IllegalArgumentException("Unknown filter")
+            else -> throw java.lang.IllegalArgumentException("Unknown filter $it")
         }
     }
 
@@ -35,8 +35,8 @@ class Pipeline(private val outputDirectory: File, private val config: Config) {
         val problem = getProblem()
         val filters = getFilters()
         val projectParser = PsiProjectParser(
-            problem.granularityLevel,
             config,
+            problem.granularityLevel,
             filters,
             problem::processTree,
             storage::store

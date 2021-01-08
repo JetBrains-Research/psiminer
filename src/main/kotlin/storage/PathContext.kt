@@ -1,6 +1,5 @@
 package storage
 
-import astminer.common.getNormalizedToken
 import astminer.common.model.ASTPath
 import astminer.common.model.Direction
 import astminer.common.model.OrientedNodeType

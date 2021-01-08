@@ -18,11 +18,11 @@ import problem.Sample
 import kotlin.math.ceil
 
 class PsiProjectParser(
-    private val granularityLevel: GranularityLevel,
     private val config: Config,
+    private val granularityLevel: GranularityLevel,
     private val filters: List<Filter>,
     private val problemCallback: (PsiNode) -> Sample?,
-    private val storeCallback: (PsiNode, String, Dataset) -> Unit
+    private val storeCallback: (PsiNode, String, Dataset) -> Unit,
 ) {
     private val treeBuilder = PsiTreeBuilder(config)
 
@@ -44,37 +44,27 @@ class PsiProjectParser(
         val nBatches = ceil(projectPsiFiles.size.toDouble() / config.batchSize).toInt()
         projectPsiFiles.chunked(config.batchSize).forEachIndexed { batch_idx, batch ->
             println("Process batch ${batch_idx + 1}/$nBatches")
-            runBlocking {
-                convertPsiFilesToTrees(batch).flatten().forEach {
-//                    printTree(it.root, true)
-                    storeCallback(it.root, it.label, holdout)
-                }
-            }
+            runBlocking { convertPsiFilesToTreesAsync(batch, holdout) }
         }
     }
 
-    private suspend fun convertPsiFilesToTrees(psiFiles: List<PsiFile>) = coroutineScope {
-        val deferred = psiFiles.map {
-            async(Dispatchers.Default) {
-                ReadAction.compute<List<Sample>, Throwable> {
-                    val fileTree = treeBuilder.buildPsiTree(it)
+    private suspend fun convertPsiFilesToTreesAsync(psiFiles: List<PsiFile>, holdout: Dataset) = coroutineScope {
+        launch(Dispatchers.Default) {
+            psiFiles
+                .map { ReadAction.compute<PsiNode, Throwable> { treeBuilder.buildPsiTree(it) } }
+                .flatMap { filePsiNode ->
                     when (granularityLevel) {
-                        GranularityLevel.File -> listOf(fileTree)
-                        GranularityLevel.Class -> fileTree.preOrder().filter {
-                            it.getTypeLabel().split("|").last() == CLASS_NODE
-                        }
-                        GranularityLevel.Method -> fileTree.preOrder().filter {
-                            it.getTypeLabel().split("|").last() == METHOD_NODE
-                        }
-                    }.filter { root -> filters.all { it.isGoodTree(root) } }.mapNotNull { problemCallback(it) }
+                        GranularityLevel.File -> listOf(filePsiNode)
+                        GranularityLevel.Class -> filePsiNode.preOrder().filter { it.wrappedNode is PsiClass }
+                        GranularityLevel.Method -> filePsiNode.preOrder().filter { it.wrappedNode is PsiMethod }
+                    }
                 }
-            }
+                .filter { root -> filters.all { it.isGoodTree(root) } }
+                .mapNotNull { problemCallback(it) }
+                .forEach {
+                    storeCallback(it.root, it.label, holdout)
+                    if (config.printTrees) printTree(it.root, true)
+                }
         }
-        deferred.awaitAll()
-    }
-
-    companion object {
-        private const val CLASS_NODE = "CLASS"
-        private const val METHOD_NODE = "METHOD"
     }
 }

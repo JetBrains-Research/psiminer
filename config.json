@@ -5,14 +5,16 @@
   "resolveTypes": true,
   "compressOperators": false,
   "removeKeyword": false,
-  "removeComments": false,
+  "removeComments": true,
   "compressTree": true,
 
-  "maxPathWidth": 4,
+  "maxPathWidth": 2,
   "maxPathLength": 9,
   "maxPathsInTrain": 1000,
   "maxPathsInTest": 200,
   "nodesToNumbers": true,
 
-  "filters": ["constructor"]
+  "filters": ["constructor", "abstract", "override"],
+
+  "printTrees": true
 }

@@ -14,7 +14,7 @@ class AbstractMethodFilter : Filter {
     override fun isGoodTree(root: PsiNode): Boolean =
         root.wrappedNode !is PsiMethod || !root.wrappedNode.modifierList.hasModifierProperty("abstract")
     companion object {
-        const val name = "abstract method"
+        const val name = "abstract"
     }
 }
 
@@ -22,7 +22,7 @@ class OverrideMethodFilter : Filter {
     override fun isGoodTree(root: PsiNode): Boolean =
         root.wrappedNode !is PsiMethod || !root.wrappedNode.modifierList.hasAnnotation("Override")
     companion object {
-        const val name = "override method"
+        const val name = "override"
     }
 }
 

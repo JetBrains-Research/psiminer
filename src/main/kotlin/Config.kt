@@ -16,6 +16,7 @@ import kotlinx.serialization.Serializable
     val removeKeyword: Boolean = false,
     val compressOperators: Boolean = false,
     val removeComments: Boolean = true,
+    val removeJavaDoc: Boolean = true,
     val compressTree: Boolean = false,
 
     /*

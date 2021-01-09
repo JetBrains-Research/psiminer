@@ -6,6 +6,7 @@ import astminer.common.setNormalizedToken
 import astminer.common.splitToSubtokens
 import com.intellij.psi.*
 import com.intellij.psi.impl.source.tree.ElementType
+import com.intellij.psi.javadoc.PsiDocComment
 import com.intellij.psi.tree.TokenSet
 import com.intellij.psi.util.elementType
 import psi.PsiNode.Companion.EMPTY_TOKEN
@@ -46,30 +47,17 @@ class PsiTreeBuilder(private val config: Config) {
         return currentNode
     }
 
-    private fun isSkipType(node: PsiElement): Boolean =
-        node is PsiWhiteSpace || node is PsiImportList || node is PsiPackageStatement
-
-    // Skip nodes for commas, semicolons, different brackets, and etc
-    private fun isJavaPrintableSymbol(node: PsiElement): Boolean = skipElementTypes.any { node.elementType == it }
-
-    // Sometimes there are empty lists in leaves, e.g. variable declaration without modifiers
-    private fun isEmptyList(node: PsiElement): Boolean =
-        (node.children.isEmpty() || node.text == "()") && (
-                node is PsiReferenceParameterList || node is PsiModifierList || node is PsiReferenceList ||
-                        node is PsiTypeParameterList || node is PsiExpressionList || node is PsiParameterList ||
-                        node is PsiExpressionListStatement || node is PsiAnnotationParameterList
-                )
-
-    private fun isSkipKeyword(node: PsiElement): Boolean = config.removeKeyword && node is PsiKeyword
-
-    private fun isSkipOperator(node: PsiElement): Boolean =
-        config.compressOperators && ElementType.OPERATION_BIT_SET.contains(node.elementType)
-
-    private fun isSkipComment(node: PsiElement): Boolean = config.removeComments && node is PsiComment
-
-    private fun validatePsiElement(node: PsiElement): Boolean =
-        !isSkipType(node) && !isJavaPrintableSymbol(node) && !isEmptyList(node) &&
-                !isSkipKeyword(node) && !isSkipOperator(node) && !isSkipComment(node)
+    private fun validatePsiElement(node: PsiElement): Boolean {
+        val isSkipType = node is PsiWhiteSpace || node is PsiImportList || node is PsiPackageStatement
+        val isJavaPrintableSymbol = skipElementTypes.any { node.elementType == it }
+        val isEmptyList = (node.children.isEmpty() || node.text == "()") && listTypes.any { it.isInstance(node) }
+        val isSkipKeyword = config.removeKeyword && node is PsiKeyword
+        val isSkipOperator = config.compressOperators && ElementType.OPERATION_BIT_SET.contains(node.elementType)
+        val isSkipComment = config.removeComments && node is PsiComment && node !is PsiDocComment
+        val isSkipJavaDoc = config.removeJavaDoc && node is PsiDocComment
+        return !(isSkipType || isJavaPrintableSymbol || isEmptyList || isSkipKeyword || isSkipOperator ||
+                isSkipComment || isSkipJavaDoc)
+    }
 
     private fun getPrintableType(node: PsiElement): String? {
         if (!config.compressOperators) return null
@@ -118,6 +106,11 @@ class PsiTreeBuilder(private val config: Config) {
             ElementType.DOT,
             ElementType.ELLIPSIS,
             ElementType.AT
+        )
+        val listTypes = listOf(
+            PsiReferenceParameterList::class, PsiReferenceParameterList::class, PsiModifierList::class,
+            PsiReferenceList::class, PsiTypeParameterList::class, PsiExpressionList::class,
+            PsiParameterList::class, PsiExpressionListStatement::class, PsiAnnotationParameterList::class
         )
     }
 }

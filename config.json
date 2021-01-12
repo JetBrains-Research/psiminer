@@ -1,5 +1,5 @@
 {
-  "format": "code2seq",
+  "format": "json",
   "problem": "method name prediction",
 
   "resolveTypes": true,
@@ -17,5 +17,5 @@
 
   "filters": ["constructor"],
 
-  "printTrees": false
+  "printTrees": true
 }

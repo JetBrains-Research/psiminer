@@ -4,7 +4,7 @@ import GranularityLevel
 import astminer.common.setNormalizedToken
 import psi.PsiNode
 
-class MethodNamePrediction : Problem {
+class MethodNamePrediction : LabelExtractor {
 
     override val granularityLevel = GranularityLevel.Method
 

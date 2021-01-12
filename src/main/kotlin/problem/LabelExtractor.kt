@@ -5,7 +5,7 @@ import psi.PsiNode
 
 data class Sample(val root: PsiNode, val label: String)
 
-interface Problem {
+interface LabelExtractor {
     val granularityLevel: GranularityLevel
     fun processTree(root: PsiNode): Sample?
 }

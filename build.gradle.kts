@@ -1,4 +1,3 @@
-group = "org.jetbrains.research.psiminer"
 version = "1.0-SNAPSHOT"
 
 plugins {
@@ -53,11 +52,11 @@ tasks {
         val dataset: String? by project
         val output: String? by project
         val config: String? by project
-        args = listOfNotNull("psiminer", dataset, output, config)
+        args = listOfNotNull("astmaker", dataset, output, config)
         jvmArgs = listOf("-Djava.awt.headless=true")
         maxHeapSize = "20g"
     }
-    register("runPSIMiner") {
+    register("extractAST") {
         dependsOn(runIde)
     }
 }

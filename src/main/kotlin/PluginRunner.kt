@@ -8,7 +8,7 @@ import kotlin.system.exitProcess
 
 class PluginRunner : ApplicationStarter {
 
-    override fun getCommandName(): String = "psiminer"
+    override fun getCommandName(): String = "astmaker"
 
     override fun main(args: Array<out String>) {
         PsiExtractor().main(args.slice(1 until args.size))

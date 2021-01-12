@@ -1,5 +1,5 @@
 <idea-plugin>
-    <id>io.github.astmaker</id>
+    <id>astmaker</id>
     <name>ASTMaker</name>
     <vendor>Anonymous Author</vendor>
 

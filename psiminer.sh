@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 if [ $# -ne "3" ]; then
-    echo "usage: extract_psi_paths <path to dataset> <path to output folder> <path to json config>"
+    echo "usage: ./psiminer.sh <path to dataset> <path to output folder> <path to json config>"
     exit 1
 fi
 

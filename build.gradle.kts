@@ -57,7 +57,7 @@ tasks {
         jvmArgs = listOf("-Djava.awt.headless=true")
         maxHeapSize = "20g"
     }
-    register("extractPSIPaths") {
+    register("runPSIMiner") {
         dependsOn(runIde)
     }
 }

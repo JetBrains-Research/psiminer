@@ -10,6 +10,10 @@ import psi.PsiNode
 import java.io.File
 import java.io.PrintWriter
 
+/***
+ * Use path-based representation of sample
+ * More details about this format: https://github.com/tech-srl/code2seq
+ ***/
 class Code2SeqStorage(
     override val outputDirectory: File,
     override val config: Config,

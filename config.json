@@ -17,5 +17,5 @@
 
   "filters": ["constructor"],
 
-  "printTrees": true
+  "printTrees": false
 }

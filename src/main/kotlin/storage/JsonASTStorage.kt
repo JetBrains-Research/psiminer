@@ -6,13 +6,18 @@ import psi.PsiNode
 import java.io.File
 import java.io.PrintWriter
 
+/***
+ * Store each tree in JSONL format (one sample per line)
+ * Format description: https://jsonlines.org
+ * Tree saves in Python150K format: https://www.sri.inf.ethz.ch/py150
+ ***/
 class JsonASTStorage(
     override val outputDirectory: File,
     override val config: Config,
 ) : Storage {
 
     private val datasetFileWriters = mutableMapOf<Dataset, PrintWriter>()
-    private val datasetStatistic = mutableMapOf(*Dataset.values().map { it to 0 }.toTypedArray())
+    private val datasetStatistic = mutableMapOf<Dataset, Int>()
 
     init {
         outputDirectory.mkdirs()
@@ -21,6 +26,7 @@ class JsonASTStorage(
             val holdoutFile = outputDirectory.resolve("$datasetName.${it.folderName}.jsonl")
             holdoutFile.createNewFile()
             datasetFileWriters[it] = PrintWriter(holdoutFile)
+            datasetStatistic[it] = 0
         }
     }
 

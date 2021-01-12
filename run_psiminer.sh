@@ -14,4 +14,4 @@ fi
 
 "$DIR/gradlew" --stop
 "$DIR/gradlew" clean
-"$DIR/gradlew" -p "$DIR" extractPSIPaths -Pdataset="$PWD/$1" -Poutput="$PWD/$2" -Pconfig="$PWD/$3"
+"$DIR/gradlew" -p "$DIR" runPSIMiner -Pdataset="$PWD/$1" -Poutput="$PWD/$2" -Pconfig="$PWD/$3"

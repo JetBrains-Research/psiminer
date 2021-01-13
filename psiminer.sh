@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 if [ $# -ne "3" ]; then
-    echo "usage: ./astmaker.sh <path to dataset> <path to output folder> <path to json config>"
+    echo "usage: ./psiminer.sh <path to dataset> <path to output folder> <path to json config>"
     exit 1
 fi
 
@@ -14,4 +14,4 @@ fi
 
 "$DIR/gradlew" --stop
 "$DIR/gradlew" clean
-"$DIR/gradlew" -p "$DIR" extractAST -Pdataset="$PWD/$1" -Poutput="$PWD/$2" -Pconfig="$PWD/$3"
+"$DIR/gradlew" -p "$DIR" runPSIMiner -Pdataset="$PWD/$1" -Poutput="$PWD/$2" -Pconfig="$PWD/$3"

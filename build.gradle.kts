@@ -52,11 +52,11 @@ tasks {
         val dataset: String? by project
         val output: String? by project
         val config: String? by project
-        args = listOfNotNull("astmaker", dataset, output, config)
+        args = listOfNotNull("psiminer", dataset, output, config)
         jvmArgs = listOf("-Djava.awt.headless=true")
         maxHeapSize = "20g"
     }
-    register("extractAST") {
+    register("runPSIMiner") {
         dependsOn(runIde)
     }
 }

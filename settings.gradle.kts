@@ -1,2 +1,2 @@
-rootProject.name = "astmaker"
+rootProject.name = "psiminer"
 

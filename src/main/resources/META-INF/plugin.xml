@@ -1,6 +1,6 @@
 <idea-plugin>
-    <id>astmaker</id>
-    <name>ASTMaker</name>
+    <id>psiminer</id>
+    <name>PSIMiner</name>
     <vendor>Anonymous Author</vendor>
 
     <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html

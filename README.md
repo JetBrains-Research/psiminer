@@ -1,15 +1,15 @@
-# ASTMaker
+# PSIMiner
 
 ## Usage
 
 To run extracting data from a dataset with source code use this command
 ```shell
-bash astmaker.sh dataset_path ouput_folder config.json 2> error_log.txt
+bash psiminer.sh dataset_path ouput_folder config.json 2> error_log.txt
 ```
 
 Folder with [mock data](src/test/resources/mock_data) contains example of dataset.
 [Config](config.json) shows the example of configuration.
 To run this example use following command:
 ```shell
-bash astmaker.sh src/test/resources/mock_data output config.json 2> error_log.txt
+bash psiminer.sh src/test/resources/mock_data output config.json 2> error_log.txt
 ```

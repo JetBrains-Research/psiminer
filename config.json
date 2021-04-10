@@ -1,12 +1,12 @@
 {
   "format": "json",
-  "problem": "method name prediction",
+  "problem": "documentation prediction",
 
   "resolveTypes": true,
   "compressOperators": false,
   "removeKeyword": false,
   "removeComments": false,
-  "removeJavaDoc": true,
+  "removeJavaDoc": false,
   "compressTree": true,
 
   "maxPathWidth": 4,

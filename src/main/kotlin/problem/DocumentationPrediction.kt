@@ -7,49 +7,48 @@ class DocumentationPrediction : LabelExtractor {
     override val granularityLevel = GranularityLevel.Method
 
     override fun processTree(root: PsiNode): Sample? {
-        return try {
-            root.prettyPrint()
-            val descriptionNodes = getDescriptionNodes(root)
-            val tags = getTags(root)
-            val javaDoc = getNormalizedJavaDoc(descriptionNodes, tags)
+        try {
+            val docCommentNode = getJavaDocNode(root) ?: return null
+            val normalizedDoc = normalizeJavaDoc(docCommentNode)
             removeJavaDoc(root)
-            Sample(root, javaDoc)
+            return Sample(root, normalizedDoc)
         } catch (e: TypeCastException) {
-            null
+            return null
         }
     }
 
-    private fun getDescriptionNodes(root: PsiNode): List<PsiNode> {
-        return findInSubtreeWithType(root, docDescriptionNode)
+    private fun getJavaDocNode(root: PsiNode): PsiNode? {
+        return root.getChildOfType(javaDocNode) as? PsiNode
     }
 
-    private fun getTags(root: PsiNode): List<Pair<String, String>> {
-        val docTags = findInSubtreeWithType(root, docTagNode)
-        return docTags.map { tag ->
-            val tagName = tag.getChildOfType(docTagNameNode) as PsiNode
-            val tagValue = tag.getChildOfType(docParamTypeNode) as PsiNode
-            return@map tagName.getNormalizedToken() to tagValue.getNormalizedToken()
-        }
+    private fun normalizeJavaDoc(docNode: PsiNode): String {
+        return docNode.getChildren().map { node ->
+            when (node.getTypeLabel()) {
+                docDescriptionNode -> node.getNormalizedToken()
+                docTagNode -> normalizeTag(node)
+                else -> ""
+            }
+        }.filter { it != "" }.joinToString("|")
     }
 
-    private fun findInSubtreeWithType(node: PsiNode, type: String): List<PsiNode> {
-        return node.preOrder().filter { it.getTypeLabel() == type }
+    private fun normalizeTag(tag: PsiNode): String {
+        return tag.getChildren().map { node ->
+            when (node.getTypeLabel()) {
+                docTagNameNode -> "@${node.getNormalizedToken()}"
+                docParamTypeNode, docDescriptionNode -> node.getNormalizedToken()
+                else -> ""
+            }
+        }.filter { it != "" }.joinToString("|")
     }
-
-    private fun getNormalizedJavaDoc(descriptionNodes: List<PsiNode>, tags: List<Pair<String, String>>): String {
-        val normalizedDescription = descriptionNodes.joinToString("|") { it.getNormalizedToken() }
-        val normalizedTags = tags.joinToString("|") { "(@${it.first},${it.second})" }
-        return normalizedDescription + normalizedTags
-    }
-
 
     private fun removeJavaDoc(root: PsiNode) {
-        //TODO(Implement)
+        val deleted = root.getChildren().filter { it.getTypeLabel().startsWith("DOC") }
+        deleted.forEach { root.removeChildrenOfType(it.getTypeLabel()) }
     }
-
 
     companion object {
         const val name = "documentation prediction"
+        const val javaDocNode = "DOC_COMMENT"
         const val docDescriptionNode = "DOC_COMMENT_DATA"
         const val docTagNode = "DOC_TAG"
         const val docTagNameNode = "DOC_TAG_NAME"

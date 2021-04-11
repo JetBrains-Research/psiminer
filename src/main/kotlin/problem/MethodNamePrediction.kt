@@ -9,13 +9,25 @@ class MethodNamePrediction : LabelExtractor {
     override val granularityLevel = GranularityLevel.Method
 
     override fun processTree(root: PsiNode): Sample? {
-        val methodNameNode = root.getChildOfType(methodNameNodeType) as? PsiNode ?: return null
+        val methodNameNode = getMethodNameNode(root) ?: return null
         val methodName = methodNameNode.getNormalizedToken()
-        if (methodName == "") return null
+        if (methodName.isBlank()) return null
+        replaceMethodNameWithKeyword(methodNameNode)
+        normalizeRecursionCalls(root, methodName)
+        return Sample(root, methodName)
+    }
+
+    private fun getMethodNameNode(root: PsiNode): PsiNode? {
+        return root.getChildOfType(methodNameNodeType) as? PsiNode
+    }
+
+    private fun replaceMethodNameWithKeyword(methodNameNode: PsiNode){
         methodNameNode.setNormalizedToken(methodNameToken)
+    }
+
+    private fun normalizeRecursionCalls(root: PsiNode, methodName: String) {
         root.preOrder().filter { it.getNormalizedToken() == methodName }
             .forEach { it.setNormalizedToken(selfCallToken) }
-        return Sample(root, methodName)
     }
 
     companion object {

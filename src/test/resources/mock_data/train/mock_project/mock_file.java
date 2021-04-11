@@ -10,8 +10,11 @@ public class Main {
 
     /**
      * This is JavaDoc
-     * @param x
-     * @param y
+     * Hello!
+     *
+     * @param x is parameter responsible for
+     * some interesting behaviour
+     * @param y is responsible for killing people
      */
     public void myStrangeFunction(int x, int y) {
         // test comment

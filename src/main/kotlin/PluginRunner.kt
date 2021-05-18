@@ -2,6 +2,7 @@ import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.types.file
 import com.intellij.openapi.application.ApplicationStarter
+import filter.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
@@ -25,6 +26,14 @@ val module = SerializersModule {
     polymorphic(StorageConfig::class) {
         subclass(Code2SeqStorageConfig::class)
         default { JsonASTStorageConfig.serializer() }
+    }
+    polymorphic(FilterConfig::class) {
+        subclass(CodeLinesFilterConfig::class)
+        subclass(TreeSizeFilterConfig::class)
+        subclass(ConstructorsFilterConfig::class)
+        subclass(AbstractMethodFilterConfig::class)
+        subclass(OverrideMethodFilterConfig::class)
+        subclass(EmptyMethodFilterConfig::class)
     }
 }
 

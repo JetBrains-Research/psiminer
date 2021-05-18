@@ -1,12 +1,9 @@
 import filter.*
-import problem.MethodNamePrediction
 import problem.LabelExtractor
+import problem.MethodNamePrediction
 import psi.PsiProjectParser
-import storage.paths.Code2SeqStorage
-import storage.JsonASTStorage
 import storage.Storage
 import java.io.File
-import java.nio.file.Paths
 
 class Pipeline(private val config: Config) {
 
@@ -17,17 +14,7 @@ class Pipeline(private val config: Config) {
         else -> throw IllegalArgumentException("Unknown problem ${config.problem}")
     }
 
-    private fun getFilters(): List<Filter> = config.filters.map {
-        when (it) {
-            ClassConstructorFilter.name -> ClassConstructorFilter()
-            AbstractMethodFilter.name -> AbstractMethodFilter()
-            OverrideMethodFilter.name -> OverrideMethodFilter()
-            TreeSizeFilter.name -> TreeSizeFilter(config.minTreeSize, config.maxTreeSize)
-            CodeLengthFilter.name -> CodeLengthFilter(config.minCodeLength, config.maxCodeLength)
-            EmptyMethodFilter.name -> EmptyMethodFilter()
-            else -> throw java.lang.IllegalArgumentException("Unknown filter $it")
-        }
-    }
+    private fun getFilters(): List<Filter> = config.filters.map { it.createFilter() }
 
     fun extractDataFromDataset(datasetDirectory: File, outputDirectory: File) {
         val storage = getStorage(outputDirectory)

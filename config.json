@@ -12,7 +12,11 @@
   "removeJavaDoc": true,
   "compressTree": true,
 
-  "filters": ["constructor"],
+  "filters": [
+    {
+      "type": "removeConstructor"
+    }
+  ],
 
   "printTrees": false
 }

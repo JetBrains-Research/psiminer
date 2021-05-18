@@ -1,7 +1,9 @@
+import filter.FilterConfig
 import kotlinx.serialization.Serializable
 import storage.StorageConfig
 
 @Serializable data class Config(
+    val filters: List<FilterConfig>,
     val storage: StorageConfig,
     /*
     Pipeline parameters
@@ -19,15 +21,6 @@ import storage.StorageConfig
     val removeComments: Boolean = true,
     val removeJavaDoc: Boolean = true,
     val compressTree: Boolean = false,
-
-    /*
-    Filters and them parameters
-     */
-    val filters: List<String> = listOf(),
-    val minTreeSize: Int = 0,
-    val maxTreeSize: Int? = null,
-    val minCodeLength: Int = 0,
-    val maxCodeLength: Int? = null,
 
     /*
     Debugging

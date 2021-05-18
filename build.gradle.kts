@@ -2,13 +2,16 @@ group = "org.jetbrains.research.psiminer"
 version = "1.0-SNAPSHOT"
 
 plugins {
-    id("java")
+    kotlin("jvm") version "1.5.0"
+
     id("idea")
+    id("java")
     id("org.jetbrains.grammarkit") version "2020.3.1"
-    id("org.jetbrains.intellij") version "0.6.5"
+    id("org.jetbrains.intellij") version "0.7.3"
+
+    kotlin("plugin.serialization") version "1.5.0"
+
     id("io.gitlab.arturbosch.detekt") version "1.17.0"
-    kotlin("jvm") version "1.4.21"
-    kotlin("plugin.serialization") version "1.4.10"
 }
 
 repositories {
@@ -18,11 +21,10 @@ repositories {
 }
 
 dependencies {
-    implementation(kotlin("stdlib-jdk8"))
     implementation("io.github.vovak:astminer:0.6.3")
     implementation("com.github.ajalt:clikt:2.8.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.1")
 
     testImplementation("junit:junit:4.11")
     testImplementation(kotlin("test-junit"))
@@ -37,7 +39,7 @@ intellij {
 }
 
 detekt {
-    failFast = true
+    allRules = true
     config = files("detekt.yml")
 }
 

@@ -2,7 +2,6 @@ package psi
 
 import Config
 import astminer.common.normalizeToken
-import astminer.common.setNormalizedToken
 import astminer.common.splitToSubtokens
 import com.intellij.psi.*
 import com.intellij.psi.impl.source.tree.ElementType

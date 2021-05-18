@@ -1,7 +1,6 @@
 package problem
 
 import GranularityLevel
-import astminer.common.setNormalizedToken
 import psi.PsiNode
 
 class MethodNamePrediction : LabelExtractor {

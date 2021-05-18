@@ -1,6 +1,5 @@
 package psi
 
-import astminer.common.NORMALIZED_TOKEN_KEY
 import astminer.common.doTraversePreOrder
 import astminer.common.model.Node
 import com.intellij.psi.PsiElement
@@ -8,24 +7,35 @@ import com.intellij.psi.util.elementType
 
 class PsiNode(
     val wrappedNode: PsiElement,
-    private val parent: PsiNode?,
+    private var parent: PsiNode?,
     val resolvedTokenType: String,
     private val presentableNodeType: String? = null
 ) : Node {
 
-    private val metadata = HashMap<String, Any>()
-    private val children = mutableListOf<PsiNode>()
+    override val metadata = HashMap<String, Any>()
+    private var children = mutableListOf<PsiNode>()
 
-    override fun getChildren(): List<PsiNode> = children.toList()
+    override fun getChildren(): List<PsiNode> = children
 
-    override fun getMetadata(key: String): Any? = metadata[key]
+    fun setChildren(newChildren: List<PsiNode>) {
+        children = newChildren.toMutableList()
+        children.forEach { it.setParent(this) }
+    }
+
+    private fun setParent(newParent: PsiNode?) {
+        parent = newParent
+    }
 
     override fun getParent(): PsiNode? = parent
 
     override fun getToken(): String = wrappedNode.text
 
+    fun setNormalizedToken(normalizedToken: String) {
+        metadata[NORMALIZED_TOKEN] = normalizedToken
+    }
+
     fun getNormalizedToken(): String {
-        val normalizedToken = metadata[NORMALIZED_TOKEN_KEY] as? String
+        val normalizedToken = metadata[NORMALIZED_TOKEN] as? String
         return if (normalizedToken == null || normalizedToken == "{}" || normalizedToken == "{|}") EMPTY_TOKEN
         else normalizedToken
     }
@@ -39,15 +49,6 @@ class PsiNode(
         children.removeIf { it.getTypeLabel() == typeLabel }
     }
 
-    override fun setMetadata(key: String, value: Any) {
-        metadata.apply { put(key, value) }
-    }
-
-    fun setChildren(newChildren: List<PsiNode>) {
-        children.clear()
-        children.addAll(newChildren)
-    }
-
     fun preOrder(): List<PsiNode> {
         val result = mutableListOf<Node>()
         doTraversePreOrder(this, result)
@@ -56,5 +57,6 @@ class PsiNode(
 
     companion object {
         const val EMPTY_TOKEN = "<EMPTY>"
+        const val NORMALIZED_TOKEN = "NORMALIZED_TOKEN"
     }
 }

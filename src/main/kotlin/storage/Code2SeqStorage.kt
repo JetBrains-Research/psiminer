@@ -31,8 +31,8 @@ class Code2SeqStorage(
 
     init {
         if (config.maxPathLength == null || config.maxPathWidth == null) throw IllegalArgumentException(
-            "Found null value for max path length or max path width, specify it to use path based representation"
-        )
+                "Found null value for max path length or max path width, specify it to use path based representation"
+            )
         miner = PathMiner(PathRetrievalSettings(config.maxPathLength, config.maxPathWidth))
         outputDirectory.mkdirs()
         val datasetName = outputDirectory.nameWithoutExtension
@@ -73,11 +73,11 @@ class Code2SeqStorage(
     override fun close() {
         datasetFileWriters.forEach { it.value.close() }
         if (config.nodesToNumbers) dumpIdStorageToCsv(
-            nodesMap,
-            "node",
-            { it },
-            outputDirectory.resolve("nodes_vocabulary.csv")
-        )
+                nodesMap,
+                "node",
+                { it },
+                outputDirectory.resolve("nodes_vocabulary.csv")
+            )
     }
 
     companion object {

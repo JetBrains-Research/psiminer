@@ -2,18 +2,15 @@ import filter.*
 import problem.MethodNamePrediction
 import problem.LabelExtractor
 import psi.PsiProjectParser
-import storage.Code2SeqStorage
+import storage.paths.Code2SeqStorage
 import storage.JsonASTStorage
 import storage.Storage
 import java.io.File
+import java.nio.file.Paths
 
-class Pipeline(private val outputDirectory: File, private val config: Config) {
+class Pipeline(private val config: Config) {
 
-    private fun getStorage(): Storage = when (config.format) {
-        Code2SeqStorage.name -> Code2SeqStorage(outputDirectory, config)
-        JsonASTStorage.name -> JsonASTStorage(outputDirectory, config)
-        else -> throw IllegalArgumentException("Unknown storage ${config.format}")
-    }
+    private fun getStorage(outputDirectory: File): Storage = config.storage.createStorage(outputDirectory)
 
     private fun getLabelExtractor(): LabelExtractor = when (config.problem) {
         MethodNamePrediction.name -> MethodNamePrediction()
@@ -32,8 +29,8 @@ class Pipeline(private val outputDirectory: File, private val config: Config) {
         }
     }
 
-    fun extractDataFromDataset(datasetDirectory: File) {
-        val storage = getStorage()
+    fun extractDataFromDataset(datasetDirectory: File, outputDirectory: File) {
+        val storage = getStorage(outputDirectory)
         val problem = getLabelExtractor()
         val filters = getFilters()
         val projectParser = PsiProjectParser(

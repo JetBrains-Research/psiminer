@@ -1,10 +1,11 @@
 import kotlinx.serialization.Serializable
+import storage.StorageConfig
 
 @Serializable data class Config(
+    val storage: StorageConfig,
     /*
     Pipeline parameters
      */
-    val format: String,
     val problem: String,
 
     /*
@@ -18,16 +19,6 @@ import kotlinx.serialization.Serializable
     val removeComments: Boolean = true,
     val removeJavaDoc: Boolean = true,
     val compressTree: Boolean = false,
-
-    /*
-    Code2Seq storage parameters
-     */
-    val maxPathWidth: Int? = 4,
-    val maxPathLength: Int? = 9,
-    val maxPathsInTrain: Int? = null,
-    val maxPathsInTest: Int? = null,
-    val resolvedTypesFirst: Boolean = false,
-    val nodesToNumbers: Boolean = false,
 
     /*
     Filters and them parameters

@@ -1,5 +1,8 @@
 {
-  "format": "json",
+  "storage": {
+    "type": "JsonAST"
+  },
+
   "problem": "method name prediction",
 
   "resolveTypes": true,
@@ -8,12 +11,6 @@
   "removeComments": false,
   "removeJavaDoc": true,
   "compressTree": true,
-
-  "maxPathWidth": 4,
-  "maxPathLength": 9,
-  "maxPathsInTrain": 1000,
-  "maxPathsInTest": 200,
-  "nodesToNumbers": true,
 
   "filters": ["constructor"],
 

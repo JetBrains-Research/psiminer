@@ -76,8 +76,4 @@ class JsonASTStorage(override val config: JsonASTStorageConfig, override val out
         Dataset.values().forEach { println("${datasetStatistic[it]} samples in $it holdout") }
 
     override fun close() = datasetFileWriters.forEach { it.value.close() }
-
-    companion object {
-        const val name = "json"
-    }
 }

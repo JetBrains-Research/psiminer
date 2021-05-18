@@ -41,6 +41,7 @@ intellij {
 detekt {
     allRules = true
     config = files("detekt.yml")
+    buildUponDefaultConfig = true
 }
 
 tasks {

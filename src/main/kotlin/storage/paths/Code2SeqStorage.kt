@@ -16,10 +16,10 @@ import java.io.PrintWriter
 @Serializable
 @SerialName("Code2seq")
 class Code2SeqStorageConfig(
-    val pathWidth: Int,                 // Maximum distance between two children of path LCA node
-    val pathLength: Int,                // Maximum length of path
-    val maxPathsInTrain: Int? = null,   // If not null then use only this number of paths to represent train trees
-    val maxPathsInTest: Int? = null,    // If not null then use only this number of paths to represent val or test trees
+    val pathWidth: Int, // Maximum distance between two children of path LCA node
+    val pathLength: Int, // Maximum length of path
+    val maxPathsInTrain: Int? = null, // If not null then use only this number of paths to represent train trees
+    val maxPathsInTest: Int? = null, // If not null then use only this number of paths to represent val or test trees
     val nodesToNumbers: Boolean = false // If true then each node type is replaced with number
 ) : StorageConfig() {
     override fun createStorage(outputDirectory: File): Storage = Code2SeqStorage(this, outputDirectory)
@@ -81,14 +81,10 @@ class Code2SeqStorage(override val config: Code2SeqStorageConfig, override val o
     override fun close() {
         datasetFileWriters.forEach { it.value.close() }
         if (config.nodesToNumbers) dumpIdStorageToCsv(
-            nodesMap,
-            "node",
-            { it },
-            outputDirectory.resolve("nodes_vocabulary.csv")
-        )
-    }
-
-    companion object {
-        const val name: String = "code2seq"
+                nodesMap,
+                "node",
+                { it },
+                outputDirectory.resolve("nodes_vocabulary.csv")
+            )
     }
 }

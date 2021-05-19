@@ -1,6 +1,5 @@
-import filter.*
-import problem.LabelExtractor
-import problem.MethodNamePrediction
+import filter.Filter
+import problem.Problem
 import psi.PsiProjectParser
 import storage.Storage
 import java.io.File
@@ -9,16 +8,13 @@ class Pipeline(private val config: Config) {
 
     private fun getStorage(outputDirectory: File): Storage = config.storage.createStorage(outputDirectory)
 
-    private fun getLabelExtractor(): LabelExtractor = when (config.problem) {
-        MethodNamePrediction.name -> MethodNamePrediction()
-        else -> throw IllegalArgumentException("Unknown problem ${config.problem}")
-    }
+    private fun getProblem(): Problem = config.problem.createProblem()
 
     private fun getFilters(): List<Filter> = config.filters.map { it.createFilter() }
 
     fun extractDataFromDataset(datasetDirectory: File, outputDirectory: File) {
         val storage = getStorage(outputDirectory)
-        val problem = getLabelExtractor()
+        val problem = getProblem()
         val filters = getFilters()
         val projectParser = PsiProjectParser(
             config,

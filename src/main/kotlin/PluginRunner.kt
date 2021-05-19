@@ -8,6 +8,8 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
+import problem.MethodNamePredictionConfig
+import problem.ProblemConfig
 import storage.JsonASTStorageConfig
 import storage.StorageConfig
 import storage.paths.Code2SeqStorageConfig
@@ -34,6 +36,9 @@ val module = SerializersModule {
         subclass(AbstractMethodFilterConfig::class)
         subclass(OverrideMethodFilterConfig::class)
         subclass(EmptyMethodFilterConfig::class)
+    }
+    polymorphic(ProblemConfig::class) {
+        default { MethodNamePredictionConfig.serializer() }
     }
 }
 

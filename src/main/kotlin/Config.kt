@@ -1,14 +1,12 @@
 import filter.FilterConfig
 import kotlinx.serialization.Serializable
+import problem.ProblemConfig
 import storage.StorageConfig
 
 @Serializable data class Config(
     val filters: List<FilterConfig>,
+    val problem: ProblemConfig,
     val storage: StorageConfig,
-    /*
-    Pipeline parameters
-     */
-    val problem: String,
 
     /*
     Parser parameters

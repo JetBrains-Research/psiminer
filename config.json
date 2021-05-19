@@ -3,7 +3,9 @@
     "type": "JsonAST"
   },
 
-  "problem": "method name prediction",
+  "problem": {
+    "type": "method name prediction"
+  },
 
   "resolveTypes": true,
   "compressOperators": false,

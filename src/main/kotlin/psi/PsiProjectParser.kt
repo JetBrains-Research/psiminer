@@ -14,14 +14,14 @@ import com.intellij.psi.PsiMethod
 import filter.Filter
 import kotlinx.coroutines.*
 import printTree
-import problem.Sample
+import problem.LabeledTree
 import kotlin.math.ceil
 
 class PsiProjectParser(
     private val config: Config,
     private val granularityLevel: GranularityLevel,
     private val filters: List<Filter>,
-    private val problemCallback: (PsiNode) -> Sample?,
+    private val problemCallback: (PsiNode) -> LabeledTree?,
     private val storeCallback: (PsiNode, String, Dataset) -> Unit,
 ) {
     private val treeBuilder = PsiTreeBuilder(config)
@@ -50,7 +50,7 @@ class PsiProjectParser(
     private suspend fun convertPsiFilesToTreesAsync(psiFiles: List<PsiFile>, holdout: Dataset) = coroutineScope {
         psiFiles.map {
             launch(Dispatchers.Default) {
-                val samples = ReadAction.compute<List<Sample>, Throwable> {
+                val samples = ReadAction.compute<List<LabeledTree>, Throwable> {
                     val filePsiNode = treeBuilder.buildPsiTree(it)
                     val granularityPsiNodes = when (granularityLevel) {
                         GranularityLevel.File -> listOf(filePsiNode)

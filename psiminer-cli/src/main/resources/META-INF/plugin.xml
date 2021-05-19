@@ -1,0 +1,18 @@
+<idea-plugin>
+    <id>org.jetbrains.research.psiminer</id>
+    <name>PSIMiner</name>
+    <vendor email="egor.spirin@jetbrains.com" url="https://github.com/JetBrains-Research/psiminer">JetBrains Research</vendor>
+
+    <description>Extract code in different representations based on PSI trees</description>
+
+    <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.java</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+        <appStarter implementation="PluginRunner"/>
+    </extensions>
+
+</idea-plugin>

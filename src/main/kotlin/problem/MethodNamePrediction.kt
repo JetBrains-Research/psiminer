@@ -26,8 +26,6 @@ class MethodNamePrediction : Problem {
     }
 
     companion object {
-        const val name: String = "method name prediction"
-
         private const val methodNameToken = "<MN>"
         private const val selfCallToken = "<SELF>"
 

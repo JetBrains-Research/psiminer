@@ -1,4 +1,4 @@
-package storage
+package storage.paths
 
 import astminer.common.model.ASTPath
 import astminer.common.model.Direction

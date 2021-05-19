@@ -23,6 +23,7 @@ repositories {
 dependencies {
     implementation("io.github.vovak:astminer:0.6.3")
     implementation("com.github.ajalt:clikt:2.8.0")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.5.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.1")
 
@@ -34,13 +35,14 @@ dependencies {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version = "2020.3"
+    version = "2021.1"
     setPlugins("java")
 }
 
 detekt {
     allRules = true
     config = files("detekt.yml")
+    buildUponDefaultConfig = true
 }
 
 tasks {

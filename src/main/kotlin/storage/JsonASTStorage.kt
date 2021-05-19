@@ -1,20 +1,24 @@
 package storage
 
-import Config
 import Dataset
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import psi.PsiNode
 import java.io.File
 import java.io.PrintWriter
+
+@Serializable
+@SerialName("JsonAST")
+class JsonASTStorageConfig : StorageConfig() {
+    override fun createStorage(outputDirectory: File): Storage = JsonASTStorage(this, outputDirectory)
+}
 
 /***
  * Store each tree in JSONL format (one sample per line)
  * Format description: https://jsonlines.org
  * Tree saves in Python150K format: https://www.sri.inf.ethz.ch/py150
  ***/
-class JsonASTStorage(
-    override val outputDirectory: File,
-    override val config: Config,
-) : Storage {
+class JsonASTStorage(override val config: JsonASTStorageConfig, override val outputDirectory: File) : Storage {
 
     private val datasetFileWriters = mutableMapOf<Dataset, PrintWriter>()
     private val datasetStatistic = mutableMapOf<Dataset, Int>()
@@ -54,7 +58,6 @@ class JsonASTStorage(
     private fun nodeToString(node: PsiNode, childrenIds: List<Int>): String =
         StringBuilder("{")
             .append("\"node\":\"${node.getTypeLabel()}\",")
-            .append(if (config.resolveTypes) "\"type\":\"${node.resolvedTokenType}\"," else "")
             .append(if (childrenIds.isNotEmpty()) "\"children\":[${childrenIds.joinToString(",")}]," else "")
             .append("\"token\":\"${node.getNormalizedToken()}\"")
             .append("}")
@@ -73,8 +76,4 @@ class JsonASTStorage(
         Dataset.values().forEach { println("${datasetStatistic[it]} samples in $it holdout") }
 
     override fun close() = datasetFileWriters.forEach { it.value.close() }
-
-    companion object {
-        const val name = "json"
-    }
 }

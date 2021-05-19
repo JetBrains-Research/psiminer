@@ -7,12 +7,14 @@
     "type": "method name prediction"
   },
 
-  "resolveTypes": true,
-  "compressOperators": false,
-  "removeKeyword": false,
-  "removeComments": false,
-  "removeJavaDoc": true,
-  "compressTree": true,
+  "parserParameters": {
+    "resolveTypes": true,
+    "compressOperators": false,
+    "removeKeyword": false,
+    "removeComments": false,
+    "removeJavaDoc": true,
+    "compressTree": true
+  },
 
   "filters": [
     {

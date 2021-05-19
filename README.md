@@ -9,7 +9,7 @@ To run extracting data from a dataset with source code use this command
 bash psiminer.sh dataset_path ouput_folder config.json 2> error_log.txt
 ```
 
-Folder with [mock data](src/test/resources/mock_data) contains example of dataset.
+Folder with [mock data](psiminer-core/src/test/resources/mock_data) contains example of dataset.
 [Config](config.json) shows the example of configuration.
 To run this example use following command:
 ```shell

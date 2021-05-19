@@ -23,8 +23,8 @@ class JsonASTStorageConfig : StorageConfig() {
 class Code2SeqStorageConfig(
     private val pathWidth: Int, // Maximum distance between two children of path LCA node
     private val pathLength: Int, // Maximum length of path
-    private val maxPathsInTrain: Int? = null, // If not null then use only this number of paths to represent train trees
-    private val maxPathsInTest: Int? = null, // If not null then use only this number of paths to represent val or test trees
+    private val maxPathsInTrain: Int? = null, // If passed then use only this number of paths to represent train trees
+    private val maxPathsInTest: Int? = null, // If passed then use only this number of paths to represent val/test trees
     private val nodesToNumbers: Boolean = false // If true then each node type is replaced with number
 ) : StorageConfig() {
     override fun createStorage(outputDirectory: File): Storage = Code2SeqStorage(

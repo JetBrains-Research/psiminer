@@ -54,5 +54,5 @@ class TreeSizeFilterConfig(
     private val minSize: Int = 0, // Set the minimum number of nodes in target trees
     private val maxSize: Int? = null // Set the maximum number of nodes in target trees
 ) : FilterConfig() {
-    override fun createFilter(): Filter = TreeBasedFilters(minSize, maxSize)
+    override fun createFilter(): Filter = TreeSizeFilter(minSize, maxSize)
 }

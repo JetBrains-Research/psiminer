@@ -1,8 +1,6 @@
 package filter
 
 import com.intellij.psi.PsiMethod
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 import psi.PsiNode
 
 /***

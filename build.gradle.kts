@@ -42,8 +42,9 @@ allprojects {
 
     detekt {
         allRules = true
-        config = files("detekt.yml")
+        config = files(rootProject.projectDir.resolve("detekt.yml"))
         buildUponDefaultConfig = true
+        parallel = true
     }
 
     tasks {
@@ -52,17 +53,6 @@ allprojects {
         }
         compileTestKotlin {
             kotlinOptions.jvmTarget = "1.8"
-        }
-        runIde {
-            val dataset: String? by project
-            val output: String? by project
-            val config: String? by project
-            args = listOfNotNull("psiminer", dataset, output, config)
-            jvmArgs = listOf("-Djava.awt.headless=true")
-            maxHeapSize = "20g"
-        }
-        register("runPSIMiner") {
-            dependsOn(runIde)
         }
     }
 }

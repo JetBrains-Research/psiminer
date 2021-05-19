@@ -11,13 +11,10 @@ formatting:
 
 style:
   MagicNumber:
-    ignoreNumbers: ['-1', '0', '1', '2', '3']
+    ignoreNumbers: ['-1', '0', '1', '2', '3', '10_000'] # default batch size
   ReturnCount:
     max: 3
   UnnecessaryAbstractClass:
     active: false # due to config system
   WildcardImport:
-    excludeImports: [
-        'java.util.*', 'kotlinx.android.synthetic.*', 'com.intellij.psi.*',
-        'kotlinx.coroutines.*', 'astminer.common.*', 'filter.*'
-    ]
+    active: false

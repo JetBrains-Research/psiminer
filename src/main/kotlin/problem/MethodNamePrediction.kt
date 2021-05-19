@@ -7,7 +7,7 @@ import psi.PsiNode
 
 @Serializable
 @SerialName("method name prediction")
-class MethodNamePredictionConfig: ProblemConfig() {
+class MethodNamePredictionConfig : ProblemConfig() {
     override fun createProblem(): Problem = MethodNamePrediction()
 }
 

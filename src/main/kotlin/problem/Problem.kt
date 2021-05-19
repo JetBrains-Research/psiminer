@@ -8,7 +8,7 @@ data class LabeledTree(val root: PsiNode, val label: String)
 
 @Serializable
 abstract class ProblemConfig {
-    abstract fun createProblem() : Problem
+    abstract fun createProblem(): Problem
 }
 
 interface Problem {

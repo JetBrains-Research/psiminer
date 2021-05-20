@@ -1,9 +1,12 @@
-import psi.PsiNode
+import com.intellij.psi.PsiClass
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiMethod
 
-enum class GranularityLevel {
-    File,
-    Class,
-    Method
+enum class GranularityLevel(val psiNodeClass: java.lang.Class<out PsiElement>) {
+    File(PsiFile::class.java),
+    Class(PsiClass::class.java),
+    Method(PsiMethod::class.java)
 }
 
 enum class Dataset(val folderName: String) {
@@ -12,14 +15,6 @@ enum class Dataset(val folderName: String) {
     Test("test")
 }
 
-fun printTree(root: PsiNode, withTypes: Boolean, indent: Int = 0, delimiter: String = "..", indentStep: Int = 2) {
-    print(delimiter.repeat(indent))
-    print("${root.getTypeLabel()} -- ${root.getNormalizedToken()}")
-    if (withTypes) {
-        print(" / ${root.resolvedTokenType}")
-    }
-    print("\n")
-    root.getChildren().forEach {
-        printTree(it, withTypes, indent + indentStep, delimiter, indentStep)
-    }
+enum class Language(val extensions: List<String>) {
+    Java(listOf("java"))
 }

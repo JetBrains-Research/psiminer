@@ -1,26 +1,18 @@
 {
-  "storage": {
-    "type": "JsonAST"
-  },
-
-  "problem": {
-    "type": "method name prediction"
-  },
-
-  "parserParameters": {
-    "resolveTypes": true,
-    "compressOperators": false,
-    "removeKeyword": false,
-    "removeComments": false,
-    "removeJavaDoc": true,
-    "compressTree": true
-  },
-
   "filters": [
-    {
-      "type": "removeConstructor"
-    }
+    {"type": "removeConstructor"}
+  ],
+  "problem": {"type": "method name prediction"},
+  "storage": {"type": "JsonAST"},
+
+  "languages": ["Java"],
+  "ignoreRules": [
+    {"type": "whitespace"}
+  ],
+  "transformTree": [
+    {"type": "remove comments"},
+    {"type": "compress operators"}
   ],
 
-  "printTrees": false
+  "printTrees": true
 }

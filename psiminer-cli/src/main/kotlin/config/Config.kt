@@ -1,5 +1,6 @@
 package config
 
+import Language
 import kotlinx.serialization.Serializable
 
 @Serializable data class Config(
@@ -9,7 +10,8 @@ import kotlinx.serialization.Serializable
     val storage: StorageConfig,
 
     // ===== Parser configuration =====
-    val parserParameters: ParserConfig,
+    val languages: List<Language>,
+    val ignoreRules: List<PsiNodeIgnoreRuleConfig>,
 
     // ===== Debugging =====
     val printTrees: Boolean = false

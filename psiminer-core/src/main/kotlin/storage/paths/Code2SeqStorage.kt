@@ -1,11 +1,13 @@
 package storage.paths
 
 import Dataset
+import Language
 import astminer.common.storage.RankedIncrementalIdStorage
 import astminer.common.storage.dumpIdStorageToCsv
 import astminer.paths.PathMiner
 import astminer.paths.PathRetrievalSettings
-import psi.PsiNode
+import com.intellij.psi.PsiElement
+import problem.LabeledTree
 import storage.Storage
 import java.io.File
 import java.io.PrintWriter
@@ -51,15 +53,17 @@ class Code2SeqStorage(
 
     private fun nodePathToIds(pathNodes: List<String>): List<Long> = pathNodes.map { nodesMap.record(it) }
 
-    private fun extractPathContexts(root: PsiNode, holdout: Dataset): List<PathContext> {
+    private fun extractPathContexts(root: PsiElement, holdout: Dataset): List<PathContext> {
         val nPaths = if (holdout == Dataset.Train) maxPathsInTrain else maxPathsInTest
-        return miner.retrievePaths(root).shuffled()
-            .map { PathContext.createFromASTPath(it) }
-            .let { it.take(nPaths ?: it.size) }
+        // TODO: fix path-based storage. Implement PsiElement wrapper for path miner.
+        return emptyList()
+//        return miner.retrievePaths(root).shuffled()
+//            .map { PathContext.createFromASTPath(it) }
+//            .let { it.take(nPaths ?: it.size) }
     }
 
-    override fun store(sample: PsiNode, label: String, holdout: Dataset) {
-        val pathContexts = extractPathContexts(sample, holdout)
+    override fun store(labeledTree: LabeledTree, holdout: Dataset, language: Language) {
+        val pathContexts = extractPathContexts(labeledTree.root, holdout)
         if (pathContexts.isEmpty()) return
         val stringPathContexts = pathContexts.joinToString(" ") {
             val nodePath = if (nodesToNumbers) nodePathToIds(it.nodePath) else it.nodePath
@@ -70,7 +74,7 @@ class Code2SeqStorage(
             nSamples += 1
             nPaths += pathContexts.size
         }
-        datasetFileWriters[holdout]?.println("$label $stringPathContexts")
+        datasetFileWriters[holdout]?.println("${labeledTree.label} $stringPathContexts")
     }
 
     override fun printStatistic() = Dataset.values().forEach { println("$it statistic: ${datasetStatistic[it]}") }

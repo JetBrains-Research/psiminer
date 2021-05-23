@@ -14,5 +14,5 @@
     {"type": "compress operators"}
   ],
 
-  "printTrees": true
+  "printTrees": false
 }

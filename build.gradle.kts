@@ -2,10 +2,12 @@ group = "org.jetbrains.research.psiminer"
 version = "1.0-SNAPSHOT"
 
 plugins {
-    java
-    kotlin("jvm") version "1.5.0"
+    id("java")
     id("org.jetbrains.intellij") version "0.7.3"
     id("io.gitlab.arturbosch.detekt") version "1.17.0"
+
+    kotlin("jvm") version "1.5.0"
+    kotlin("plugin.serialization") version "1.5.0"
 }
 
 allprojects {
@@ -14,6 +16,7 @@ allprojects {
         plugin("kotlin")
         plugin("org.jetbrains.intellij")
         plugin("io.gitlab.arturbosch.detekt")
+        plugin("kotlinx-serialization")
     }
     repositories {
         mavenCentral()
@@ -24,6 +27,7 @@ allprojects {
     dependencies {
         implementation(kotlin("stdlib"))
         implementation("org.jetbrains.kotlin:kotlin-reflect:1.5.0")
+        implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.1")
 
         testImplementation("junit:junit:4.11")
         testImplementation(kotlin("test-junit"))

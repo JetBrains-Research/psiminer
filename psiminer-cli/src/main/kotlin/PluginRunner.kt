@@ -66,7 +66,7 @@ class PsiExtractor : CliktCommand() {
                 config.ignoreRules.map { it.createIgnoreRule() },
                 config.printTrees
             )
-        } catch (e: IllegalArgumentException) {
+        } catch (e: Exception) {
             println(e.message)
         } finally {
             storage.printStatistic()

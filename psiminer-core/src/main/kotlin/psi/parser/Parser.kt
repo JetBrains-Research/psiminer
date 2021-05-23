@@ -3,18 +3,22 @@ package psi.parser
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VfsUtilCore
-import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiElementVisitor
-import com.intellij.psi.PsiFile
-import com.intellij.psi.PsiManager
+import com.intellij.psi.*
+import com.intellij.psi.util.PsiTreeUtil
 import psi.nodeProperties.isHidden
 import psi.nodeIgnoreRules.PsiNodeIgnoreRule
+import psi.nodeIgnoreRules.WhiteSpaceIgnoreRule
 
 abstract class Parser(private val nodeIgnoreRules: List<PsiNodeIgnoreRule>) {
 
     abstract val extensions: List<String>
 
     abstract val psiElementVisitor: PsiElementVisitor
+
+    fun isWhiteSpaceHidden() = nodeIgnoreRules.find { it is WhiteSpaceIgnoreRule } != null
+
+    fun hideAllWhiteSpaces(root: PsiElement) =
+        PsiTreeUtil.collectElementsOfType(root, PsiWhiteSpace::class.java).forEach { it.isHidden = true}
 
     protected fun validateNode(node: PsiElement) {
         if (nodeIgnoreRules.any { it.isIgnored(node) }) node.isHidden = true

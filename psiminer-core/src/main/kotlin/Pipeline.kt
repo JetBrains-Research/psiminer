@@ -4,6 +4,7 @@ import com.intellij.openapi.project.ex.ProjectManagerEx
 import filter.Filter
 import problem.Problem
 import psi.nodeIgnoreRules.PsiNodeIgnoreRule
+import psi.nodeIgnoreRules.WhiteSpaceIgnoreRule
 import psi.parser.ParserFactory
 import psi.printTree
 import psi.splitPsiByGranularity
@@ -41,7 +42,7 @@ class Pipeline(private val filters: List<Filter>, private val problem: Problem, 
         } else {
             println("No dataset found. Process all sources under passed path")
             // TODO: handle not dataset projects/files
-//            extractFromProject(inputDirectory, null, languages, parserFactory, printTrees)
+            // extractFromProject(inputDirectory, null, languages, parserFactory, printTrees)
         }
     }
 
@@ -60,6 +61,12 @@ class Pipeline(private val filters: List<Filter>, private val problem: Problem, 
             val labeledResults = splitPsiByGranularity(psiTrees, problem.granularityLevel)
                 .filter { root -> filters.all { it.isGoodTree(root) } }
                 .mapNotNull { problem.processTree(it) }
+            labeledResults.forEach {
+                // Some modifications during filtering or label extracting
+                // may add new white spaces (e.g. after renaming method names)
+                // Therefore manually check if we need to hide such nodes again
+                if (parser.isWhiteSpaceHidden()) parser.hideAllWhiteSpaces(it.root)
+            }
             labeledResults.forEach {
                 storage.store(it, holdout, language)
                 if (printTrees) it.root.printTree()

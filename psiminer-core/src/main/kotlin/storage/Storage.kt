@@ -12,3 +12,5 @@ interface Storage {
     fun printStatistic()
     fun close()
 }
+
+class StorageException(override val message: String?): RuntimeException(message)

@@ -30,7 +30,6 @@ fun renameAllSubtreeOccurrences(root: PsiNamedElement, newName: String) {
         .collectElements(root) { it.textMatches(root.name ?: return@collectElements false) }
         .map { UsageInfo(it) }
         .toTypedArray()
-    println(usages.size)
     val renameProcessor = RenamePsiElementProcessor.forElement(root)
     WriteCommandAction.runWriteCommandAction(root.project) {
         renameProcessor.renameElement(root, newName, usages, null)

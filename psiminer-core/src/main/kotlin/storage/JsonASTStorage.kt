@@ -3,7 +3,16 @@ package storage
 import Dataset
 import Language
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiRecursiveElementVisitor
+import com.intellij.psi.PsiWhiteSpace
+import com.intellij.psi.util.PsiTreeUtil
+import com.jetbrains.rd.util.getOrCreate
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.encodeToString
 import problem.LabeledTree
+import psi.nodeProperties.isHidden
 import psi.nodeProperties.nodeType
 import psi.nodeProperties.token
 import java.io.File
@@ -16,60 +25,67 @@ import java.io.PrintWriter
  ***/
 class JsonASTStorage(override val outputDirectory: File) : Storage {
 
-    private val datasetFileWriters = mutableMapOf<Dataset, PrintWriter>()
-    private val datasetStatistic = mutableMapOf<Dataset, Int>()
+    private data class OutputDirection(val holdout: Dataset, val language: Language)
+    private val datasetFileWriters = mutableMapOf<OutputDirection, PrintWriter>()
+    private val datasetStatistic = mutableMapOf<OutputDirection, Int>()
 
     init {
         outputDirectory.mkdirs()
-        val datasetName = outputDirectory.nameWithoutExtension
-        Dataset.values().forEach {
-            val holdoutFile = outputDirectory.resolve("$datasetName.${it.folderName}.jsonl")
-            holdoutFile.createNewFile()
-            datasetFileWriters[it] = PrintWriter(holdoutFile)
-            datasetStatistic[it] = 0
+    }
+
+    @Serializable
+    private data class NodeRepresentation(
+        @Transient val id: Int? = null,
+        val token: String?,
+        val nodeType: String,
+        val children: List<Int>,
+    )
+    @Serializable
+    private data class TreeRepresentation(val label: String, val nodes: List<NodeRepresentation>)
+
+    private class NumerateTreeVisitor: PsiRecursiveElementVisitor() {
+        val nodeToId = hashMapOf<PsiElement, Int>()
+
+        override fun visitElement(element: PsiElement) {
+            if (!element.isHidden) nodeToId[element] = nodeToId.size
+            super.visitElement(element) // super call in the end of recursion method correspond to preorder traverse
         }
     }
 
-    private data class NumeratedNode(val node: PsiElement, val id: Int, val children: List<NumeratedNode>)
-    private data class DFSReturn(val numerateNode: NumeratedNode, val subtreeSize: Int)
-
-    private fun dfsEnumerateTree(node: PsiElement, currentId: Int): DFSReturn {
-        var step = 0
-        val children = node.children.map { child ->
-            val dfsReturn = dfsEnumerateTree(child, currentId + 1 + step)
-            step += dfsReturn.subtreeSize
-            dfsReturn.numerateNode
-        }
-        return DFSReturn(NumeratedNode(node, currentId, children), step + 1)
+    private fun collectNodeRepresentation(root: PsiElement): List<NodeRepresentation> {
+        val numerateTreeVisitor = NumerateTreeVisitor()
+        root.accept(numerateTreeVisitor)
+        return numerateTreeVisitor.nodeToId
+            .map { (node, id) ->
+                val childrenIds = node.children.mapNotNull { numerateTreeVisitor.nodeToId[it] }
+                NodeRepresentation(id, node.token, node.nodeType, childrenIds)
+            }
+            .sortedBy { it.id }
     }
-
-    private fun dfsOrder(node: NumeratedNode): List<NumeratedNode> {
-        val order = mutableListOf(node)
-        node.children.forEach {
-            order.addAll(dfsOrder(it))
-        }
-        return order
-    }
-
-    private fun nodeToString(node: PsiElement, childrenIds: List<Int>): String =
-        StringBuilder("{")
-            .append("\"node\":\"${node.nodeType}\",")
-            .append(if (childrenIds.isNotEmpty()) "\"children\":[${childrenIds.joinToString(",")}]," else "")
-            .append("\"token\":\"${node.token}\"")
-            .append("}")
-            .toString()
 
     override fun store(labeledTree: LabeledTree, holdout: Dataset, language: Language) {
-        datasetStatistic[holdout] = datasetStatistic[holdout]?.plus(1) ?: 0
-        val enumeratedTree = dfsEnumerateTree(labeledTree.root, 0).numerateNode
-        val stringTree = dfsOrder(enumeratedTree).map { nodeToString(it.node, it.children.map { c -> c.id }) }
-        datasetFileWriters[holdout]?.println(
-            "{\"label\":\"${labeledTree.label}\",\"AST\":[${stringTree.joinToString(",")}]}"
-        )
+        val outputDirection = OutputDirection(holdout, language)
+
+        val nodesRepresentation = collectNodeRepresentation(labeledTree.root)
+        val treeRepresentation = TreeRepresentation(labeledTree.label, nodesRepresentation)
+
+        datasetStatistic[outputDirection] = datasetStatistic.getOrCreate(outputDirection) { 0 }.plus(1)
+        datasetFileWriters.getOrPut(outputDirection) {
+            val outputFile = outputDirectory
+                .resolve(language.name)
+                .resolve("${holdout.folderName}.$jsonlExtension")
+            outputFile.parentFile.mkdirs()
+            outputFile.createNewFile()
+            PrintWriter(outputFile)
+        }.println(Json.encodeToString(treeRepresentation))
     }
 
     override fun printStatistic() =
-        Dataset.values().forEach { println("${datasetStatistic[it]} samples in $it holdout") }
+        datasetStatistic.forEach { println("${it.value} samples for ${it.key.language} in ${it.key.holdout} holdout") }
 
     override fun close() = datasetFileWriters.forEach { it.value.close() }
+
+    companion object {
+        const val jsonlExtension = "jsonl"
+    }
 }

@@ -21,15 +21,9 @@ import java.io.PrintWriter
  * Format description: https://jsonlines.org
  * Tree saves in Python150K format: https://www.sri.inf.ethz.ch/py150
  ***/
-class JsonASTStorage(override val outputDirectory: File) : Storage {
+class JsonASTStorage(outputDirectory: File) : Storage(outputDirectory) {
 
-    private data class OutputDirection(val holdout: Dataset, val language: Language)
-    private val datasetFileWriters = mutableMapOf<OutputDirection, PrintWriter>()
-    private val datasetStatistic = mutableMapOf<OutputDirection, Int>()
-
-    init {
-        outputDirectory.mkdirs()
-    }
+    override val fileExtension: String = "jsonl"
 
     @Serializable
     private data class NodeRepresentation(
@@ -61,29 +55,9 @@ class JsonASTStorage(override val outputDirectory: File) : Storage {
             .sortedBy { it.id }
     }
 
-    override fun store(labeledTree: LabeledTree, holdout: Dataset, language: Language) {
-        val outputDirection = OutputDirection(holdout, language)
-
+    override fun convert(labeledTree: LabeledTree): String {
         val nodesRepresentation = collectNodeRepresentation(labeledTree.root)
         val treeRepresentation = TreeRepresentation(labeledTree.label, nodesRepresentation)
-
-        datasetStatistic[outputDirection] = datasetStatistic.getOrCreate(outputDirection) { 0 }.plus(1)
-        datasetFileWriters.getOrPut(outputDirection) {
-            val outputFile = outputDirectory
-                .resolve(language.name)
-                .resolve("${holdout.folderName}.$jsonlExtension")
-            outputFile.parentFile.mkdirs()
-            outputFile.createNewFile()
-            PrintWriter(outputFile)
-        }.println(Json.encodeToString(treeRepresentation))
-    }
-
-    override fun printStatistic() =
-        datasetStatistic.forEach { println("${it.value} samples for ${it.key.language} in ${it.key.holdout} holdout") }
-
-    override fun close() = datasetFileWriters.forEach { it.value.close() }
-
-    companion object {
-        const val jsonlExtension = "jsonl"
+        return Json.encodeToString(treeRepresentation)
     }
 }

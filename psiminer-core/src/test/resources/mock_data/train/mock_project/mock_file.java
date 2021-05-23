@@ -29,6 +29,7 @@ public class Main {
             if (i > 0) {}
             hashMap.remove(i);
         }
+        int f = 5;
     }
 
     public final void set(final AABB aabb) {
@@ -47,6 +48,7 @@ public class Main {
         String s1 = null;
         Char c = 's';
         Double d = 3.14;
+        int f = 5;
         f();
     }
 }

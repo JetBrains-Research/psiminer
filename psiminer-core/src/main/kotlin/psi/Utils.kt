@@ -1,10 +1,12 @@
 package psi
 
 import GranularityLevel
+import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNamedElement
 import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.refactoring.openapi.impl.RefactoringFactoryImpl
+import com.intellij.refactoring.rename.RenamePsiElementProcessor
+import com.intellij.usageView.UsageInfo
 import psi.nodeProperties.isHidden
 import psi.nodeProperties.nodeType
 import psi.nodeProperties.token
@@ -23,6 +25,14 @@ fun splitPsiByGranularity(psiTrees: List<PsiElement>, granularity: GranularityLe
         PsiTreeUtil.collectElementsOfType(psiTree, granularity.psiNodeClass)
     }
 
-fun renameAllOccurrences(definition: PsiNamedElement, newName: String) {
-    RefactoringFactoryImpl(definition.project).createRename(definition, newName).run()
+fun renameAllSubtreeOccurrences(root: PsiNamedElement, newName: String) {
+    val usages = PsiTreeUtil
+        .collectElements(root) { it.textMatches(root.name ?: return@collectElements false) }
+        .map { UsageInfo(it) }
+        .toTypedArray()
+    println(usages.size)
+    val renameProcessor = RenamePsiElementProcessor.forElement(root)
+    WriteCommandAction.runWriteCommandAction(root.project) {
+        renameProcessor.renameElement(root, newName, usages, null)
+    }
 }

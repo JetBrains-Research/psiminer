@@ -4,8 +4,6 @@ version = "1.0-SNAPSHOT"
 plugins {
     java
     kotlin("jvm") version "1.5.0"
-
-    id("org.jetbrains.grammarkit") version "2020.3.1"
     id("org.jetbrains.intellij") version "0.7.3"
     id("io.gitlab.arturbosch.detekt") version "1.17.0"
 }
@@ -14,7 +12,6 @@ allprojects {
     apply {
         plugin("java")
         plugin("kotlin")
-        plugin("org.jetbrains.grammarkit")
         plugin("org.jetbrains.intellij")
         plugin("io.gitlab.arturbosch.detekt")
     }

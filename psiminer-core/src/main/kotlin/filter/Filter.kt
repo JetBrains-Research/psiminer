@@ -1,7 +1,7 @@
 package filter
 
-import psi.PsiNode
+import com.intellij.psi.PsiElement
 
 interface Filter {
-    fun isGoodTree(root: PsiNode): Boolean
+    fun isGoodTree(root: PsiElement): Boolean
 }

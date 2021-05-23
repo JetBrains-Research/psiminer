@@ -1,7 +1,11 @@
 package storage
 
 import Dataset
-import psi.PsiNode
+import Language
+import com.intellij.psi.PsiElement
+import problem.LabeledTree
+import psi.nodeProperties.nodeType
+import psi.nodeProperties.token
 import java.io.File
 import java.io.PrintWriter
 
@@ -26,12 +30,12 @@ class JsonASTStorage(override val outputDirectory: File) : Storage {
         }
     }
 
-    private data class NumeratedNode(val node: PsiNode, val id: Int, val children: List<NumeratedNode>)
+    private data class NumeratedNode(val node: PsiElement, val id: Int, val children: List<NumeratedNode>)
     private data class DFSReturn(val numerateNode: NumeratedNode, val subtreeSize: Int)
 
-    private fun dfsEnumerateTree(node: PsiNode, currentId: Int): DFSReturn {
+    private fun dfsEnumerateTree(node: PsiElement, currentId: Int): DFSReturn {
         var step = 0
-        val children = node.getChildren().map { child ->
+        val children = node.children.map { child ->
             val dfsReturn = dfsEnumerateTree(child, currentId + 1 + step)
             step += dfsReturn.subtreeSize
             dfsReturn.numerateNode
@@ -47,20 +51,20 @@ class JsonASTStorage(override val outputDirectory: File) : Storage {
         return order
     }
 
-    private fun nodeToString(node: PsiNode, childrenIds: List<Int>): String =
+    private fun nodeToString(node: PsiElement, childrenIds: List<Int>): String =
         StringBuilder("{")
-            .append("\"node\":\"${node.getTypeLabel()}\",")
+            .append("\"node\":\"${node.nodeType}\",")
             .append(if (childrenIds.isNotEmpty()) "\"children\":[${childrenIds.joinToString(",")}]," else "")
-            .append("\"token\":\"${node.getNormalizedToken()}\"")
+            .append("\"token\":\"${node.token}\"")
             .append("}")
             .toString()
 
-    override fun store(sample: PsiNode, label: String, holdout: Dataset) {
+    override fun store(labeledTree: LabeledTree, holdout: Dataset, language: Language) {
         datasetStatistic[holdout] = datasetStatistic[holdout]?.plus(1) ?: 0
-        val enumeratedTree = dfsEnumerateTree(sample, 0).numerateNode
+        val enumeratedTree = dfsEnumerateTree(labeledTree.root, 0).numerateNode
         val stringTree = dfsOrder(enumeratedTree).map { nodeToString(it.node, it.children.map { c -> c.id }) }
         datasetFileWriters[holdout]?.println(
-            "{\"label\":\"$label\",\"AST\":[${stringTree.joinToString(",")}]}"
+            "{\"label\":\"${labeledTree.label}\",\"AST\":[${stringTree.joinToString(",")}]}"
         )
     }
 

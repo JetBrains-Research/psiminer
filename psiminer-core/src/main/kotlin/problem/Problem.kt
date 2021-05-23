@@ -1,11 +1,11 @@
 package problem
 
 import GranularityLevel
-import psi.PsiNode
+import com.intellij.psi.PsiElement
 
-data class LabeledTree(val root: PsiNode, val label: String)
+data class LabeledTree(val root: PsiElement, val label: String)
 
 interface Problem {
     val granularityLevel: GranularityLevel
-    fun processTree(root: PsiNode): LabeledTree?
+    fun processTree(root: PsiElement): LabeledTree?
 }

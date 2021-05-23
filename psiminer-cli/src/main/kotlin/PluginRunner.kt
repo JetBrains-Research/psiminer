@@ -35,6 +35,14 @@ val module = SerializersModule {
     polymorphic(ProblemConfig::class) {
         default { MethodNamePredictionConfig.serializer() }
     }
+    polymorphic(PsiNodeIgnoreRuleConfig::class) {
+        subclass(WhitespaceIgnoreRuleConfig::class)
+    }
+}
+
+val jsonFormat = Json {
+    serializersModule = module
+    ignoreUnknownKeys = true
 }
 
 class PsiExtractor : CliktCommand() {
@@ -44,16 +52,25 @@ class PsiExtractor : CliktCommand() {
     private val jsonConfig by argument(help = "JSON config").file(mustExist = true, canBeDir = false)
 
     override fun run() {
-        val config = Json { serializersModule = module }.decodeFromString<Config>(jsonConfig.readText())
+        val config = jsonFormat.decodeFromString<Config>(jsonConfig.readText())
+
         val filters = config.filters.map { it.createFilter() }
         val problem = config.problem.createProblem()
         val storage = config.storage.createStorage(output)
-        val pipeliner = Pipeline(filters, problem, storage)
+        val pipeline = Pipeline(filters, problem, storage)
+
         try {
-            pipeliner.extractDataFromDataset(dataset, config.parserParameters)
+            pipeline.extract(
+                dataset,
+                config.languages,
+                config.ignoreRules.map { it.createIgnoreRule() },
+                config.printTrees
+            )
         } catch (e: IllegalArgumentException) {
             println(e.message)
         } finally {
+            storage.printStatistic()
+            storage.close()
             exitProcess(0)
         }
     }

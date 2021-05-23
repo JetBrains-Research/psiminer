@@ -4,3 +4,5 @@
 build/
 
 data/
+output/
+error_log.txt

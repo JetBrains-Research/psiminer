@@ -1,5 +1,6 @@
-package psi.parser
+package psi
 
+import Language
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VfsUtilCore
@@ -9,29 +10,26 @@ import psi.nodeProperties.isHidden
 import psi.nodeIgnoreRules.PsiNodeIgnoreRule
 import psi.nodeIgnoreRules.WhiteSpaceIgnoreRule
 
-abstract class Parser(private val nodeIgnoreRules: List<PsiNodeIgnoreRule>) {
-
-    abstract val extensions: List<String>
-
-    abstract val psiElementVisitor: PsiElementVisitor
+class Parser(private val nodeIgnoreRules: List<PsiNodeIgnoreRule>) {
 
     fun isWhiteSpaceHidden() = nodeIgnoreRules.find { it is WhiteSpaceIgnoreRule } != null
 
     fun hideAllWhiteSpaces(root: PsiElement) =
         PsiTreeUtil.collectElementsOfType(root, PsiWhiteSpace::class.java).forEach { it.isHidden = true}
 
-    protected fun validateNode(node: PsiElement) {
+    private fun validateNode(node: PsiElement) {
         if (nodeIgnoreRules.any { it.isIgnored(node) }) node.isHidden = true
     }
 
-    private fun processPsiTrees(psiTrees: List<PsiElement>) =
-        psiTrees.forEach { it.accept(psiElementVisitor) }
+    private fun hideNodes(root: PsiElement) =
+        PsiTreeUtil.collectElements(root) { node -> nodeIgnoreRules.any { it.isIgnored(node)} }
+            .forEach { it.isHidden = true }
 
-    fun parseProject(project: Project): List<PsiElement> {
+    fun parseProject(project: Project, language: Language): List<PsiElement> {
         val projectPsiFiles = mutableListOf<PsiFile>()
         ProjectRootManager.getInstance(project).contentRoots.mapNotNull { root ->
             VfsUtilCore.iterateChildrenRecursively(root, null) { virtualFile ->
-                if (virtualFile.extension !in extensions || virtualFile.canonicalPath == null) {
+                if (virtualFile.extension !in language.extensions || virtualFile.canonicalPath == null) {
                     return@iterateChildrenRecursively true
                 }
                 val psi =
@@ -40,7 +38,7 @@ abstract class Parser(private val nodeIgnoreRules: List<PsiNodeIgnoreRule>) {
             }
         }
 
-        processPsiTrees(projectPsiFiles)
+        projectPsiFiles.forEach { hideNodes(it) }
         return projectPsiFiles
     }
 }

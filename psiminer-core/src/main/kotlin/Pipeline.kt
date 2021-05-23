@@ -3,9 +3,8 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.ex.ProjectManagerEx
 import filter.Filter
 import problem.Problem
+import psi.Parser
 import psi.nodeIgnoreRules.PsiNodeIgnoreRule
-import psi.nodeIgnoreRules.WhiteSpaceIgnoreRule
-import psi.parser.ParserFactory
 import psi.printTree
 import psi.splitPsiByGranularity
 import storage.Storage
@@ -24,7 +23,7 @@ class Pipeline(private val filters: List<Filter>, private val problem: Problem, 
         ignoreNodeRule: List<PsiNodeIgnoreRule>,
         printTrees: Boolean = false
     ) {
-        val parserFactory = ParserFactory(ignoreNodeRule)
+        val parser = Parser(ignoreNodeRule)
         val isDataset = checkFolderIsDataset(inputDirectory)
 
         if (isDataset) {
@@ -36,7 +35,7 @@ class Pipeline(private val filters: List<Filter>, private val problem: Problem, 
                 holdoutProjects.forEachIndexed { index, holdoutProject ->
                     println("Start parsing $holdout.${holdoutProject.name} project " +
                             "(${index + 1}/${holdoutProjects.size})")
-                    extractFromProject(holdoutProject, holdout, languages, parserFactory, printTrees)
+                    extractFromProject(parser, languages, holdoutProject, holdout, printTrees)
                 }
             }
         } else {
@@ -47,17 +46,16 @@ class Pipeline(private val filters: List<Filter>, private val problem: Problem, 
     }
 
     private fun extractFromProject(
+        parser: Parser,
+        languages: List<Language>,
         projectFile: File,
         holdout: Dataset,
-        languages: List<Language>,
-        parserFactory: ParserFactory,
         printTrees: Boolean
     ) {
         // TODO: log error
         val project = ProjectUtil.openOrImport(projectFile.path, null, true) ?: return
         languages.forEach { language ->
-            val parser = parserFactory.createParser(language)
-            val psiTrees = parser.parseProject(project)
+            val psiTrees = parser.parseProject(project, language)
             val labeledResults = splitPsiByGranularity(psiTrees, problem.granularityLevel)
                 .filter { root -> filters.all { it.isGoodTree(root) } }
                 .mapNotNull { problem.processTree(it) }

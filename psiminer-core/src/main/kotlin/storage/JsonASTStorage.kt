@@ -4,13 +4,11 @@ import Dataset
 import Language
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiRecursiveElementVisitor
-import com.intellij.psi.PsiWhiteSpace
-import com.intellij.psi.util.PsiTreeUtil
 import com.jetbrains.rd.util.getOrCreate
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import problem.LabeledTree
 import psi.nodeProperties.isHidden
 import psi.nodeProperties.nodeType

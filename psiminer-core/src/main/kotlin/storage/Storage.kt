@@ -9,9 +9,9 @@ import problem.LabeledTree
 import java.io.File
 import java.io.PrintWriter
 
-abstract class Storage(private val outputDirectory: File) {
+abstract class Storage(protected val outputDirectory: File) {
 
-    private data class OutputDirection(val holdout: Dataset, val language: Language)
+    protected data class OutputDirection(val holdout: Dataset, val language: Language)
     private val datasetFileWriters = mutableMapOf<OutputDirection, PrintWriter>()
     private val datasetStatistic = mutableMapOf<OutputDirection, Int>()
 
@@ -20,12 +20,12 @@ abstract class Storage(private val outputDirectory: File) {
     }
 
     abstract val fileExtension: String
-    abstract fun convert(labeledTree: LabeledTree): String
+    protected abstract fun convert(labeledTree: LabeledTree, outputDirection: OutputDirection): String
 
     fun store(labeledTree: LabeledTree, holdout: Dataset, language: Language) {
-        val stringRepresentation = convert(labeledTree)
-
         val outputDirection = OutputDirection(holdout, language)
+        val stringRepresentation = convert(labeledTree, outputDirection)
+
         datasetStatistic[outputDirection] = datasetStatistic.getOrCreate(outputDirection) { 0 }.plus(1)
         datasetFileWriters.getOrPut(outputDirection) {
             val outputFile = outputDirectory
@@ -34,12 +34,12 @@ abstract class Storage(private val outputDirectory: File) {
             outputFile.parentFile.mkdirs()
             outputFile.createNewFile()
             PrintWriter(outputFile)
-        }.println(Json.encodeToString(stringRepresentation))
+        }.println(stringRepresentation)
     }
 
-    fun printStatistic() =
+    open fun printStatistic() =
         datasetStatistic.forEach { println("${it.value} samples for ${it.key.language} in ${it.key.holdout} holdout") }
 
-    fun close() = datasetFileWriters.forEach { it.value.close() }
+    open fun close() = datasetFileWriters.forEach { it.value.close() }
 }
 

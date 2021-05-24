@@ -1,16 +1,17 @@
 package storage.paths
 
 import Dataset
-import Language
+import astminer.common.model.ASTPath
 import astminer.common.storage.RankedIncrementalIdStorage
 import astminer.common.storage.dumpIdStorageToCsv
 import astminer.paths.PathMiner
 import astminer.paths.PathRetrievalSettings
 import com.intellij.psi.PsiElement
 import problem.LabeledTree
+import psi.nodeProperties.nodeType
+import psi.nodeProperties.token
 import storage.Storage
 import java.io.File
-import java.io.PrintWriter
 
 /***
  * Use path-based representation to represent each tree
@@ -22,70 +23,66 @@ import java.io.PrintWriter
  * @param nodesToNumbers: If true then each node type is replaced with number
  ***/
 class Code2SeqStorage(
-    override val outputDirectory: File,
+    outputDirectory: File,
     private val pathWidth: Int,
     private val pathLength: Int,
     private val maxPathsInTrain: Int? = null,
     private val maxPathsInTest: Int? = null,
     private val nodesToNumbers: Boolean = false
-) : Storage {
+) : Storage(outputDirectory) {
 
-    private val datasetFileWriters = mutableMapOf<Dataset, PrintWriter>()
-    private val nodesMap = RankedIncrementalIdStorage<String>()
-    private val miner: PathMiner = PathMiner(PathRetrievalSettings(pathLength, pathWidth))
+    override val fileExtension: String = "c2s"
+
+    private val miner = PathMiner(PathRetrievalSettings(pathLength, pathWidth))
+    private val nodeTypesIdStorage = RankedIncrementalIdStorage<String>()
 
     private data class HoldoutStatistic(var nSamples: Int = 0, var nPaths: Int = 0) {
         override fun toString(): String =
             "#samples: $nSamples, #paths: $nPaths, #rate: ${nPaths.toDouble() / nSamples}"
     }
+    private val datasetStatistic = mutableMapOf<OutputDirection, HoldoutStatistic>()
 
-    private val datasetStatistic = Dataset.values().associate { it to HoldoutStatistic() }
+    private fun unwrapAstPath(wrappedPath: ASTPath): List<PsiElement> =
+        wrappedPath.upwardNodes.map { (it as AstminerNodeWrapper).psiNode } +
+                (wrappedPath.topNode as AstminerNodeWrapper).psiNode +
+                wrappedPath.downwardNodes.map { (it as AstminerNodeWrapper).psiNode }
 
-    init {
-        outputDirectory.mkdirs()
-        val datasetName = outputDirectory.nameWithoutExtension
-        Dataset.values().forEach {
-            val holdoutFile = outputDirectory.resolve("$datasetName.${it.folderName}.c2s")
-            holdoutFile.createNewFile()
-            datasetFileWriters[it] = PrintWriter(holdoutFile)
-        }
-    }
+    private fun nodeToString(node: PsiElement): String =
+        if (nodesToNumbers) nodeTypesIdStorage.record(node.nodeType).toString()
+        else node.nodeType
 
-    private fun nodePathToIds(pathNodes: List<String>): List<Long> = pathNodes.map { nodesMap.record(it) }
+    // TODO: normalize tokens
+    private fun pathToString(path: List<PsiElement>): String = StringBuilder()
+        .append("\"${path.first().token?.replace("\n", "\\n")}\"")
+        .append(",")
+        .append(path.joinToString("|") { nodeToString(it) })
+        .append(",")
+        .append("\"${path.last().token?.replace("\n", "\\n")}\"")
+        .toString()
 
-    private fun extractPathContexts(root: PsiElement, holdout: Dataset): List<PathContext> {
-        val nPaths = if (holdout == Dataset.Train) maxPathsInTrain else maxPathsInTest
-        // TODO: fix path-based storage. Implement PsiElement wrapper for path miner.
-        return emptyList()
-//        return miner.retrievePaths(root).shuffled()
-//            .map { PathContext.createFromASTPath(it) }
-//            .let { it.take(nPaths ?: it.size) }
-    }
+    override fun convert(labeledTree: LabeledTree, outputDirection: OutputDirection): String {
+        val wrappedNode = AstminerNodeWrapper(labeledTree.root)
+        val maxPaths = if (outputDirection.holdout == Dataset.Train) maxPathsInTrain else maxPathsInTest
+        val paths = miner.retrievePaths(wrappedNode).shuffled().let { it.take(maxPaths ?: it.size) }
+        val unwrappedPaths = paths.map { unwrapAstPath(it) }
+        val pathRepresentation = unwrappedPaths.joinToString(" ") { pathToString(it) }
 
-    override fun store(labeledTree: LabeledTree, holdout: Dataset, language: Language) {
-        val pathContexts = extractPathContexts(labeledTree.root, holdout)
-        if (pathContexts.isEmpty()) return
-        val stringPathContexts = pathContexts.joinToString(" ") {
-            val nodePath = if (nodesToNumbers) nodePathToIds(it.nodePath) else it.nodePath
-            val basePathContext = "${it.startToken},${nodePath.joinToString("|")},${it.endToken}"
-            basePathContext
-        }
-        datasetStatistic[holdout]?.apply {
+        datasetStatistic.getOrPut(outputDirection) { HoldoutStatistic(0, 0) }.apply {
             nSamples += 1
-            nPaths += pathContexts.size
+            nPaths += paths.size
         }
-        datasetFileWriters[holdout]?.println("${labeledTree.label} $stringPathContexts")
+        return "${labeledTree.label} $pathRepresentation"
     }
 
-    override fun printStatistic() = Dataset.values().forEach { println("$it statistic: ${datasetStatistic[it]}") }
+    override fun printStatistic() = datasetStatistic.forEach { println(it.value) }
 
     override fun close() {
-        datasetFileWriters.forEach { it.value.close() }
+        super.close()
         if (nodesToNumbers) dumpIdStorageToCsv(
-                nodesMap,
-                "node",
-                { it },
-                outputDirectory.resolve("nodes_vocabulary.csv")
-            )
+            nodeTypesIdStorage,
+            "nodeType",
+            { it },
+            outputDirectory.resolve("nodes_vocabulary.csv")
+        )
     }
 }

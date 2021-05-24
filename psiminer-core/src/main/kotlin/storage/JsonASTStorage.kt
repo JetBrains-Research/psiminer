@@ -1,10 +1,7 @@
 package storage
 
-import Dataset
-import Language
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiRecursiveElementVisitor
-import com.jetbrains.rd.util.getOrCreate
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import kotlinx.serialization.encodeToString
@@ -14,7 +11,6 @@ import psi.nodeProperties.isHidden
 import psi.nodeProperties.nodeType
 import psi.nodeProperties.token
 import java.io.File
-import java.io.PrintWriter
 
 /***
  * Store each tree in JSONL format (one sample per line)
@@ -55,7 +51,7 @@ class JsonASTStorage(outputDirectory: File) : Storage(outputDirectory) {
             .sortedBy { it.id }
     }
 
-    override fun convert(labeledTree: LabeledTree): String {
+    override fun convert(labeledTree: LabeledTree, outputDirection: OutputDirection): String {
         val nodesRepresentation = collectNodeRepresentation(labeledTree.root)
         val treeRepresentation = TreeRepresentation(labeledTree.label, nodesRepresentation)
         return Json.encodeToString(treeRepresentation)

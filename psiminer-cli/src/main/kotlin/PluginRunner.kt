@@ -45,6 +45,7 @@ val module = SerializersModule {
 val jsonFormat = Json {
     serializersModule = module
     ignoreUnknownKeys = true
+    classDiscriminator = "name"
 }
 
 class PsiExtractor : CliktCommand() {

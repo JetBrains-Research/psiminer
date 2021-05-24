@@ -1,17 +1,17 @@
 {
   "filters": [
-    {"type": "removeConstructor"}
+    {"name": "removeConstructor"}
   ],
-  "problem": {"type": "method name prediction"},
-  "storage": {"type": "JsonTypedTree"},
+  "problem": {"name": "method name prediction"},
+  "storage": {"name": "JsonTypedTree"},
 
   "languages": ["Java"],
   "ignoreRules": [
-    {"type": "whitespace"}
+    {"name": "whitespace"}
   ],
   "transformTree": [
-    {"type": "remove comments"},
-    {"type": "compress operators"}
+    {"name": "remove comments"},
+    {"name": "compress operators"}
   ],
 
   "printTrees": false

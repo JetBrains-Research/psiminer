@@ -51,7 +51,6 @@ class Code2SeqStorage(
         if (nodesToNumbers) nodeTypesIdStorage.record(node.nodeType).toString()
         else node.nodeType
 
-    // TODO: normalize tokens
     private fun pathToString(path: List<PsiElement>): String = StringBuilder()
         .append("\"${path.first().token?.replace("\n", "\\n")}\"")
         .append(",")

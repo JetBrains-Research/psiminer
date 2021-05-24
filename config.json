@@ -3,7 +3,7 @@
     {"type": "removeConstructor"}
   ],
   "problem": {"type": "method name prediction"},
-  "storage": {"type": "JsonAST"},
+  "storage": {"type": "JsonTypedTree"},
 
   "languages": ["Java"],
   "ignoreRules": [

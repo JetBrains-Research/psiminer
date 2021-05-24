@@ -1,4 +1,4 @@
-package storage.ast
+package storage.tree
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiRecursiveElementVisitor

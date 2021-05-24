@@ -21,8 +21,8 @@ class PluginRunner : ApplicationStarter {
 
 val module = SerializersModule {
     polymorphic(StorageConfig::class) {
-        subclass(JsonASTStorageConfig::class)
-        subclass(JsonTypedASTStorageConfig::class)
+        subclass(JsonTreeStorageConfig::class)
+        subclass(JsonTypedTreeStorageConfig::class)
         subclass(Code2SeqStorageConfig::class)
         subclass(TypedCode2SeqStorageConfig::class)
     }

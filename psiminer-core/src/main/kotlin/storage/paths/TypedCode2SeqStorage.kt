@@ -19,7 +19,7 @@ class TypedCode2SeqStorage(
     outputDirectory: File,
     pathWidth: Int,
     pathLength: Int,
-    splitTypes: Boolean,
+    splitTypes: Boolean = true,
     maxPathsInTrain: Int? = null,
     maxPathsInTest: Int? = null,
     nodesToNumbers: Boolean = false

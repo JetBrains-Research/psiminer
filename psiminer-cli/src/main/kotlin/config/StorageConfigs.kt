@@ -2,9 +2,9 @@ package config
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import storage.ast.JsonASTStorage
+import storage.tree.JsonTreeStorage
 import storage.Storage
-import storage.ast.JsonTypedASTStorage
+import storage.tree.JsonTypedTreeStorage
 import storage.paths.Code2SeqStorage
 import storage.paths.TypedCode2SeqStorage
 import java.io.File
@@ -15,15 +15,15 @@ abstract class StorageConfig {
 }
 
 @Serializable
-@SerialName("JsonAST")
-class JsonASTStorageConfig : StorageConfig() {
-    override fun createStorage(outputDirectory: File): Storage = JsonASTStorage(outputDirectory)
+@SerialName("JsonTree")
+class JsonTreeStorageConfig : StorageConfig() {
+    override fun createStorage(outputDirectory: File): Storage = JsonTreeStorage(outputDirectory)
 }
 
 @Serializable
-@SerialName("JsonTypedAST")
-class JsonTypedASTStorageConfig(private val splitTypes: Boolean) : StorageConfig() {
-    override fun createStorage(outputDirectory: File): Storage = JsonTypedASTStorage(outputDirectory, splitTypes)
+@SerialName("JsonTypedTree")
+class JsonTypedTreeStorageConfig(private val splitTypes: Boolean = true) : StorageConfig() {
+    override fun createStorage(outputDirectory: File): Storage = JsonTypedTreeStorage(outputDirectory, splitTypes)
 }
 
 @Serializable
@@ -45,7 +45,7 @@ class Code2SeqStorageConfig(
 class TypedCode2SeqStorageConfig(
     private val pathWidth: Int, // Maximum distance between two children of path LCA node
     private val pathLength: Int, // Maximum length of path
-    private val splitTypes: Boolean, // If passed then split resolved types into subtypes
+    private val splitTypes: Boolean = true, // If passed then split resolved types into subtypes
     private val maxPathsInTrain: Int? = null, // If passed then use only this number of paths to represent train trees
     private val maxPathsInTest: Int? = null, // If passed then use only this number of paths to represent val/test trees
     private val nodesToNumbers: Boolean = false // If true then each node type is replaced with number

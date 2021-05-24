@@ -13,7 +13,10 @@ tasks {
         val output: String? by project
         val config: String? by project
         args = listOfNotNull("psiminer", dataset, output, config)
-        jvmArgs = listOf("-Djava.awt.headless=true")
+        jvmArgs = listOf(
+            "-Djava.awt.headless=true", "-Djdk.module.illegalAccess.silent=true",
+            "--add-exports", "java.base/jdk.internal.vm=ALL-UNNAMED"
+        )
         maxHeapSize = "20g"
     }
     register("runPSIMiner") {

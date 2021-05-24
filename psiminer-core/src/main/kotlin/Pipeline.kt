@@ -1,5 +1,4 @@
 import com.intellij.ide.impl.ProjectUtil
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.ex.ProjectManagerEx
 import filter.Filter
 import problem.Problem
@@ -72,8 +71,6 @@ class Pipeline(private val filters: List<Filter>, private val problem: Problem, 
         }
         // Force close project to avoid making physical modification of data
         // due to corresponding PSI trees modifications
-        ApplicationManager.getApplication().invokeAndWait {
-            ProjectManagerEx.getInstanceEx().forceCloseProject(project)
-        }
+        ProjectManagerEx.getInstanceEx().forceCloseProject(project)
     }
 }

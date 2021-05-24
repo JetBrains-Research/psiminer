@@ -4,12 +4,17 @@ complexity:
   TooManyFunctions:
     ignoreOverridden: true
 
+exceptions:
+  TooGenericExceptionCaught:
+    active: false
 
 formatting:
   NoWildcardImports:
     active: false
 
 style:
+  ForbiddenComment:
+    allowedPatterns: "TODO"
   MagicNumber:
     ignoreNumbers: ['-1', '0', '1', '2', '3', '10_000'] # default batch size
   ReturnCount:

@@ -3,8 +3,6 @@ package storage
 import Dataset
 import Language
 import com.jetbrains.rd.util.getOrCreate
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import problem.LabeledTree
 import java.io.File
 import java.io.PrintWriter
@@ -30,7 +28,7 @@ abstract class Storage(protected val outputDirectory: File) {
         datasetFileWriters.getOrPut(outputDirection) {
             val outputFile = outputDirectory
                 .resolve(language.name)
-                .resolve("${holdout.folderName}.${fileExtension}")
+                .resolve("${holdout.folderName}.$fileExtension")
             outputFile.parentFile.mkdirs()
             outputFile.createNewFile()
             PrintWriter(outputFile)
@@ -42,4 +40,3 @@ abstract class Storage(protected val outputDirectory: File) {
 
     open fun close() = datasetFileWriters.forEach { it.value.close() }
 }
-

@@ -15,14 +15,10 @@ class Parser(private val nodeIgnoreRules: List<PsiNodeIgnoreRule>) {
     fun isWhiteSpaceHidden() = nodeIgnoreRules.find { it is WhiteSpaceIgnoreRule } != null
 
     fun hideAllWhiteSpaces(root: PsiElement) =
-        PsiTreeUtil.collectElementsOfType(root, PsiWhiteSpace::class.java).forEach { it.isHidden = true}
-
-    private fun validateNode(node: PsiElement) {
-        if (nodeIgnoreRules.any { it.isIgnored(node) }) node.isHidden = true
-    }
+        PsiTreeUtil.collectElementsOfType(root, PsiWhiteSpace::class.java).forEach { it.isHidden = true }
 
     private fun hideNodes(root: PsiElement) =
-        PsiTreeUtil.collectElements(root) { node -> nodeIgnoreRules.any { it.isIgnored(node)} }
+        PsiTreeUtil.collectElements(root) { node -> nodeIgnoreRules.any { it.isIgnored(node) } }
             .forEach { it.isHidden = true }
 
     fun parseProject(project: Project, language: Language): List<PsiElement> {

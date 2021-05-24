@@ -31,7 +31,7 @@ class JsonASTStorage(outputDirectory: File) : Storage(outputDirectory) {
     @Serializable
     private data class TreeRepresentation(val label: String, val nodes: List<NodeRepresentation>)
 
-    private class NumerateTreeVisitor: PsiRecursiveElementVisitor() {
+    private class NumerateTreeVisitor : PsiRecursiveElementVisitor() {
         val nodeToId = hashMapOf<PsiElement, Int>()
 
         override fun visitElement(element: PsiElement) {

@@ -6,6 +6,7 @@ import storage.ast.JsonASTStorage
 import storage.Storage
 import storage.ast.JsonTypedASTStorage
 import storage.paths.Code2SeqStorage
+import storage.paths.TypedCode2SeqStorage
 import java.io.File
 
 @Serializable
@@ -36,5 +37,20 @@ class Code2SeqStorageConfig(
 ) : StorageConfig() {
     override fun createStorage(outputDirectory: File): Storage = Code2SeqStorage(
         outputDirectory, pathWidth, pathLength, maxPathsInTrain, maxPathsInTest, nodesToNumbers
+    )
+}
+
+@Serializable
+@SerialName("TypedCode2Seq")
+class TypedCode2SeqStorageConfig(
+    private val pathWidth: Int, // Maximum distance between two children of path LCA node
+    private val pathLength: Int, // Maximum length of path
+    private val splitTypes: Boolean, // If passed then split resolved types into subtypes
+    private val maxPathsInTrain: Int? = null, // If passed then use only this number of paths to represent train trees
+    private val maxPathsInTest: Int? = null, // If passed then use only this number of paths to represent val/test trees
+    private val nodesToNumbers: Boolean = false // If true then each node type is replaced with number
+) : StorageConfig() {
+    override fun createStorage(outputDirectory: File): Storage = TypedCode2SeqStorage(
+        outputDirectory, pathWidth, pathLength, splitTypes, maxPathsInTrain, maxPathsInTest, nodesToNumbers
     )
 }

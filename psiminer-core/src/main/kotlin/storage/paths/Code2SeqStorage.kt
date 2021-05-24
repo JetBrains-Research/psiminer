@@ -22,7 +22,7 @@ import java.io.File
  * @param maxPathsInTest: If not null then use only this number of paths to represent val or test trees
  * @param nodesToNumbers: If true then each node type is replaced with number
  ***/
-class Code2SeqStorage(
+open class Code2SeqStorage(
     outputDirectory: File,
     private val pathWidth: Int,
     private val pathLength: Int,
@@ -51,7 +51,7 @@ class Code2SeqStorage(
         if (nodesToNumbers) nodeTypesIdStorage.record(node.nodeType).toString()
         else node.nodeType
 
-    private fun pathToString(path: List<PsiElement>): String = StringBuilder()
+    protected open fun pathToString(path: List<PsiElement>): String = StringBuilder()
         .append("\"${path.first().token?.replace("\n", "\\n")}\"")
         .append(",")
         .append(path.joinToString("|") { nodeToString(it) })

@@ -6,7 +6,7 @@ import com.intellij.psi.impl.source.tree.ElementType
 import com.intellij.psi.util.elementType
 import com.intellij.psi.util.parentOfType
 
-class PsiTypeResolver(private val config: PsiParserParameters) {
+class PsiTypeResolver(private val splitTypes: Boolean) {
 
     fun resolveType(node: PsiElement): String {
         return when {
@@ -15,7 +15,7 @@ class PsiTypeResolver(private val config: PsiParserParameters) {
             node is PsiKeyword -> KEYWORD
             node is PsiIdentifier -> {
                 val resolvedType = extractFromIdentifier(node)
-                if (resolvedType == NO_TYPE || !config.splitNames) return resolvedType
+                if (resolvedType == NO_TYPE || !splitTypes) return resolvedType
                 else splitTypeToSubtypes(resolvedType).joinToString("|")
             }
             else -> NO_TYPE

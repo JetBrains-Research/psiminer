@@ -1,15 +1,13 @@
-package storage
+package storage.ast
 
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiRecursiveElementVisitor
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import problem.LabeledTree
-import psi.nodeProperties.isHidden
 import psi.nodeProperties.nodeType
 import psi.nodeProperties.token
+import storage.Storage
 import java.io.File
 
 /***
@@ -23,7 +21,6 @@ class JsonASTStorage(outputDirectory: File) : Storage(outputDirectory) {
 
     @Serializable
     private data class NodeRepresentation(
-        @Transient val id: Int? = null,
         val token: String?,
         val nodeType: String,
         val children: List<Int>,
@@ -31,24 +28,13 @@ class JsonASTStorage(outputDirectory: File) : Storage(outputDirectory) {
     @Serializable
     private data class TreeRepresentation(val label: String, val nodes: List<NodeRepresentation>)
 
-    private class NumerateTreeVisitor : PsiRecursiveElementVisitor() {
-        val nodeToId = hashMapOf<PsiElement, Int>()
-
-        override fun visitElement(element: PsiElement) {
-            if (!element.isHidden) nodeToId[element] = nodeToId.size
-            super.visitElement(element) // super call in the end of recursion method correspond to preorder traverse
-        }
-    }
-
     private fun collectNodeRepresentation(root: PsiElement): List<NodeRepresentation> {
         val numerateTreeVisitor = NumerateTreeVisitor()
         root.accept(numerateTreeVisitor)
-        return numerateTreeVisitor.nodeToId
-            .map { (node, id) ->
-                val childrenIds = node.children.mapNotNull { numerateTreeVisitor.nodeToId[it] }
-                NodeRepresentation(id, node.token, node.nodeType, childrenIds)
-            }
-            .sortedBy { it.id }
+        return numerateTreeVisitor.orderTree().map {
+            val childrenIds = it.children.mapNotNull { child -> numerateTreeVisitor.nodeToId[child] }
+            NodeRepresentation(it.token, it.nodeType, childrenIds)
+        }
     }
 
     override fun convert(labeledTree: LabeledTree, outputDirection: OutputDirection): String {

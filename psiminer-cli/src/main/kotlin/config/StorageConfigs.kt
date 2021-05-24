@@ -2,8 +2,9 @@ package config
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import storage.JsonASTStorage
+import storage.ast.JsonASTStorage
 import storage.Storage
+import storage.ast.JsonTypedASTStorage
 import storage.paths.Code2SeqStorage
 import java.io.File
 
@@ -16,6 +17,12 @@ abstract class StorageConfig {
 @SerialName("JsonAST")
 class JsonASTStorageConfig : StorageConfig() {
     override fun createStorage(outputDirectory: File): Storage = JsonASTStorage(outputDirectory)
+}
+
+@Serializable
+@SerialName("JsonTypedAST")
+class JsonTypedASTStorageConfig(private val splitTypes: Boolean) : StorageConfig() {
+    override fun createStorage(outputDirectory: File): Storage = JsonTypedASTStorage(outputDirectory, splitTypes)
 }
 
 @Serializable

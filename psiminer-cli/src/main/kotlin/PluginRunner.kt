@@ -21,8 +21,9 @@ class PluginRunner : ApplicationStarter {
 
 val module = SerializersModule {
     polymorphic(StorageConfig::class) {
+        subclass(JsonASTStorageConfig::class)
+        subclass(JsonTypedASTStorageConfig::class)
         subclass(Code2SeqStorageConfig::class)
-        default { JsonASTStorageConfig.serializer() }
     }
     polymorphic(FilterConfig::class) {
         subclass(CodeLinesFilterConfig::class)
@@ -33,7 +34,7 @@ val module = SerializersModule {
         subclass(EmptyMethodFilterConfig::class)
     }
     polymorphic(ProblemConfig::class) {
-        default { MethodNamePredictionConfig.serializer() }
+        subclass(MethodNamePredictionConfig::class)
     }
     polymorphic(PsiNodeIgnoreRuleConfig::class) {
         subclass(WhitespaceIgnoreRuleConfig::class)

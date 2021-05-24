@@ -1,5 +1,8 @@
 import com.intellij.ide.impl.ProjectUtil
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.project.ex.ProjectManagerEx
+import com.intellij.openapi.startup.StartupManager
 import filter.Filter
 import problem.Problem
 import psi.Parser
@@ -32,8 +35,7 @@ class Pipeline(private val filters: List<Filter>, private val problem: Problem, 
                 val holdoutProjects = holdoutFolder
                     .walk().maxDepth(1).toList().filter { it.name != holdout.folderName && !it.isFile }
                 holdoutProjects.forEachIndexed { index, holdoutProject ->
-                    println("Start parsing $holdout.${holdoutProject.name} project " +
-                            "(${index + 1}/${holdoutProjects.size})")
+                    println("Process $holdout.${holdoutProject.name} project (${index + 1}/${holdoutProjects.size})")
                     extractFromProject(parser, languages, holdoutProject, holdout, printTrees)
                 }
             }

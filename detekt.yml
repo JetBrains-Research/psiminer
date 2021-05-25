@@ -1,11 +1,9 @@
 complexity:
-  ComplexMethod:
-    threshold: 20
-  TooManyFunctions:
-    ignoreOverridden: true
+  LongParameterList:
+    constructorThreshold: 8 # TypedCode2SeqConstructor
 
 exceptions:
-  TooGenericExceptionCaught:
+  TooGenericExceptionCaught: # wrap whole plugin run to handle IDEA errors
     active: false
 
 formatting:
@@ -17,8 +15,6 @@ style:
     allowedPatterns: "TODO"
   MagicNumber:
     ignoreNumbers: ['-1', '0', '1', '2', '3', '10_000'] # default batch size
-  ReturnCount:
-    max: 3
   UnnecessaryAbstractClass:
     active: false # due to config system
   WildcardImport:

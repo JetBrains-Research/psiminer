@@ -33,5 +33,4 @@ class TypedCode2SeqStorage(
         val endTokenType = typeResolver.resolveType(path.last())
         return "$startTokenType,$vanillaPath,$endTokenType"
     }
-
 }

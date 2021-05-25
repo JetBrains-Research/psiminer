@@ -1,8 +1,5 @@
 import com.intellij.ide.impl.ProjectUtil
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.project.ex.ProjectManagerEx
-import com.intellij.openapi.startup.StartupManager
 import com.intellij.serviceContainer.AlreadyDisposedException
 import filter.Filter
 import problem.Problem
@@ -12,7 +9,6 @@ import psi.printTree
 import psi.splitPsiByGranularity
 import storage.Storage
 import java.io.File
-import java.lang.reflect.InvocationTargetException
 
 class Pipeline(private val filters: List<Filter>, private val problem: Problem, private val storage: Storage) {
 
@@ -79,6 +75,7 @@ class Pipeline(private val filters: List<Filter>, private val problem: Problem, 
             ProjectManagerEx.getInstanceEx().forceCloseProject(project)
         } catch (e: AlreadyDisposedException) {
             // TODO: figure out why this happened
+            println(e.message)
         }
     }
 }

@@ -53,7 +53,7 @@ class Pipeline(private val filters: List<Filter>, private val problem: Problem, 
             val files = getAllFilesByLanguage(project, language)
             println("Found ${files.size} $language files")
             val labeledTrees = parser.parseFiles(files, project).flatMap { psiTreeRoot ->
-                splitPsiByGranularity(psiTreeRoot, problem.granularityLevel)
+                psiTreeRoot.splitPsiByGranularity(problem.granularityLevel)
                     .filter { root -> filters.all { it.isGoodTree(root) } }
                     .mapNotNull { problem.processTree(it) }
             }

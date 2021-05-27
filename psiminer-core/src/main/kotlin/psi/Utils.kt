@@ -20,16 +20,16 @@ fun PsiElement.printTree(indent: Int = 0, delimiter: String = "..", indentStep: 
     children.forEach { it.printTree(newIndent, delimiter, indentStep) }
 }
 
-fun splitPsiByGranularity(root: PsiElement, granularity: GranularityLevel): List<PsiElement> =
-    PsiTreeUtil.collectElementsOfType(root, granularity.psiNodeClass).toList()
+fun PsiElement.splitPsiByGranularity(granularity: GranularityLevel): List<PsiElement> =
+    PsiTreeUtil.collectElementsOfType(this, granularity.psiNodeClass).toList()
 
-fun renameAllSubtreeOccurrences(root: PsiNamedElement, newName: String) {
+fun PsiNamedElement.renameAllSubtreeOccurrences(newName: String) {
     val usages = PsiTreeUtil
-        .collectElements(root) { it.textMatches(root.name ?: return@collectElements false) }
+        .collectElements(this) { it.textMatches(this.name ?: return@collectElements false) }
         .map { UsageInfo(it) }
         .toTypedArray()
-    val renameProcessor = RenamePsiElementProcessor.forElement(root)
-    WriteCommandAction.runWriteCommandAction(root.project) {
-        renameProcessor.renameElement(root, newName, usages, null)
+    val renameProcessor = RenamePsiElementProcessor.forElement(this)
+    WriteCommandAction.runWriteCommandAction(this.project) {
+        renameProcessor.renameElement(this, newName, usages, null)
     }
 }

@@ -4,20 +4,29 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiMethod
 
 class ConstructorFilter : Filter {
-    override fun isGoodTree(root: PsiElement) = root !is PsiMethod || !root.isConstructor
+    override fun isGoodTree(root: PsiElement) = root is PsiMethod && !root.isConstructor
 }
 
-class AbstractMethodFilter : Filter {
+/**
+ * Filter methods by their modifiers.
+ * E.g. [listOf("abstract")] would remove all abstract methods
+ * @param ignoreModifiers: list of modifiers to ignore
+ */
+class ModifierFilter(private val ignoreModifiers: List<String>) : Filter {
     override fun isGoodTree(root: PsiElement): Boolean =
-        root !is PsiMethod || !root.modifierList.hasModifierProperty("abstract")
+        root is PsiMethod && ignoreModifiers.all { !root.modifierList.hasModifierProperty(it) }
 }
 
-class OverrideMethodFilter : Filter {
+/**
+ * Filter methods by their annotations.
+ * E.g. [listOf("Override")] would remove all overridden methods
+ * @param ignoreAnnotations: list of annotations to ignore
+ */
+class AnnotationFilter(private val ignoreAnnotations: List<String>) : Filter {
     override fun isGoodTree(root: PsiElement): Boolean =
-        root !is PsiMethod || !root.modifierList.hasAnnotation("Override")
+        root is PsiMethod && ignoreAnnotations.all { !root.hasAnnotation(it) }
 }
 
 class EmptyMethodFilter : Filter {
-    override fun isGoodTree(root: PsiElement): Boolean =
-        root !is PsiMethod || !(root.body?.isEmpty ?: false)
+    override fun isGoodTree(root: PsiElement): Boolean = root is PsiMethod && !(root.body?.isEmpty ?: true)
 }

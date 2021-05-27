@@ -15,19 +15,19 @@ abstract class StorageConfig {
 }
 
 @Serializable
-@SerialName("JsonTree")
+@SerialName("json tree")
 class JsonTreeStorageConfig : StorageConfig() {
     override fun createStorage(outputDirectory: File): Storage = JsonTreeStorage(outputDirectory)
 }
 
 @Serializable
-@SerialName("JsonTypedTree")
+@SerialName("json typed tree")
 class JsonTypedTreeStorageConfig(private val splitTypes: Boolean = true) : StorageConfig() {
     override fun createStorage(outputDirectory: File): Storage = JsonTypedTreeStorage(outputDirectory, splitTypes)
 }
 
 @Serializable
-@SerialName("Code2seq")
+@SerialName("code2seq")
 class Code2SeqStorageConfig(
     private val pathWidth: Int, // Maximum distance between two children of path LCA node
     private val pathLength: Int, // Maximum length of path
@@ -41,7 +41,7 @@ class Code2SeqStorageConfig(
 }
 
 @Serializable
-@SerialName("TypedCode2Seq")
+@SerialName("typed code2seq")
 class TypedCode2SeqStorageConfig(
     private val pathWidth: Int, // Maximum distance between two children of path LCA node
     private val pathLength: Int, // Maximum length of path

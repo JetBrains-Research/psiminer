@@ -8,7 +8,6 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
-import psi.nodeIgnoreRules.PackageStatementIgnoreRule
 import kotlin.system.exitProcess
 
 class PluginRunner : ApplicationStarter {
@@ -31,8 +30,8 @@ val module = SerializersModule {
         subclass(CodeLinesFilterConfig::class)
         subclass(TreeSizeFilterConfig::class)
         subclass(ConstructorsFilterConfig::class)
-        subclass(AbstractMethodFilterConfig::class)
-        subclass(OverrideMethodFilterConfig::class)
+        subclass(ModifiersFilterConfig::class)
+        subclass(AnnotationsFilterConfig::class)
         subclass(EmptyMethodFilterConfig::class)
     }
     polymorphic(ProblemConfig::class) {

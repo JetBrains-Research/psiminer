@@ -1,9 +1,14 @@
 {
   "filters": [
-    {"name": "removeConstructor"}
+    {"name": "constructor"},
+    {"name": "empty method"},
+    {
+      "name": "by modifiers",
+      "excludeModifiers": ["abstract"]
+    }
   ],
   "problem": {"name": "method name prediction"},
-  "storage": {"name": "JsonTypedTree"},
+  "storage": {"name": "json typed tree"},
 
   "languages": ["Java"],
   "ignoreRules": [

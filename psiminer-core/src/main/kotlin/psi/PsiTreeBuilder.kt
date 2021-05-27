@@ -1,8 +1,5 @@
 package psi
 
-import com.intellij.psi.PsiModifierList
-import com.intellij.psi.PsiReferenceParameterList
-
 //    import astminer.common.normalizeToken
 //    import astminer.common.splitToSubtokens
 //    import com.intellij.psi.*

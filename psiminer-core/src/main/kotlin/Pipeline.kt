@@ -30,7 +30,8 @@ class Pipeline(private val filters: List<Filter>, private val problem: Problem, 
                 val holdoutProjects = holdoutFolder
                     .walk().maxDepth(1).toList().filter { it.name != holdout.folderName && !it.isFile }
                 holdoutProjects.forEachIndexed { index, holdoutProjectFile ->
-                    println("Process $holdout.${holdoutProjectFile.name} project (${index + 1}/${holdoutProjects.size})")
+                    println("Process $holdout.${holdoutProjectFile.name} project " +
+                            "(${index + 1}/${holdoutProjects.size})")
                     processProject(holdoutProjectFile, languageParsers, holdout, printTrees)
                 }
             }

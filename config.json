@@ -7,12 +7,15 @@
 
   "languages": ["Java"],
   "ignoreRules": [
-    {"name": "whitespace"}
+    {"name": "whitespace"},
+    {"name": "empty grammar lists"},
+    {"name": "keywords"},
+    {"name": "java symbols"}
   ],
   "transformTree": [
     {"name": "remove comments"},
     {"name": "compress operators"}
   ],
 
-  "printTrees": false
+  "printTrees": true
 }

@@ -1,5 +1,8 @@
 package psi
 
+import com.intellij.psi.PsiModifierList
+import com.intellij.psi.PsiReferenceParameterList
+
 //    import astminer.common.normalizeToken
 //    import astminer.common.splitToSubtokens
 //    import com.intellij.psi.*
@@ -46,10 +49,6 @@ package psi
 //        }
 //
 //        private fun validatePsiElement(node: PsiElement): Boolean {
-//            val isSkipType = node is PsiWhiteSpace || node is PsiImportList || node is PsiPackageStatement
-//            val isJavaPrintableSymbol = skipElementTypes.any { node.elementType == it }
-//            val isEmptyList = (node.children.isEmpty() || node.text == "()") && listTypes.any { it.isInstance(node) }
-//            val isSkipKeyword = config.removeKeyword && node is PsiKeyword
 //            val isSkipOperator = config.compressOperators && ElementType.OPERATION_BIT_SET.contains(node.elementType)
 //            val isSkipComment = config.removeComments && node is PsiComment && node !is PsiDocComment
 //            val isSkipJavaDoc = config.removeJavaDoc && node is PsiDocComment
@@ -92,23 +91,7 @@ package psi
 //
 //            private val numberLiterals = TokenSet.orSet(ElementType.INTEGER_LITERALS, ElementType.REAL_LITERALS)
 //            private val numberWhiteList = listOf("0", "1", "32", "64")
-//            private val skipElementTypes = listOf(
-//                ElementType.LBRACE,
-//                ElementType.RBRACE,
-//                ElementType.LBRACKET,
-//                ElementType.RBRACKET,
-//                ElementType.LPARENTH,
-//                ElementType.RPARENTH,
-//                ElementType.SEMICOLON,
-//                ElementType.COMMA,
-//                ElementType.DOT,
-//                ElementType.ELLIPSIS,
-//                ElementType.AT
-//            )
-//            val listTypes = listOf(
-//                PsiReferenceParameterList::class, PsiReferenceParameterList::class, PsiModifierList::class,
-//                PsiReferenceList::class, PsiTypeParameterList::class, PsiExpressionList::class,
-//                PsiParameterList::class, PsiExpressionListStatement::class, PsiAnnotationParameterList::class
-//            )
+//
+
 //        }
 //    }

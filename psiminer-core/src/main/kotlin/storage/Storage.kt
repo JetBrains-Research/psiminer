@@ -9,7 +9,7 @@ import java.io.PrintWriter
 
 abstract class Storage(protected val outputDirectory: File) {
 
-    protected data class OutputDirection(val holdout: Dataset, val language: Language)
+    protected data class OutputDirection(val holdout: Dataset?, val language: Language)
     private val datasetFileWriters = mutableMapOf<OutputDirection, PrintWriter>()
     private val datasetStatistic = mutableMapOf<OutputDirection, Int>()
 
@@ -20,15 +20,16 @@ abstract class Storage(protected val outputDirectory: File) {
     abstract val fileExtension: String
     protected abstract fun convert(labeledTree: LabeledTree, outputDirection: OutputDirection): String
 
-    fun store(labeledTree: LabeledTree, holdout: Dataset, language: Language) {
+    fun store(labeledTree: LabeledTree, holdout: Dataset?, language: Language) {
         val outputDirection = OutputDirection(holdout, language)
         val stringRepresentation = convert(labeledTree, outputDirection)
 
         datasetStatistic[outputDirection] = datasetStatistic.getOrCreate(outputDirection) { 0 }.plus(1)
         datasetFileWriters.getOrPut(outputDirection) {
+            val outputFilename = holdout?.folderName ?: "result"
             val outputFile = outputDirectory
                 .resolve(language.name)
-                .resolve("${holdout.folderName}.$fileExtension")
+                .resolve("$outputFilename.$fileExtension")
             outputFile.parentFile.mkdirs()
             outputFile.createNewFile()
             PrintWriter(outputFile)

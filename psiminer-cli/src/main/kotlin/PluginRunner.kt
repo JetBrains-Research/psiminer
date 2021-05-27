@@ -8,6 +8,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
+import psi.nodeIgnoreRules.PackageStatementIgnoreRule
 import kotlin.system.exitProcess
 
 class PluginRunner : ApplicationStarter {
@@ -38,7 +39,12 @@ val module = SerializersModule {
         subclass(MethodNamePredictionConfig::class)
     }
     polymorphic(PsiNodeIgnoreRuleConfig::class) {
-        subclass(WhitespaceIgnoreRuleConfig::class)
+        subclass(WhiteSpaceIgnoreRuleConfig::class)
+        subclass(KeywordsIgnoreRuleConfig::class)
+        subclass(EmptyListsIgnoreRuleConfig::class)
+        subclass(PackageStatementIgnoreRuleConfig::class)
+        subclass(ImportStatementIgnoreRuleConfig::class)
+        subclass(JavaSymbolsIgnoreRuleConfig::class)
     }
 }
 

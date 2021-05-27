@@ -20,10 +20,8 @@ fun PsiElement.printTree(indent: Int = 0, delimiter: String = "..", indentStep: 
     children.forEach { it.printTree(newIndent, delimiter, indentStep) }
 }
 
-fun splitPsiByGranularity(psiTrees: List<PsiElement>, granularity: GranularityLevel): List<PsiElement> =
-    psiTrees.flatMap { psiTree ->
-        PsiTreeUtil.collectElementsOfType(psiTree, granularity.psiNodeClass)
-    }
+fun splitPsiByGranularity(root: PsiElement, granularity: GranularityLevel): List<PsiElement> =
+    PsiTreeUtil.collectElementsOfType(root, granularity.psiNodeClass).toList()
 
 fun renameAllSubtreeOccurrences(root: PsiNamedElement, newName: String) {
     val usages = PsiTreeUtil

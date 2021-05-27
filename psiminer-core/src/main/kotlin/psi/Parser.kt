@@ -1,40 +1,49 @@
 package psi
 
-import Language
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.ProjectRootManager
-import com.intellij.openapi.vfs.VfsUtilCore
-import com.intellij.psi.*
+import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiManager
+import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.PsiTreeUtil
-import psi.nodeProperties.isHidden
+import psi.language.LanguageDescription
+import psi.nodeIgnoreRules.CommonIgnoreRule
 import psi.nodeIgnoreRules.PsiNodeIgnoreRule
 import psi.nodeIgnoreRules.WhiteSpaceIgnoreRule
+import psi.nodeProperties.isHidden
 
-class Parser(private val nodeIgnoreRules: List<PsiNodeIgnoreRule>) {
+class Parser(
+    nodeIgnoreRules: List<PsiNodeIgnoreRule>,
+    private val languageDescription: LanguageDescription
+) {
 
-    fun isWhiteSpaceHidden() = nodeIgnoreRules.find { it is WhiteSpaceIgnoreRule } != null
-
-    fun hideAllWhiteSpaces(root: PsiElement) =
-        PsiTreeUtil.collectElementsOfType(root, PsiWhiteSpace::class.java).forEach { it.isHidden = true }
+    private val validatedIgnoreRules = nodeIgnoreRules.filter {
+        it is CommonIgnoreRule || languageDescription.ignoreRuleType.isInstance(it)
+    }
 
     private fun hideNodes(root: PsiElement) =
-        PsiTreeUtil.collectElements(root) { node -> nodeIgnoreRules.any { it.isIgnored(node) } }
+        PsiTreeUtil
+            .collectElements(root) { node -> validatedIgnoreRules.any { it.isIgnored(node) } }
             .forEach { it.isHidden = true }
 
-    fun parseProject(project: Project, language: Language): List<PsiElement> {
-        val projectPsiFiles = mutableListOf<PsiFile>()
-        ProjectRootManager.getInstance(project).contentRoots.mapNotNull { root ->
-            VfsUtilCore.iterateChildrenRecursively(root, null) { virtualFile ->
-                if (virtualFile.extension !in language.extensions || virtualFile.canonicalPath == null) {
-                    return@iterateChildrenRecursively true
-                }
-                val psi =
-                    PsiManager.getInstance(project).findFile(virtualFile) ?: return@iterateChildrenRecursively true
-                projectPsiFiles.add(psi)
-            }
-        }
+    fun parseFile(virtualFile: VirtualFile, projectCtx: Project): PsiElement? {
+        val psiFile = PsiManager.getInstance(projectCtx).findFile(virtualFile) ?: return null
+        hideNodes(psiFile)
+        return psiFile
+    }
 
-        projectPsiFiles.forEach { hideNodes(it) }
-        return projectPsiFiles
+    fun parseFiles(virtualFiles: List<VirtualFile>, projectCtx: Project): List<PsiElement> =
+        virtualFiles.mapNotNull { parseFile(it, projectCtx) }
+
+    /***
+     * Some modifications during filtering or label extracting may add whitespaces (e.g. after renaming identifiers)
+     * Therefore someone need to hide them manually before saving
+     * @param root: tree for which we need to hide white spaces
+     * @return: false if parser wasn't initialized with white space ignore rule and true otherwise
+     */
+    fun hideWhitespaces(root: PsiElement): Boolean {
+        if (validatedIgnoreRules.find { it is WhiteSpaceIgnoreRule } == null) return false
+        PsiTreeUtil.collectElementsOfType(root, PsiWhiteSpace::class.java).forEach { it.isHidden = true }
+        return true
     }
 }

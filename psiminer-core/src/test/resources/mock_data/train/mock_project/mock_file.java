@@ -48,7 +48,7 @@ public class Main {
         String s1 = null;
         Char c = 's';
         Double d = 3.14;
-        int f = 5;
+        int f = 0;
         f();
     }
 }

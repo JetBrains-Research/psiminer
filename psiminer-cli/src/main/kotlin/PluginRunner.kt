@@ -45,11 +45,15 @@ val module = SerializersModule {
         subclass(ImportStatementIgnoreRuleConfig::class)
         subclass(JavaSymbolsIgnoreRuleConfig::class)
     }
+    polymorphic(PsiTreeProcessorConfig::class) {
+        subclass(HideLiteralsConfig::class)
+        subclass(CompressOperatorsConfig::class)
+        subclass(RemoveCommentsConfig::class)
+    }
 }
 
 val jsonFormat = Json {
     serializersModule = module
-    ignoreUnknownKeys = true
     classDiscriminator = "name"
 }
 
@@ -72,6 +76,7 @@ class PsiExtractor : CliktCommand() {
                 dataset,
                 config.languages,
                 config.ignoreRules.map { it.createIgnoreRule() },
+                config.treeProcessors.map { it.createTreeProcessor() },
                 config.printTrees
             )
         } catch (e: Exception) {

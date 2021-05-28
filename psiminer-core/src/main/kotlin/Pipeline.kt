@@ -4,6 +4,7 @@ import psi.Parser
 import psi.nodeIgnoreRules.PsiNodeIgnoreRule
 import psi.printTree
 import psi.splitPsiByGranularity
+import psi.treeProcessors.PsiTreeProcessor
 import storage.Storage
 import java.io.File
 
@@ -18,9 +19,10 @@ class Pipeline(private val filters: List<Filter>, private val problem: Problem, 
         inputDirectory: File,
         languages: List<Language>,
         nodeIgnoreRules: List<PsiNodeIgnoreRule>,
+        treeProcessors: List<PsiTreeProcessor>,
         printTrees: Boolean = false
     ) {
-        val languageParsers = languages.associateWith { Parser(nodeIgnoreRules, it.description) }
+        val languageParsers = languages.associateWith { Parser(nodeIgnoreRules, treeProcessors, it) }
 
         val isDataset = checkFolderIsDataset(inputDirectory)
         if (isDataset) {
@@ -58,6 +60,7 @@ class Pipeline(private val filters: List<Filter>, private val problem: Problem, 
                     .mapNotNull { problem.processTree(it) }
             }
             labeledTrees.forEach {
+                parser.hideWhitespaces(it.root)
                 storage.store(it, holdout, language)
                 if (printTrees) it.root.printTree()
             }

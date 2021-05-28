@@ -14,7 +14,11 @@ style:
   ForbiddenComment:
     allowedPatterns: "TODO"
   MagicNumber:
-    ignoreNumbers: ['-1', '0', '1', '2', '3', '10_000'] # default batch size
+    ignoreNumbers: [
+        '-1', '0', '1', '2', '3', # initial values
+        '10_000', # default batch size
+        '32', '64' # default number literals whitelist
+    ]
   UnnecessaryAbstractClass:
     active: false # due to config system
   WildcardImport:

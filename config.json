@@ -11,15 +11,22 @@
   "storage": {"name": "json typed tree"},
 
   "languages": ["Java"],
-  "ignoreRules": [
+  "ignore rules": [
     {"name": "whitespace"},
     {"name": "empty grammar lists"},
     {"name": "keywords"},
     {"name": "java symbols"}
   ],
-  "transformTree": [
-    {"name": "remove comments"},
-    {"name": "compress operators"}
+  "process tree": [
+    {"name": "compress operators"},
+    {
+      "name": "hide literals",
+      "hideNumbers": true
+    },
+    {
+      "name": "remove comments",
+      "removeJavaDoc": false
+    }
   ],
 
   "printTrees": true

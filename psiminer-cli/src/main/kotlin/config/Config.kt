@@ -1,6 +1,7 @@
 package config
 
 import Language
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable data class Config(
@@ -11,7 +12,8 @@ import kotlinx.serialization.Serializable
 
     // ===== Parser configuration =====
     val languages: List<Language>,
-    val ignoreRules: List<PsiNodeIgnoreRuleConfig>,
+    @SerialName("ignore rules") val ignoreRules: List<PsiNodeIgnoreRuleConfig>,
+    @SerialName("process tree") val treeProcessors: List<PsiTreeProcessorConfig>,
 
     // ===== Debugging =====
     val printTrees: Boolean = false

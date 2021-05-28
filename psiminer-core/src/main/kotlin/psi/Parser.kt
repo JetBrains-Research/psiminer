@@ -1,24 +1,39 @@
 package psi
 
+import Language
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.PsiTreeUtil
-import psi.language.LanguageDescription
 import psi.nodeIgnoreRules.CommonIgnoreRule
 import psi.nodeIgnoreRules.PsiNodeIgnoreRule
 import psi.nodeIgnoreRules.WhiteSpaceIgnoreRule
 import psi.nodeProperties.isHidden
+import psi.treeProcessors.PsiTreeProcessor
 
 class Parser(
     nodeIgnoreRules: List<PsiNodeIgnoreRule>,
-    private val languageDescription: LanguageDescription
+    treeProcessors: List<PsiTreeProcessor>,
+    private val language: Language
 ) {
 
     private val validatedIgnoreRules = nodeIgnoreRules.filter {
-        it is CommonIgnoreRule || languageDescription.ignoreRuleType.isInstance(it)
+        if (it is CommonIgnoreRule) return@filter true
+        if (!language.description.ignoreRuleType.isInstance(it)) {
+            println("$language doesn't support ${it::class.simpleName} and thus wouldn't use it")
+            return@filter false
+        }
+        true
+    }
+
+    private val validatedTreeProcessors = treeProcessors.filter {
+        if (!language.description.treeProcessor.isInstance(it)) {
+            println("$language doesn't support ${it::class.simpleName} and thus wouldn't use it")
+            return@filter false
+        }
+        true
     }
 
     private fun hideNodes(root: PsiElement) =
@@ -26,8 +41,12 @@ class Parser(
             .collectElements(root) { node -> validatedIgnoreRules.any { it.isIgnored(node) } }
             .forEach { it.isHidden = true }
 
+    private fun processTree(root: PsiElement) =
+        validatedTreeProcessors.forEach { it.process(root) }
+
     fun parseFile(virtualFile: VirtualFile, projectCtx: Project): PsiElement? {
         val psiFile = PsiManager.getInstance(projectCtx).findFile(virtualFile) ?: return null
+        processTree(psiFile)
         hideNodes(psiFile)
         return psiFile
     }

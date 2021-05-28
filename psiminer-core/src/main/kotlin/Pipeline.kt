@@ -65,5 +65,6 @@ class Pipeline(private val filters: List<Filter>, private val problem: Problem, 
                 if (printTrees) it.root.printTree()
             }
         }
+        closeProject(project)
     }
 }

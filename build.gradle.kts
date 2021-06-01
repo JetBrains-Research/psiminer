@@ -24,7 +24,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1")
 
-    testImplementation("junit:junit:4.11")
+    testImplementation("junit:junit:4.13.2")
     testImplementation(kotlin("test-junit"))
 
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.17.0")

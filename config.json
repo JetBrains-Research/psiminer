@@ -7,7 +7,7 @@
       "excludeModifiers": ["abstract"]
     }
   ],
-  "problem": {"name": "method name prediction"},
+  "label": {"name": "method name prediction"},
   "storage": {"name": "json typed tree"},
 
   "languages": ["Java"],
@@ -29,5 +29,5 @@
     }
   ],
 
-  "printTrees": true
+  "printTrees": false
 }

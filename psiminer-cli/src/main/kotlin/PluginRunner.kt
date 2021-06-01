@@ -34,7 +34,7 @@ val module = SerializersModule {
         subclass(AnnotationsFilterConfig::class)
         subclass(EmptyMethodFilterConfig::class)
     }
-    polymorphic(ProblemConfig::class) {
+    polymorphic(LabelExtractorConfig::class) {
         subclass(MethodNamePredictionConfig::class)
     }
     polymorphic(PsiNodeIgnoreRuleConfig::class) {
@@ -67,17 +67,17 @@ class PsiExtractor : CliktCommand() {
         val config = jsonFormat.decodeFromString<Config>(jsonConfig.readText())
 
         val filters = config.filters.map { it.createFilter() }
-        val problem = config.problem.createProblem()
+        val problem = config.labelExtractor.createProblem()
         val storage = config.storage.createStorage(output)
-        val pipeline = Pipeline(filters, problem, storage)
+        val pipelineParameters = Pipeline.PipelineParameters(config.batchSize, config.printTrees)
+        val pipeline = Pipeline(filters, problem, storage, pipelineParameters)
 
         try {
             pipeline.extract(
                 dataset,
                 config.languages,
                 config.ignoreRules.map { it.createIgnoreRule() },
-                config.treeProcessors.map { it.createTreeProcessor() },
-                config.printTrees
+                config.treeProcessors.map { it.createTreeProcessor() }
             )
         } catch (e: Exception) {
             println(e.message)

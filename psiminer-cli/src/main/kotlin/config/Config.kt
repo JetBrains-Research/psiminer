@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 @Serializable data class Config(
     // ====== Pipeline configuration =====
     val filters: List<FilterConfig>,
-    val problem: ProblemConfig,
+    @SerialName("label") val labelExtractor: LabelExtractorConfig,
     val storage: StorageConfig,
 
     // ===== Parser configuration =====
@@ -15,6 +15,7 @@ import kotlinx.serialization.Serializable
     @SerialName("ignore rules") val ignoreRules: List<PsiNodeIgnoreRuleConfig>,
     @SerialName("process tree") val treeProcessors: List<PsiTreeProcessorConfig>,
 
-    // ===== Debugging =====
+    // ===== Other parameters =====
+    val batchSize: Int = 10_000,
     val printTrees: Boolean = false
 )

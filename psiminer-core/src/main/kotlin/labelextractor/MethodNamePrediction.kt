@@ -1,4 +1,4 @@
-package problem
+package labelextractor
 
 import GranularityLevel
 import com.intellij.psi.PsiElement
@@ -8,17 +8,21 @@ import psi.nodeProperties.technicalToken
 import psi.nodeProperties.token
 import psi.renameAllSubtreeOccurrences
 
-class MethodNamePrediction : Problem {
+class MethodNamePrediction : LabelExtractor() {
 
     override val granularityLevel = GranularityLevel.Method
 
-    override fun processTree(root: PsiElement): LabeledTree? {
+    override fun handleTree(root: PsiElement): String? {
         if (root !is PsiMethod) throw IllegalArgumentException("Try to extract method name not from the method")
         val methodName = root.nameIdentifier?.token ?: return null
-        root.renameAllSubtreeOccurrences(METHOD_NAME) // Rename text representation
-        PsiTreeUtil.collectElements(root) { it.textMatches(METHOD_NAME) } // Mark with technical token
+        // Mark all occurrences in subtree with METHOD_NAME token
+        PsiTreeUtil
+            .collectElements(root) { it.textMatches(methodName) }
             .forEach { it.technicalToken = METHOD_NAME }
-        return LabeledTree(root, methodName)
+        // TODO: implement text replacement of original method name to special token
+        // For now, label extractor is working under ReadAction and cannot be applied to write changes
+        // root.renameAllSubtreeOccurrences(METHOD_NAME) // Rename text representation
+        return methodName
     }
 
     private companion object {

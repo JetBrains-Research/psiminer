@@ -1,9 +1,11 @@
 package psi
 
 import GranularityLevel
-import com.intellij.openapi.command.WriteCommandAction
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.ReadAction
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNamedElement
+import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.refactoring.rename.RenamePsiElementProcessor
 import com.intellij.usageView.UsageInfo
@@ -12,16 +14,20 @@ import psi.nodeProperties.nodeType
 import psi.nodeProperties.token
 
 fun PsiElement.printTree(indent: Int = 0, delimiter: String = "..", indentStep: Int = 2) {
-    var newIndent = indent
-    if (!isHidden) {
-        println("${delimiter.repeat(indent)} $nodeType -- $token")
-        newIndent += indentStep
+    ReadAction.run<Exception> {
+        var newIndent = indent
+        if (!isHidden) {
+            println("${delimiter.repeat(indent)} $nodeType -- $token")
+            newIndent += indentStep
+        }
+        children.forEach { it.printTree(newIndent, delimiter, indentStep) }
     }
-    children.forEach { it.printTree(newIndent, delimiter, indentStep) }
 }
 
 fun PsiElement.splitPsiByGranularity(granularity: GranularityLevel): List<PsiElement> =
-    PsiTreeUtil.collectElementsOfType(this, granularity.psiNodeClass).toList()
+    ReadAction.compute<List<PsiElement>, Exception> {
+        PsiTreeUtil.collectElementsOfType(this, granularity.psiNodeClass).toList()
+    }
 
 fun PsiNamedElement.renameAllSubtreeOccurrences(newName: String) {
     val usages = PsiTreeUtil
@@ -29,7 +35,13 @@ fun PsiNamedElement.renameAllSubtreeOccurrences(newName: String) {
         .map { UsageInfo(it) }
         .toTypedArray()
     val renameProcessor = RenamePsiElementProcessor.forElement(this)
-    WriteCommandAction.runWriteCommandAction(this.project) {
-        renameProcessor.renameElement(this, newName, usages, null)
-    }
+    renameProcessor.renameElement(this, newName, usages, null)
+}
+
+/**
+ * Some modifications during filtering or label extracting may add whitespaces (e.g. after renaming identifiers)
+ * Therefore someone need to hide them manually before saving
+ */
+fun PsiElement.hideWhiteSpaces() = ReadAction.run<Exception> {
+    PsiTreeUtil.collectElementsOfType(this, PsiWhiteSpace::class.java).forEach { it.isHidden = true }
 }

@@ -40,7 +40,7 @@ fun getAllFilesByLanguage(project: Project, language: Language) =
         .contentRoots
         .flatMap { root ->
             VfsUtil.collectChildrenRecursively(root).filter {
-                it.extension in language.extensions || it.canonicalPath != null
+                it.extension in language.extensions && it.canonicalPath != null
             }
         }
         .filterNotNull()

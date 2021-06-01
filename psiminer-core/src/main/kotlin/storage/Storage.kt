@@ -2,8 +2,9 @@ package storage
 
 import Dataset
 import Language
+import com.intellij.openapi.application.ReadAction
 import com.jetbrains.rd.util.getOrCreate
-import problem.LabeledTree
+import labelextractor.LabeledTree
 import java.io.File
 import java.io.PrintWriter
 
@@ -22,7 +23,7 @@ abstract class Storage(protected val outputDirectory: File) {
 
     fun store(labeledTree: LabeledTree, holdout: Dataset?, language: Language) {
         val outputDirection = OutputDirection(holdout, language)
-        val stringRepresentation = convert(labeledTree, outputDirection)
+        val stringRepresentation = ReadAction.compute<String, Exception> { convert(labeledTree, outputDirection) }
 
         datasetStatistic[outputDirection] = datasetStatistic.getOrCreate(outputDirection) { 0 }.plus(1)
         datasetFileWriters.getOrPut(outputDirection) {

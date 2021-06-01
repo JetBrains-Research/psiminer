@@ -7,7 +7,7 @@ import astminer.common.storage.dumpIdStorageToCsv
 import astminer.paths.PathMiner
 import astminer.paths.PathRetrievalSettings
 import com.intellij.psi.PsiElement
-import problem.LabeledTree
+import labelextractor.LabeledTree
 import psi.nodeProperties.nodeType
 import psi.nodeProperties.token
 import storage.Storage

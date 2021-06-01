@@ -1,6 +1,5 @@
 package psi.treeProcessors
 
-import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.psi.*
 import com.intellij.psi.impl.source.tree.ElementType
 import com.intellij.psi.javadoc.PsiDocComment
@@ -74,11 +73,7 @@ class RemoveComments(private val removeJavaDoc: Boolean) : JavaTreeProcessor {
             // If we do not change the order of the elements, then a parent can invalidate
             // the child element, but it can also be a comment and an exception will be thrown,
             // so we must delete the found comments in the reverse order
-            it.value.reversed().forEach { comment ->
-                WriteCommandAction.runWriteCommandAction(comment.project) {
-                    comment.delete()
-                }
-            }
+            it.value.reversed().forEach { it.delete() }
         }
     }
 }

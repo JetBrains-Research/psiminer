@@ -4,7 +4,7 @@ import com.intellij.psi.PsiElement
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import problem.LabeledTree
+import labelextractor.LabeledTree
 import psi.nodeProperties.nodeType
 import psi.nodeProperties.token
 import storage.Storage

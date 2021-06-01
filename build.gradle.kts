@@ -6,7 +6,7 @@ plugins {
     id("org.jetbrains.intellij") version "0.7.3"
     id("io.gitlab.arturbosch.detekt") version "1.17.0"
 
-    kotlin("jvm") version "1.5.0"
+    kotlin("jvm") version "1.5.10"
     kotlin("plugin.serialization") version "1.5.0"
 }
 

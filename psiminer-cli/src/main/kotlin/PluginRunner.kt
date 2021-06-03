@@ -3,6 +3,7 @@ import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.types.file
 import com.intellij.openapi.application.ApplicationStarter
 import config.*
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
@@ -55,6 +56,7 @@ val module = SerializersModule {
 val jsonFormat = Json {
     serializersModule = module
     classDiscriminator = "name"
+    ignoreUnknownKeys = false
 }
 
 class PsiExtractor : CliktCommand() {
@@ -64,26 +66,28 @@ class PsiExtractor : CliktCommand() {
     private val jsonConfig by argument(help = "JSON config").file(mustExist = true, canBeDir = false)
 
     override fun run() {
-        val config = jsonFormat.decodeFromString<Config>(jsonConfig.readText())
-
-        val filters = config.filters.map { it.createFilter() }
-        val problem = config.labelExtractor.createProblem()
-        val storage = config.storage.createStorage(output)
-        val pipelineParameters = Pipeline.PipelineParameters(config.batchSize, config.printTrees)
-        val pipeline = Pipeline(filters, problem, storage, pipelineParameters)
-
         try {
-            pipeline.extract(
-                dataset,
-                config.languages,
-                config.ignoreRules.map { it.createIgnoreRule() },
-                config.treeProcessors.map { it.createTreeProcessor() }
+            val config = jsonFormat.decodeFromString<Config>(jsonConfig.readText())
+
+            val storage = config.storage.createStorage(output)
+            val pipelineConfig = PipelineConfig(
+                parameters = Parameters(config.batchSize, config.printTrees),
+                languages = config.languages,
+                nodeIgnoreRules = config.nodeIgnoreRules.map { it.createIgnoreRule() },
+                treeTransformations = config.treeTransformers.map { it.createTreeProcessor() },
+                filters = config.filters.map { it.createFilter() },
+                labelExtractor = config.labelExtractor.createProblem(),
+                storage = storage
             )
+            val pipeline = Pipeline(pipelineConfig)
+            pipeline.extract(dataset)
+            storage.printStatistic()
+            storage.close()
+        } catch (e: SerializationException) {
+            println("Error during parsing the config:\n${e.message}")
         } catch (e: Exception) {
             println(e.message)
         } finally {
-            storage.printStatistic()
-            storage.close()
             exitProcess(0)
         }
     }

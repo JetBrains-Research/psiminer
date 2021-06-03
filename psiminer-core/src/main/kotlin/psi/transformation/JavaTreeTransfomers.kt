@@ -1,4 +1,4 @@
-package psi.treeProcessors
+package psi.transformation
 
 import com.intellij.psi.*
 import com.intellij.psi.impl.source.tree.ElementType
@@ -10,14 +10,14 @@ import psi.nodeProperties.isHidden
 import psi.nodeProperties.nodeType
 import psi.nodeProperties.technicalToken
 
-interface JavaTreeProcessor : PsiTreeProcessor
+interface JavaTreeTransformer : PsiTreeTransformer
 
 class HideLiterals(
     private val hideNumbers: Boolean = false,
     private val numberWhiteList: List<Int> = listOf(0, 1, 32, 64),
     private val hideStrings: Boolean = false
-) : JavaTreeProcessor {
-    override fun process(root: PsiElement) =
+) : JavaTreeTransformer {
+    override fun transform(root: PsiElement) =
         PsiTreeUtil.collectElementsOfType(root, PsiJavaToken::class.java)
             .forEach { token ->
                 if (hideNumbers &&
@@ -39,10 +39,10 @@ class HideLiterals(
     }
 }
 
-class CompressOperators : JavaTreeProcessor {
+class CompressOperators : JavaTreeTransformer {
     private val compressOperatorVisitor = CompressOperatorVisitor()
 
-    override fun process(root: PsiElement) = root.accept(compressOperatorVisitor)
+    override fun transform(root: PsiElement) = root.accept(compressOperatorVisitor)
 
     private inner class CompressOperatorVisitor : JavaRecursiveElementVisitor() {
         override fun visitExpression(expression: PsiExpression?) {
@@ -62,8 +62,8 @@ class CompressOperators : JavaTreeProcessor {
     }
 }
 
-class RemoveComments(private val removeJavaDoc: Boolean) : JavaTreeProcessor {
-    override fun process(root: PsiElement) {
+class RemoveComments(private val removeJavaDoc: Boolean) : JavaTreeTransformer {
+    override fun transform(root: PsiElement) {
         val comments = PsiTreeUtil.collectElementsOfType(root, PsiComment::class.java)
             .filter { if (!removeJavaDoc) it !is PsiDocComment else true }
         // We should handle each group of elements with same parent separately

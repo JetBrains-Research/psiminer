@@ -12,8 +12,8 @@ import kotlinx.serialization.Serializable
 
     // ===== Parser configuration =====
     val languages: List<Language>,
-    @SerialName("ignore rules") val ignoreRules: List<PsiNodeIgnoreRuleConfig>,
-    @SerialName("process tree") val treeProcessors: List<PsiTreeProcessorConfig>,
+    @SerialName("node ignore rules") val nodeIgnoreRules: List<PsiNodeIgnoreRuleConfig>,
+    @SerialName("tree transformations") val treeTransformers: List<PsiTreeProcessorConfig>,
 
     // ===== Other parameters =====
     val batchSize: Int = 10_000,

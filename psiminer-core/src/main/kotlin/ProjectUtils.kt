@@ -3,6 +3,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ex.ProjectManagerEx
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VfsUtil
+import com.intellij.psi.PsiManager
 import com.intellij.serviceContainer.AlreadyDisposedException
 import java.io.File
 
@@ -26,21 +27,3 @@ fun closeProject(project: Project) =
         // TODO: figure out why this happened
         println(e.message)
     }
-
-/***
- * Collect all files from project that correspond to given language
- * Search is based on checking extension of each file
- * @param project: project where run search
- * @param language: specified language
- * @return: list of all files in project that correspond to required language
- */
-fun getAllFilesByLanguage(project: Project, language: Language) =
-    ProjectRootManager
-        .getInstance(project)
-        .contentRoots
-        .flatMap { root ->
-            VfsUtil.collectChildrenRecursively(root).filter {
-                it.extension in language.extensions && it.canonicalPath != null
-            }
-        }
-        .filterNotNull()

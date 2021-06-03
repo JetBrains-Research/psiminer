@@ -29,7 +29,7 @@ allprojects {
         implementation("org.jetbrains.kotlin:kotlin-reflect:1.5.0")
         implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.1")
 
-        testImplementation("junit:junit:4.11")
+        testImplementation("junit:junit:4.13")
         testImplementation(kotlin("test-junit"))
 
         detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.17.0")

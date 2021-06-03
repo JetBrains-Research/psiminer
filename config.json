@@ -11,13 +11,13 @@
   "storage": {"name": "json typed tree"},
 
   "languages": ["Java"],
-  "ignore rules": [
+  "node ignore rules": [
     {"name": "whitespace"},
     {"name": "empty grammar lists"},
     {"name": "keywords"},
     {"name": "java symbols"}
   ],
-  "process tree": [
+  "tree transformations": [
     {"name": "compress operators"},
     {
       "name": "hide literals",

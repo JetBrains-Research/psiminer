@@ -1,66 +1,77 @@
 package psi
 
+import GranularityLevel
 import Language
-import com.intellij.openapi.command.WriteCommandAction
+import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.roots.ProjectRootManager
+import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.util.PsiTreeUtil
+import labelextractor.LabeledTree
 import psi.nodeIgnoreRules.CommonIgnoreRule
 import psi.nodeIgnoreRules.PsiNodeIgnoreRule
 import psi.nodeIgnoreRules.WhiteSpaceIgnoreRule
 import psi.nodeProperties.isHidden
-import psi.treeProcessors.PsiTreeProcessor
+import psi.transformation.PsiTreeTransformer
 
 class Parser(
+    private val language: Language,
     nodeIgnoreRules: List<PsiNodeIgnoreRule>,
-    treeProcessors: List<PsiTreeProcessor>,
-    private val language: Language
+    treeTransformers: List<PsiTreeTransformer>
 ) {
 
-    private val validatedIgnoreRules = nodeIgnoreRules.filter {
-        if (it is CommonIgnoreRule) return@filter true
-        if (!language.description.ignoreRuleType.isInstance(it)) {
-            println("$language doesn't support ${it::class.simpleName} and thus wouldn't use it")
-            return@filter false
-        }
-        true
+    private val nodeIgnoreRules = nodeIgnoreRules.filter {
+        it is CommonIgnoreRule || language.description.ignoreRuleType.isInstance(it)
+    }
+    private val isWhiteSpaceHidden = nodeIgnoreRules.any { it is WhiteSpaceIgnoreRule }
+
+    private val treeTransformers = treeTransformers.filter {
+        language.description.treeTransformer.isInstance(it)
     }
 
-    private val validatedTreeProcessors = treeProcessors.filter {
-        if (!language.description.treeProcessor.isInstance(it)) {
-            println("$language doesn't support ${it::class.simpleName} and thus wouldn't use it")
-            return@filter false
-        }
-        true
+    override fun toString(): String =
+        "$language parser with " +
+                "${nodeIgnoreRules.joinToString { it::class.simpleName ?: "" }} ignore rules and " +
+                "${treeTransformers.joinToString { it::class.simpleName ?: "" }} tree transformations"
+
+    /***
+     * Collect all files from project that correspond to given language
+     * Search is based on checking extension of each file
+     * @param project: project where run search
+     * @return: list of all PSI Files in project that correspond to required language
+     * @see PsiFile
+     */
+    fun parseProject(
+        project: Project,
+        granularity: GranularityLevel,
+        handlePsiFile: (PsiElement) -> LabeledTree?,
+        outputCallback: (LabeledTree) -> Unit
+    ) {
+        ProjectRootManager
+            .getInstance(project)
+            .contentRoots
+            .flatMap { root ->
+                VfsUtil.collectChildrenRecursively(root).filter {
+                    it.extension in language.extensions && it.canonicalPath != null
+                }
+            }
+            .forEach { file ->
+                val psiFile = ReadAction.compute<PsiFile?, Exception> {
+                    PsiManager.getInstance(project).findFile(file)
+                } ?: return@forEach
+                treeTransformers.forEach { it.transform(psiFile) }
+                PsiTreeUtil
+                    .collectElements(psiFile) { node -> nodeIgnoreRules.any { it.isIgnored(node) } }
+                    .forEach { it.isHidden = true }
+                psiFile
+                    .splitPsiByGranularity(granularity)
+                    .mapNotNull { psiElement ->
+                        handlePsiFile(psiElement)?.also { if (isWhiteSpaceHidden) it.root.hideWhiteSpaces() }
+                    }
+                    .forEach { outputCallback(it) }
+            }
     }
-
-    private fun hideNodes(root: PsiElement) =
-        PsiTreeUtil
-            .collectElements(root) { node -> validatedIgnoreRules.any { it.isIgnored(node) } }
-            .forEach { it.isHidden = true }
-
-    private fun processTree(root: PsiElement) =
-        validatedTreeProcessors.forEach { it.process(root) }
-
-    private fun handleVirtualFile(virtualFile: VirtualFile, projectCtx: Project) =
-        PsiManager.getInstance(projectCtx)
-            .findFile(virtualFile)
-            ?.also { processTree(it) }
-            ?.also { hideNodes(it) }
-
-    fun <R> parseFile(virtualFile: VirtualFile, projectCtx: Project, psiFileHandler: (PsiFile) -> R?) =
-        WriteCommandAction.writeCommandAction(projectCtx).compute<PsiFile?, Exception> {
-            handleVirtualFile(virtualFile, projectCtx)
-        }.let { psiFileHandler(it) }
-
-    fun <R> parseFiles(
-        virtualFiles: List<VirtualFile>,
-        projectCtx: Project,
-        handlePsiFile: (PsiFile) -> R?
-    ) = virtualFiles.mapNotNull { parseFile(it, projectCtx, handlePsiFile) }
-
-    fun isWhiteSpacesHidden() = validatedIgnoreRules.any { it is WhiteSpaceIgnoreRule }
 }

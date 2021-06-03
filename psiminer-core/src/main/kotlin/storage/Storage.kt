@@ -37,6 +37,9 @@ abstract class Storage(protected val outputDirectory: File) {
         }.println(stringRepresentation)
     }
 
+    fun store(labeledTrees: List<LabeledTree>, holdout: Dataset?, language: Language) =
+        labeledTrees.forEach { store(it, holdout, language) }
+
     open fun printStatistic() =
         datasetStatistic.forEach { println("${it.value} samples for ${it.key.language} in ${it.key.holdout} holdout") }
 

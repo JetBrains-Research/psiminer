@@ -1,39 +1,21 @@
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.openapi.project.Project
-import filter.Filter
-import kotlinx.coroutines.*
-import labelextractor.LabelExtractor
 import psi.Parser
-import psi.hideWhiteSpaces
-import psi.nodeIgnoreRules.PsiNodeIgnoreRule
 import psi.printTree
-import psi.splitPsiByGranularity
-import psi.treeProcessors.PsiTreeProcessor
-import storage.Storage
 import java.io.File
 
-class Pipeline(
-    private val filters: List<Filter>,
-    private val labelExtractor: LabelExtractor,
-    private val storage: Storage,
-    private val parameters: PipelineParameters
-) {
+class Pipeline(private val config: PipelineConfig) {
 
-    data class PipelineParameters(val batchSize: Int, val printTrees: Boolean)
+    private val languageParsers = config.languages.associateWith {
+        Parser(it, config.nodeIgnoreRules, config.treeTransformations)
+    }
 
     private fun checkFolderIsDataset(folder: File): Boolean {
         val folderDirNames = folder.listFiles()?.filter { it.isDirectory }?.map { it.name } ?: return false
         return Dataset.values().all { folderDirNames.contains(it.folderName) }
     }
 
-    fun extract(
-        inputDirectory: File,
-        languages: List<Language>,
-        nodeIgnoreRules: List<PsiNodeIgnoreRule>,
-        treeProcessors: List<PsiTreeProcessor>,
-    ) {
-        val languageParsers = languages.associateWith { Parser(nodeIgnoreRules, treeProcessors, it) }
-
+    fun extract(inputDirectory: File) {
+        println("Starting data extraction using the following parser configurations")
+        languageParsers.forEach { println(it.value) }
         val isDataset = checkFolderIsDataset(inputDirectory)
         if (isDataset) {
             println("Dataset structure is detected.")
@@ -46,50 +28,37 @@ class Pipeline(
                         "Process $holdout.${holdoutProjectFile.name} project " +
                                 "(${index + 1}/${holdoutProjects.size})"
                     )
-                    processProject(holdoutProjectFile, languageParsers, holdout)
+                    processProject(holdoutProjectFile, holdout)
                 }
             }
         } else {
             println("No dataset found. Process all sources under passed path")
-            processProject(inputDirectory, languageParsers, null)
+            processProject(inputDirectory, null)
         }
     }
 
-    private fun processProject(projectFile: File, languageParsers: Map<Language, Parser>, holdout: Dataset?) {
+    private fun processProject(projectFile: File, holdout: Dataset?) {
         // TODO: log why we can't process the project
         val project = openProject(projectFile) ?: return
         languageParsers.forEach { (language, parser) ->
-            val files = getAllFilesByLanguage(project, language)
-            println("Found ${files.size} $language files")
-            files.chunked(parameters.batchSize).forEachIndexed { batchId, batchFiles ->
-                runBlocking {
-                    val labeledTrees = processPsiTreeAsync(batchFiles, project, parser)
-                    labeledTrees.filterNotNull().forEach {
-                        storage.store(it, holdout, language)
-                        if (parameters.printTrees) it.root.printTree()
-                    }
+            var processedDataPoints = 0
+            parser.parseProject(
+                project,
+                config.labelExtractor.granularityLevel,
+                handlePsiFile = { psiRoot ->
+                    if (config.filters.all { it.validateTree(psiRoot) }) {
+                        config.labelExtractor.extractLabel(psiRoot)
+                    } else null
+
+                },
+                outputCallback = {
+                    config.storage.store(it, holdout, language)
+                    processedDataPoints += 1
+                    if (processedDataPoints % 10000 == 0) println("Processed $processedDataPoints data points")
+                    if (config.parameters.printTrees) it.root.printTree()
                 }
-            }
+            )
         }
 //        closeProject(project)
-    }
-
-    private suspend fun processPsiTreeAsync(
-        files: List<VirtualFile>,
-        projectCtx: Project,
-        parser: Parser
-    ) = coroutineScope {
-        files.map {
-            async(Dispatchers.Default) {
-                parser.parseFile(it, projectCtx) { psiRoot ->
-                    psiRoot.splitPsiByGranularity(labelExtractor.granularityLevel).map { psiTreeRoot ->
-                        if (filters.all { it.validateTree(psiTreeRoot) }) {
-                            labelExtractor.extractLabel(psiTreeRoot)
-                                ?.also { if (parser.isWhiteSpacesHidden()) it.root.hideWhiteSpaces() }
-                        } else null
-                    }
-                }
-            }
-        }.awaitAll().filterNotNull().flatten()
     }
 }

@@ -3,7 +3,6 @@ import labelextractor.LabelExtractor
 import psi.nodeIgnoreRules.PsiNodeIgnoreRule
 import psi.transformation.PsiTreeTransformer
 import storage.Storage
-import java.io.File
 
 data class PipelineConfig(
     val parameters: Parameters,

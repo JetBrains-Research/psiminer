@@ -2,7 +2,6 @@ package filter
 
 import Language
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiMethod
 
 class ConstructorFilter : Filter() {
     override fun isGoodTree(root: PsiElement, language: Language) =

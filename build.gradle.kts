@@ -26,7 +26,6 @@ allprojects {
 
     dependencies {
         implementation(kotlin("stdlib"))
-        implementation("org.jetbrains.kotlin:kotlin-reflect:1.5.0")
         implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.1")
 
         testImplementation("junit:junit:4.13")
@@ -37,8 +36,9 @@ allprojects {
 
     // See https://github.com/JetBrains/gradle-intellij-plugin/
     intellij {
+        type = "IC"
         version = "2021.1"
-        setPlugins("java")
+        setPlugins("java", "org.jetbrains.kotlin:211-1.5.0-release-759-IJ6693.72")
     }
 
     detekt {

@@ -3,6 +3,7 @@ package psi
 import GranularityLevel
 import Language
 import com.intellij.openapi.application.ReadAction
+import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VfsUtil
@@ -24,12 +25,12 @@ class Parser(
 ) {
 
     private val nodeIgnoreRules = nodeIgnoreRules.filter {
-        it is CommonIgnoreRule || language.description.ignoreRuleType.isInstance(it)
+        it is CommonIgnoreRule || language.handler.ignoreRuleType.isInstance(it)
     }
     private val isWhiteSpaceHidden = nodeIgnoreRules.any { it is WhiteSpaceIgnoreRule }
 
     private val treeTransformers = treeTransformers.filter {
-        language.description.treeTransformer.isInstance(it)
+        language.handler.treeTransformer.isInstance(it)
     }
 
     override fun toString(): String =
@@ -62,14 +63,15 @@ class Parser(
                 val psiFile = ReadAction.compute<PsiFile?, Exception> {
                     PsiManager.getInstance(project).findFile(file)
                 } ?: return@forEach
-                treeTransformers.forEach { it.transform(psiFile) }
-                PsiTreeUtil
-                    .collectElements(psiFile) { node -> nodeIgnoreRules.any { it.isIgnored(node) } }
-                    .forEach { it.isHidden = true }
-                psiFile
-                    .splitPsiByGranularity(granularity)
+                treeTransformers.forEach { WriteCommandAction.runWriteCommandAction(project) { it.transform(psiFile) } }
+                ReadAction.run<Exception> {
+                    PsiTreeUtil
+                        .collectElements(psiFile) { node -> nodeIgnoreRules.any { it.isIgnored(node) } }
+                        .forEach { it.isHidden = true }
+                }
+                language.handler.splitByGranularity(psiFile, granularity)
                     .mapNotNull { psiElement ->
-                        handlePsiFile(psiElement)?.also { if (isWhiteSpaceHidden) it.root.hideWhiteSpaces() }
+                            handlePsiFile(psiElement)?.also { if (isWhiteSpaceHidden) it.root.hideWhiteSpaces() }
                     }
                     .forEach { outputCallback(it) }
             }

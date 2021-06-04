@@ -1,5 +1,6 @@
 package filter
 
+import Language
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 
@@ -9,7 +10,7 @@ import com.intellij.psi.util.PsiTreeUtil
  * @param maxSize: Set the maximum number of nodes in target trees
  */
 class TreeSizeFilter(private val minSize: Int = 0, private val maxSize: Int? = null) : Filter() {
-    override fun isGoodTree(root: PsiElement): Boolean {
+    override fun isGoodTree(root: PsiElement, language: Language): Boolean {
         val treeSize = PsiTreeUtil.collectElementsOfType(root, PsiElement::class.java).size
         return (minSize <= treeSize) && (maxSize == null || treeSize <= maxSize)
     }

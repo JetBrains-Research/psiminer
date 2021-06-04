@@ -41,15 +41,15 @@ class Pipeline(private val config: PipelineConfig) {
         // TODO: log why we can't process the project
         val project = openProject(projectFile) ?: return
         languageParsers.forEach { (language, parser) ->
+            println("Working on $language language")
             var processedDataPoints = 0
             parser.parseProject(
                 project,
                 config.labelExtractor.granularityLevel,
                 handlePsiFile = { psiRoot ->
-                    if (config.filters.all { it.validateTree(psiRoot) }) {
-                        config.labelExtractor.extractLabel(psiRoot)
+                    if (config.filters.all { it.validateTree(psiRoot, language) }) {
+                        config.labelExtractor.extractLabel(psiRoot, language)
                     } else null
-
                 },
                 outputCallback = {
                     config.storage.store(it, holdout, language)

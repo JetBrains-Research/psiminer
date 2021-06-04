@@ -1,14 +1,11 @@
-import com.intellij.psi.PsiClass
-import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFile
-import com.intellij.psi.PsiMethod
-import psi.language.JavaDescription
-import psi.language.LanguageDescription
+import psi.language.JavaHandler
+import psi.language.KotlinHandler
+import psi.language.LanguageHandler
 
-enum class GranularityLevel(val psiNodeClass: java.lang.Class<out PsiElement>) {
-    File(PsiFile::class.java),
-    Class(PsiClass::class.java),
-    Method(PsiMethod::class.java)
+enum class GranularityLevel {
+    File,
+    Class,
+    Method
 }
 
 enum class Dataset(val folderName: String) {
@@ -17,6 +14,7 @@ enum class Dataset(val folderName: String) {
     Test("test")
 }
 
-enum class Language(val extensions: List<String>, val description: LanguageDescription) {
-    Java(listOf("java"), JavaDescription())
+enum class Language(val extensions: List<String>, val handler: LanguageHandler) {
+    Java(listOf("java"), JavaHandler()),
+    Kotlin(listOf("kt", "kts"), KotlinHandler())
 }

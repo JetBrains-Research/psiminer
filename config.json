@@ -10,7 +10,7 @@
   "label": {"name": "method name prediction"},
   "storage": {"name": "json typed tree"},
 
-  "languages": ["Java"],
+  "languages": ["Java", "Kotlin"],
   "node ignore rules": [
     {"name": "whitespace"},
     {"name": "empty grammar lists"},

@@ -1,10 +1,12 @@
 package filter
 
+import Language
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiMethod
 
 class ConstructorFilter : Filter() {
-    override fun isGoodTree(root: PsiElement) = root is PsiMethod && !root.isConstructor
+    override fun isGoodTree(root: PsiElement, language: Language) =
+        !language.handler.methodProvider.isConstructor(root)
 }
 
 /**
@@ -13,8 +15,8 @@ class ConstructorFilter : Filter() {
  * @param ignoreModifiers: list of modifiers to ignore
  */
 class ModifierFilter(private val ignoreModifiers: List<String>) : Filter() {
-    override fun isGoodTree(root: PsiElement): Boolean =
-        root is PsiMethod && ignoreModifiers.all { !root.modifierList.hasModifierProperty(it) }
+    override fun isGoodTree(root: PsiElement, language: Language): Boolean =
+        ignoreModifiers.all { !language.handler.methodProvider.hasModifier(root, it) }
 }
 
 /**
@@ -23,10 +25,11 @@ class ModifierFilter(private val ignoreModifiers: List<String>) : Filter() {
  * @param ignoreAnnotations: list of annotations to ignore
  */
 class AnnotationFilter(private val ignoreAnnotations: List<String>) : Filter() {
-    override fun isGoodTree(root: PsiElement): Boolean =
-        root is PsiMethod && ignoreAnnotations.all { !root.hasAnnotation(it) }
+    override fun isGoodTree(root: PsiElement, language: Language): Boolean =
+        ignoreAnnotations.all { !language.handler.methodProvider.hasAnnotation(root, it) }
 }
 
 class EmptyMethodFilter : Filter() {
-    override fun isGoodTree(root: PsiElement): Boolean = root is PsiMethod && !(root.body?.isEmpty ?: true)
+    override fun isGoodTree(root: PsiElement, language: Language): Boolean =
+        language.handler.methodProvider.getBody(root)?.isNotEmpty() ?: false
 }

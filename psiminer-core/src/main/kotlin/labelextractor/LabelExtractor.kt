@@ -1,6 +1,7 @@
 package labelextractor
 
 import GranularityLevel
+import Language
 import com.intellij.openapi.application.ReadAction
 import com.intellij.psi.PsiElement
 
@@ -19,7 +20,7 @@ abstract class LabelExtractor {
      * @param root: Root of PSI Tree where label should be extracted
      * @return string label of tree or null if label can not be extracted
      */
-    protected abstract fun handleTree(root: PsiElement): String?
+    protected abstract fun handleTree(root: PsiElement, language: Language): String?
 
     /**
      * Interface method to extract label from tree.
@@ -28,8 +29,8 @@ abstract class LabelExtractor {
      * @return tree with label or null if label can not be extracted
      * @see LabeledTree
      */
-    fun extractLabel(root: PsiElement): LabeledTree? =
+    fun extractLabel(root: PsiElement, language: Language): LabeledTree? =
         ReadAction.compute<LabeledTree?, Exception> {
-            handleTree(root)?.let { LabeledTree(root, it) }
+            handleTree(root, language)?.let { LabeledTree(root, it) }
         }
 }

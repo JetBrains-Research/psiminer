@@ -1,7 +1,5 @@
 package psi
 
-import GranularityLevel
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ReadAction
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNamedElement
@@ -23,11 +21,6 @@ fun PsiElement.printTree(indent: Int = 0, delimiter: String = "..", indentStep: 
         children.forEach { it.printTree(newIndent, delimiter, indentStep) }
     }
 }
-
-fun PsiElement.splitPsiByGranularity(granularity: GranularityLevel): List<PsiElement> =
-    ReadAction.compute<List<PsiElement>, Exception> {
-        PsiTreeUtil.collectElementsOfType(this, granularity.psiNodeClass).toList()
-    }
 
 fun PsiNamedElement.renameAllSubtreeOccurrences(newName: String) {
     val usages = PsiTreeUtil

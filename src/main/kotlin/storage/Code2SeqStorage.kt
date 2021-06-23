@@ -27,7 +27,7 @@ class Code2SeqStorage(
         override fun toString(): String =
             "#samples: $nSamples, #paths: $nPaths, #rate: ${nPaths.toDouble() / nSamples}"
     }
-    private val datasetStatistic = Dataset.values().map { it to HoldoutStatistic() }.toMap()
+    private val datasetStatistic = Dataset.values().associate { it to HoldoutStatistic() }
 
     init {
         if (config.maxPathLength == null || config.maxPathWidth == null) throw IllegalArgumentException(

@@ -1,22 +1,21 @@
 package psi.language
 
 import GranularityLevel
+import Language
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
-import psi.language.method.MethodProvider
-import psi.nodeIgnoreRules.PsiNodeIgnoreRule
-import psi.transformation.PsiTreeTransformer
-import kotlin.reflect.KClass
+import psi.method.MethodProvider
+import psi.transformations.PsiTreeTransformation
 
 abstract class LanguageHandler {
-    abstract val ignoreRuleType: KClass<out PsiNodeIgnoreRule>
-    abstract val treeTransformer: KClass<out PsiTreeTransformer>
+    abstract val language: Language
+
+    abstract val transformationType: Class<out PsiTreeTransformation>
+    abstract val methodProvider: MethodProvider
 
     abstract val classPsiType: Class<out PsiElement>
     abstract val methodPsiType: Class<out PsiElement>
-
-    abstract val methodProvider: MethodProvider
 
     fun splitByGranularity(psiFile: PsiFile, granularity: GranularityLevel): List<PsiElement> =
         when (granularity) {

@@ -38,18 +38,16 @@ val module = SerializersModule {
     polymorphic(LabelExtractorConfig::class) {
         subclass(MethodNamePredictionConfig::class)
     }
-    polymorphic(PsiNodeIgnoreRuleConfig::class) {
-        subclass(WhiteSpaceIgnoreRuleConfig::class)
-        subclass(KeywordsIgnoreRuleConfig::class)
-        subclass(EmptyListsIgnoreRuleConfig::class)
-        subclass(PackageStatementIgnoreRuleConfig::class)
-        subclass(ImportStatementIgnoreRuleConfig::class)
-        subclass(JavaSymbolsIgnoreRuleConfig::class)
-    }
-    polymorphic(PsiTreeProcessorConfig::class) {
-        subclass(HideLiteralsConfig::class)
-        subclass(CompressOperatorsConfig::class)
-        subclass(RemoveCommentsConfig::class)
+    polymorphic(PsiTreeTransformationConfig::class) {
+        subclass(HideLiteralsTransformationConfig::class)
+        subclass(CompressOperatorsTransformationConfig::class)
+        subclass(RemoveCommentsTransformationConfig::class)
+        subclass(ExcludeWhiteSpaceTransformationConfig::class)
+        subclass(ExcludeKeywordTransformationConfig::class)
+        subclass(ExcludeEmptyGrammarListTransformationConfig::class)
+        subclass(ExcludePackageStatementTransformationConfig::class)
+        subclass(ExcludeImportStatementsTransformationConfig::class)
+        subclass(ExcludeLanguageSymbolsTransformationConfig::class)
     }
 }
 
@@ -72,9 +70,8 @@ class PsiExtractor : CliktCommand() {
             val storage = config.storage.createStorage(output)
             val pipelineConfig = PipelineConfig(
                 parameters = Parameters(config.batchSize, config.printTrees),
-                languages = config.languages,
-                nodeIgnoreRules = config.nodeIgnoreRules.map { it.createIgnoreRule() },
-                treeTransformations = config.treeTransformers.map { it.createTreeProcessor() },
+                language = config.language,
+                psiTreeTransformations = config.treeTransformers.map { it.createTreeTransformation(config.language) },
                 filters = config.filters.map { it.createFilter() },
                 labelExtractor = config.labelExtractor.createProblem(),
                 storage = storage

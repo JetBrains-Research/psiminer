@@ -1,18 +1,16 @@
-package psi.nodeIgnoreRules
+package psi.transformations.excludenode
 
 import com.intellij.psi.*
 
-interface CommonIgnoreRule : PsiNodeIgnoreRule
-
-class WhiteSpaceIgnoreRule : CommonIgnoreRule {
+class ExcludeWhiteSpaceTransformation : ExcludeNodeTransformation() {
     override fun isIgnored(node: PsiElement): Boolean = node is PsiWhiteSpace
 }
 
-class KeywordIgnoreRule : CommonIgnoreRule {
+class ExcludeKeywordTransformation : ExcludeNodeTransformation() {
     override fun isIgnored(node: PsiElement): Boolean = node is PsiKeyword
 }
 
-class EmptyListsIgnoreRule : CommonIgnoreRule {
+class ExcludeEmptyGrammarListsTransformation : ExcludeNodeTransformation() {
     private val listTypes = listOf(
         PsiReferenceParameterList::class, PsiModifierList::class, PsiReferenceList::class,
         PsiTypeParameterList::class, PsiExpressionList::class, PsiParameterList::class,

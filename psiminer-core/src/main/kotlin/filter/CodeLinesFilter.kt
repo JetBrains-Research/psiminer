@@ -1,7 +1,7 @@
 package filter
 
-import Language
 import com.intellij.psi.PsiElement
+import psi.language.LanguageHandler
 
 /***
  * Filter code snippets based on number of lines in it.
@@ -10,7 +10,7 @@ import com.intellij.psi.PsiElement
  * @param maxCodeLines: Set the maximum number of lines in corresponded code snippet
  */
 class CodeLinesFilter(private val minCodeLines: Int = 0, private val maxCodeLines: Int? = null) : Filter() {
-    override fun isGoodTree(root: PsiElement, language: Language): Boolean {
+    override fun isGoodTree(root: PsiElement, languageHandler: LanguageHandler): Boolean {
         val cleanCodeLines = getCleanCode(root.text)
         return (minCodeLines <= cleanCodeLines.size) && (maxCodeLines == null || cleanCodeLines.size <= maxCodeLines)
     }

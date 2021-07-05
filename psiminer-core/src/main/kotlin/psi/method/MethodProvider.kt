@@ -1,4 +1,4 @@
-package psi.language.method
+package psi.method
 
 import com.intellij.psi.PsiElement
 

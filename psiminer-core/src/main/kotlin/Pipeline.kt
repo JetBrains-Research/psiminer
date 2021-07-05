@@ -1,12 +1,17 @@
 import psi.Parser
+import psi.language.JavaHandler
+import psi.language.KotlinHandler
 import psi.printTree
 import java.io.File
 
 class Pipeline(private val config: PipelineConfig) {
 
-    private val languageParsers = config.languages.associateWith {
-        Parser(it, config.nodeIgnoreRules, config.treeTransformations)
+    private val language = config.language
+    private val languageHandler = when (language) {
+        Language.Java -> JavaHandler()
+        Language.Kotlin -> KotlinHandler()
     }
+    private val parser = Parser(languageHandler, config.psiTreeTransformations)
 
     private fun checkFolderIsDataset(folder: File): Boolean {
         val folderDirNames = folder.listFiles()?.filter { it.isDirectory }?.map { it.name } ?: return false
@@ -14,8 +19,7 @@ class Pipeline(private val config: PipelineConfig) {
     }
 
     fun extract(inputDirectory: File) {
-        println("Starting data extraction using the following parser configurations")
-        languageParsers.forEach { println(it.value) }
+        println("Starting data extraction using the following parser configuration\n$parser")
         val isDataset = checkFolderIsDataset(inputDirectory)
         if (isDataset) {
             println("Dataset structure is detected.")
@@ -40,25 +44,22 @@ class Pipeline(private val config: PipelineConfig) {
     private fun processProject(projectFile: File, holdout: Dataset?) {
         // TODO: log why we can't process the project
         val project = openProject(projectFile) ?: return
-        languageParsers.forEach { (language, parser) ->
-            println("Working on $language language")
-            var processedDataPoints = 0
-            parser.parseProject(
-                project,
-                config.labelExtractor.granularityLevel,
-                handlePsiFile = { psiRoot ->
-                    if (config.filters.all { it.validateTree(psiRoot, language) }) {
-                        config.labelExtractor.extractLabel(psiRoot, language)
-                    } else null
-                },
-                outputCallback = {
-                    config.storage.store(it, holdout, language)
-                    processedDataPoints += 1
-                    if (processedDataPoints % 10000 == 0) println("Processed $processedDataPoints data points")
-                    if (config.parameters.printTrees) it.root.printTree()
-                }
-            )
-        }
+        var processedDataPoints = 0
+        parser.parseProject(
+            project,
+            config.labelExtractor.granularityLevel,
+            handlePsiFile = { psiRoot ->
+                if (config.filters.all { it.validateTree(psiRoot, languageHandler) }) {
+                    config.labelExtractor.extractLabel(psiRoot, languageHandler)
+                } else null
+            },
+            outputCallback = {
+                config.storage.store(it, holdout, language)
+                processedDataPoints += 1
+                if (processedDataPoints % 10000 == 0) println("Processed $processedDataPoints data points")
+                if (config.parameters.printTrees) it.root.printTree()
+            }
+        )
 //        closeProject(project)
     }
 }

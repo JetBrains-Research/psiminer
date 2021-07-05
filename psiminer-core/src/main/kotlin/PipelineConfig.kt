@@ -1,15 +1,13 @@
 import filter.Filter
 import labelextractor.LabelExtractor
-import psi.nodeIgnoreRules.PsiNodeIgnoreRule
-import psi.transformation.PsiTreeTransformer
+import psi.transformations.PsiTreeTransformation
 import storage.Storage
 
 data class PipelineConfig(
     val parameters: Parameters,
 
-    val languages: List<Language>,
-    val nodeIgnoreRules: List<PsiNodeIgnoreRule>,
-    val treeTransformations: List<PsiTreeTransformer>,
+    val language: Language,
+    val psiTreeTransformations: List<PsiTreeTransformation>,
 
     val filters: List<Filter>,
     val labelExtractor: LabelExtractor,

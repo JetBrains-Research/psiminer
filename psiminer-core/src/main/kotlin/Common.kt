@@ -1,7 +1,3 @@
-import psi.language.JavaHandler
-import psi.language.KotlinHandler
-import psi.language.LanguageHandler
-
 enum class GranularityLevel {
     File,
     Class,
@@ -14,7 +10,7 @@ enum class Dataset(val folderName: String) {
     Test("test")
 }
 
-enum class Language(val extensions: List<String>, val handler: LanguageHandler) {
-    Java(listOf("java"), JavaHandler()),
-    Kotlin(listOf("kt", "kts"), KotlinHandler())
+enum class Language(val extensions: List<String>) {
+    Java(listOf("java")),
+    Kotlin(listOf("kt", "kts"))
 }

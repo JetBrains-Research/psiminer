@@ -10,14 +10,12 @@
   "label": {"name": "method name prediction"},
   "storage": {"name": "json typed tree"},
 
-  "languages": ["Java", "Kotlin"],
-  "node ignore rules": [
-    {"name": "whitespace"},
-    {"name": "empty grammar lists"},
-    {"name": "keywords"},
-    {"name": "java symbols"}
-  ],
+  "language": "Java",
   "tree transformations": [
+    {"name": "exclude whitespace"},
+    {"name": "exclude empty grammar lists"},
+    {"name": "exclude keywords"},
+    {"name": "exclude language symbols"},
     {"name": "compress operators"},
     {
       "name": "hide literals",

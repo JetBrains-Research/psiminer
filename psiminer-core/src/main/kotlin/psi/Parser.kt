@@ -1,42 +1,29 @@
 package psi
 
 import GranularityLevel
-import Language
 import com.intellij.openapi.application.ReadAction
-import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
-import com.intellij.psi.util.PsiTreeUtil
 import labelextractor.LabeledTree
-import psi.nodeIgnoreRules.CommonIgnoreRule
-import psi.nodeIgnoreRules.PsiNodeIgnoreRule
-import psi.nodeIgnoreRules.WhiteSpaceIgnoreRule
-import psi.nodeProperties.isHidden
-import psi.transformation.PsiTreeTransformer
+import psi.language.LanguageHandler
+import psi.transformations.PsiTreeTransformation
+import psi.transformations.excludenode.ExcludeWhiteSpaceTransformation
 
 class Parser(
-    private val language: Language,
-    nodeIgnoreRules: List<PsiNodeIgnoreRule>,
-    treeTransformers: List<PsiTreeTransformer>
+    private val languageHandler: LanguageHandler,
+    private val psiTreeTransformations: List<PsiTreeTransformation>
 ) {
 
-    private val nodeIgnoreRules = nodeIgnoreRules.filter {
-        it is CommonIgnoreRule || language.handler.ignoreRuleType.isInstance(it)
-    }
-    private val isWhiteSpaceHidden = nodeIgnoreRules.any { it is WhiteSpaceIgnoreRule }
-
-    private val treeTransformers = treeTransformers.filter {
-        language.handler.treeTransformer.isInstance(it)
-    }
+    val language = languageHandler.language
+    private val isWhiteSpaceHidden = psiTreeTransformations.any { it is ExcludeWhiteSpaceTransformation }
 
     override fun toString(): String =
         "$language parser with " +
-                "${nodeIgnoreRules.joinToString { it::class.simpleName ?: "" }} ignore rules and " +
-                "${treeTransformers.joinToString { it::class.simpleName ?: "" }} tree transformations"
+                "${psiTreeTransformations.joinToString { it::class.simpleName ?: "" }} tree transformations"
 
     /***
      * Collect all files from project that correspond to given language
@@ -63,13 +50,8 @@ class Parser(
                 val psiFile = ReadAction.compute<PsiFile?, Exception> {
                     PsiManager.getInstance(project).findFile(file)
                 } ?: return@forEach
-                treeTransformers.forEach { WriteCommandAction.runWriteCommandAction(project) { it.transform(psiFile) } }
-                ReadAction.run<Exception> {
-                    PsiTreeUtil
-                        .collectElements(psiFile) { node -> nodeIgnoreRules.any { it.isIgnored(node) } }
-                        .forEach { it.isHidden = true }
-                }
-                language.handler.splitByGranularity(psiFile, granularity)
+                psiTreeTransformations.forEach { ReadAction.run<Exception> { it.transform(psiFile) } }
+                languageHandler.splitByGranularity(psiFile, granularity)
                     .mapNotNull { psiElement ->
                             handlePsiFile(psiElement)?.also { if (isWhiteSpaceHidden) it.root.hideWhiteSpaces() }
                     }

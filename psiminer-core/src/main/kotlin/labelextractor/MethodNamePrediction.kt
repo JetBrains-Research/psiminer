@@ -1,17 +1,17 @@
 package labelextractor
 
 import GranularityLevel
-import Language
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
+import psi.language.LanguageHandler
 import psi.nodeProperties.technicalToken
 
 class MethodNamePrediction : LabelExtractor() {
 
     override val granularityLevel = GranularityLevel.Method
 
-    override fun handleTree(root: PsiElement, language: Language): String? {
-        val methodName = language.handler.methodProvider.getName(root) ?: return null
+    override fun handleTree(root: PsiElement, languageHandler: LanguageHandler): String? {
+        val methodName = languageHandler.methodProvider.getName(root) ?: return null
         // Mark all occurrences in subtree with METHOD_NAME token
         PsiTreeUtil
             .collectElements(root) { it.textMatches(methodName) }

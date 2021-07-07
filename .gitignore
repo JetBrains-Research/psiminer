@@ -1,4 +1,5 @@
-.idea/
+.idea/*.xml
+.idea/libraries/
 .gradle/
 
 .DS_Store

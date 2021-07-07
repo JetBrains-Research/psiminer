@@ -1,16 +1,17 @@
 package psi.transformations.excludenode
 
 import com.intellij.psi.*
+import psi.transformations.CommonTreeTransformation
 
-class ExcludeWhiteSpaceTransformation : ExcludeNodeTransformation() {
+class ExcludeWhiteSpaceTransformation : CommonTreeTransformation, ExcludeNodeTransformation() {
     override fun isIgnored(node: PsiElement): Boolean = node is PsiWhiteSpace
 }
 
-class ExcludeKeywordTransformation : ExcludeNodeTransformation() {
+class ExcludeKeywordTransformation : CommonTreeTransformation, ExcludeNodeTransformation() {
     override fun isIgnored(node: PsiElement): Boolean = node is PsiKeyword
 }
 
-class ExcludeEmptyGrammarListsTransformation : ExcludeNodeTransformation() {
+class ExcludeEmptyGrammarListsTransformation : CommonTreeTransformation, ExcludeNodeTransformation() {
     private val listTypes = listOf(
         PsiReferenceParameterList::class, PsiModifierList::class, PsiReferenceList::class,
         PsiTypeParameterList::class, PsiExpressionList::class, PsiParameterList::class,

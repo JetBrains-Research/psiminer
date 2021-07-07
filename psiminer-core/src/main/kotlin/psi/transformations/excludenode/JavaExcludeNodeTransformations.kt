@@ -5,16 +5,17 @@ import com.intellij.psi.PsiImportStatement
 import com.intellij.psi.PsiPackageStatement
 import com.intellij.psi.impl.source.tree.ElementType
 import com.intellij.psi.util.elementType
+import psi.transformations.JavaTreeTransformation
 
-class ExcludePackageStatementTransformation : ExcludeNodeTransformation() {
+class ExcludePackageStatementTransformation : JavaTreeTransformation, ExcludeNodeTransformation() {
     override fun isIgnored(node: PsiElement): Boolean = node is PsiPackageStatement
 }
 
-class ExcludeImportStatementsTransformation : ExcludeNodeTransformation() {
+class ExcludeImportStatementsTransformation : JavaTreeTransformation, ExcludeNodeTransformation() {
     override fun isIgnored(node: PsiElement): Boolean = node is PsiImportStatement
 }
 
-class ExcludeJavaSymbolsTransformation : ExcludeNodeTransformation() {
+class ExcludeJavaSymbolsTransformation : JavaTreeTransformation, ExcludeNodeTransformation() {
     private val skipElementTypes = listOf(
         ElementType.LBRACE,
         ElementType.RBRACE,

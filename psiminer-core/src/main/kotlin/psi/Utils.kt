@@ -1,6 +1,5 @@
 package psi
 
-import com.intellij.openapi.application.ReadAction
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNamedElement
 import com.intellij.psi.PsiWhiteSpace
@@ -12,14 +11,12 @@ import psi.nodeProperties.nodeType
 import psi.nodeProperties.token
 
 fun PsiElement.printTree(indent: Int = 0, delimiter: String = "..", indentStep: Int = 2) {
-    ReadAction.run<Exception> {
-        var newIndent = indent
-        if (!isHidden) {
-            println("${delimiter.repeat(indent)} $nodeType -- $token")
-            newIndent += indentStep
-        }
-        children.forEach { it.printTree(newIndent, delimiter, indentStep) }
+    var newIndent = indent
+    if (!isHidden) {
+        println("${delimiter.repeat(indent)} $nodeType -- $token")
+        newIndent += indentStep
     }
+    children.forEach { it.printTree(newIndent, delimiter, indentStep) }
 }
 
 fun PsiNamedElement.renameAllSubtreeOccurrences(newName: String) {
@@ -35,6 +32,5 @@ fun PsiNamedElement.renameAllSubtreeOccurrences(newName: String) {
  * Some modifications during filtering or label extracting may add whitespaces (e.g. after renaming identifiers)
  * Therefore someone need to hide them manually before saving
  */
-fun PsiElement.hideWhiteSpaces() = ReadAction.run<Exception> {
+fun PsiElement.hideWhiteSpaces() =
     PsiTreeUtil.collectElementsOfType(this, PsiWhiteSpace::class.java).forEach { it.isHidden = true }
-}

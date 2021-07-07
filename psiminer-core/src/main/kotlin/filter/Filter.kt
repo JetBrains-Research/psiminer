@@ -1,6 +1,5 @@
 package filter
 
-import com.intellij.openapi.application.ReadAction
 import com.intellij.psi.PsiElement
 import psi.language.LanguageHandler
 
@@ -21,6 +20,5 @@ abstract class Filter {
      * @param root: tree to validate
      * @return: `true` if tree is satisfy condition and should be kept and `false` otherwise
      */
-    fun validateTree(root: PsiElement, languageHandler: LanguageHandler): Boolean =
-        ReadAction.compute<Boolean, Exception> { isGoodTree(root, languageHandler) }
+    fun validateTree(root: PsiElement, languageHandler: LanguageHandler): Boolean = isGoodTree(root, languageHandler)
 }

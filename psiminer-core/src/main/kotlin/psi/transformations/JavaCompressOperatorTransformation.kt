@@ -8,9 +8,10 @@ import psi.nodeProperties.nodeType
 
 class JavaCompressOperatorTransformation : JavaTreeTransformation {
 
-    private val compressOperatorVisitor = CompressOperatorVisitor()
-
-    override fun transform(root: PsiElement) = root.accept(compressOperatorVisitor)
+    override fun transform(root: PsiElement) {
+        val compressOperatorVisitor = CompressOperatorVisitor()
+        root.accept(compressOperatorVisitor)
+    }
 
     private inner class CompressOperatorVisitor : JavaRecursiveElementVisitor() {
         override fun visitExpression(expression: PsiExpression?) {

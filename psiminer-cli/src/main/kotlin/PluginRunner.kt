@@ -64,27 +64,30 @@ class PsiExtractor : CliktCommand() {
     private val jsonConfig by argument(help = "JSON config").file(mustExist = true, canBeDir = false)
 
     override fun run() {
-        try {
-            val config = jsonFormat.decodeFromString<Config>(jsonConfig.readText())
-
-            val storage = config.storage.createStorage(output)
-            val pipelineConfig = PipelineConfig(
-                parameters = Parameters(config.batchSize, config.printTrees),
-                language = config.language,
-                psiTreeTransformations = config.treeTransformers.map { it.createTreeTransformation(config.language) },
-                filters = config.filters.map { it.createFilter() },
-                labelExtractor = config.labelExtractor.createProblem(),
-                storage = storage
-            )
-            val pipeline = Pipeline(pipelineConfig)
-            pipeline.extract(dataset)
-            storage.printStatistic()
-            storage.close()
+        val config = try {
+            jsonFormat.decodeFromString<Config>(jsonConfig.readText())
         } catch (e: SerializationException) {
             println("Error during parsing the config:\n${e.message}")
+            exitProcess(0)
+        }
+        val storage = config.storage.createStorage(output)
+        val pipelineConfig = PipelineConfig(
+            parameters = Parameters(config.batchSize, config.printTrees),
+            language = config.language,
+            psiTreeTransformations = config.treeTransformers.map { it.createTreeTransformation(config.language) },
+            filters = config.filters.map { it.createFilter() },
+            labelExtractor = config.labelExtractor.createProblem(),
+            storage = storage
+        )
+        val pipeline = Pipeline(pipelineConfig)
+
+        try {
+            pipeline.extract(dataset)
+            storage.printStatistic()
         } catch (e: Exception) {
-            println(e.message)
+            println("Failed with ${e::class.simpleName}: ${e.message}")
         } finally {
+            storage.close()
             exitProcess(0)
         }
     }

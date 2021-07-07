@@ -44,7 +44,6 @@ class Pipeline(private val config: PipelineConfig) {
     private fun processProject(projectFile: File, holdout: Dataset?) {
         // TODO: log why we can't process the project
         val project = openProject(projectFile) ?: return
-        var processedDataPoints = 0
         parser.parseProject(
             project,
             config.labelExtractor.granularityLevel,
@@ -55,8 +54,6 @@ class Pipeline(private val config: PipelineConfig) {
             },
             outputCallback = {
                 config.storage.store(it, holdout, language)
-                processedDataPoints += 1
-                if (processedDataPoints % 10000 == 0) println("Processed $processedDataPoints data points")
                 if (config.parameters.printTrees) it.root.printTree()
             }
         )

@@ -40,7 +40,11 @@ abstract class Storage(protected val outputDirectory: File) {
         labeledTrees.forEach { store(it, holdout, language) }
 
     open fun printStatistic() =
-        datasetStatistic.forEach { println("${it.value} samples for ${it.key.language} in ${it.key.holdout} holdout") }
+        datasetStatistic.forEach {
+            val prefix = "${it.value} samples for ${it.key.language}"
+            val suffix = if (it.key.holdout != null) " in ${it.key.holdout} holdout" else ""
+            println("$prefix$suffix")
+        }
 
     open fun close() = datasetFileWriters.forEach { it.value.close() }
 }

@@ -5,6 +5,7 @@ import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VfsUtil
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
@@ -18,7 +19,9 @@ import kotlin.math.ceil
 
 class Parser(
     private val languageHandler: LanguageHandler,
-    private val psiTreeTransformations: List<PsiTreeTransformation>
+    private val psiTreeTransformations: List<PsiTreeTransformation>,
+    private val granularity: GranularityLevel,
+    private val handlePsiFile: (PsiElement) -> LabeledTree?,
 ) {
 
     init {
@@ -36,7 +39,7 @@ class Parser(
         "$language parser with " +
                 "${psiTreeTransformations.joinToString { it::class.simpleName ?: "" }} tree transformations"
 
-    private fun extractPsiFiles(project: Project): List<PsiFile> =
+    private fun extractProjectFiles(project: Project): List<VirtualFile> =
         ProjectRootManager
             .getInstance(project)
             .contentRoots
@@ -45,34 +48,33 @@ class Parser(
                     it.extension in language.extensions && it.canonicalPath != null
                 }
             }
-            .mapNotNull {
-                PsiManager.getInstance(project).findFile(it)
-            }
 
     private suspend fun processPsiFilesAsync(
-        psiFiles: List<PsiFile>,
-        granularity: GranularityLevel,
-        handlePsiFile: (PsiElement) -> LabeledTree?,
+        psiManager: PsiManager,
+        virtualFiles: List<VirtualFile>,
         outputCallback: (LabeledTree) -> Unit
     ) = coroutineScope {
-        psiFiles.map { psiFile ->
-            launch(Dispatchers.Default) {
-                val labeledTrees = ReadAction.compute<List<LabeledTree>, Exception> {
-                    psiTreeTransformations.forEach { it.transform(psiFile) }
-                    languageHandler
-                        .splitByGranularity(psiFile, granularity)
-                        .mapNotNull { psiElement ->
+            virtualFiles.map { virtualFile ->
+                launch(Dispatchers.Default) {
+                    val psiFile =
+                        ReadAction.compute<PsiFile?, Exception> { psiManager.findFile(virtualFile) } ?: return@launch
+                    psiTreeTransformations.forEach { ReadAction.run<Exception> { it.transform(psiFile) } }
+                    val granularityPsiElements = ReadAction.compute<List<PsiElement>, Exception> {
+                        languageHandler.splitByGranularity(psiFile, granularity)
+                    }
+                    val labeledTrees = granularityPsiElements.mapNotNull { psiElement ->
+                        ReadAction.compute<LabeledTree, Exception> {
                             handlePsiFile(psiElement)?.also { if (isWhiteSpaceHidden) it.root.hideWhiteSpaces() }
                         }
-                }
-                labeledTrees.forEach {
-                    withContext(Dispatchers.IO) {
-                        ReadAction.run<Exception> { outputCallback(it) }
+                    }
+                    labeledTrees.forEach {
+                        withContext(Dispatchers.IO) {
+                            ReadAction.run<Exception> { outputCallback(it) }
+                        }
                     }
                 }
             }
         }
-    }
 
     /***
      * Collect all files from project that correspond to given language
@@ -81,18 +83,13 @@ class Parser(
      * @return: list of all PSI Files in project that correspond to required language
      * @see PsiFile
      */
-    fun parseProject(
-        project: Project,
-        granularity: GranularityLevel,
-        handlePsiFile: (PsiElement) -> LabeledTree?,
-        outputCallback: (LabeledTree) -> Unit
-    ) {
-        PsiManager.getInstance(project)
-        val psiFiles = extractPsiFiles(project)
-        val nBatches = ceil(psiFiles.size.toDouble() / 10_000).toInt()
-        psiFiles.chunked(10_000).forEachIndexed { index, batch ->
+    fun parseProject(project: Project, batchSize: Int = 10_000, outputCallback: (LabeledTree) -> Unit) {
+        val psiManager = PsiManager.getInstance(project)
+        val virtualFiles = extractProjectFiles(project)
+        val nBatches = ceil(virtualFiles.size.toDouble() / batchSize).toInt()
+        virtualFiles.chunked(batchSize).forEachIndexed { index, batch ->
             println("Processing batch ${index + 1}/$nBatches")
-            runBlocking { processPsiFilesAsync(batch, granularity, handlePsiFile, outputCallback) }
+            runBlocking { processPsiFilesAsync(psiManager, batch, outputCallback) }
         }
     }
 }

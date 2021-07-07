@@ -70,19 +70,18 @@ class PsiExtractor : CliktCommand() {
             println("Error during parsing the config:\n${e.message}")
             exitProcess(0)
         }
+
         val storage = config.storage.createStorage(output)
-        val pipelineConfig = PipelineConfig(
-            parameters = Parameters(config.batchSize, config.printTrees),
+        val pipeline = Pipeline(
             language = config.language,
             psiTreeTransformations = config.treeTransformers.map { it.createTreeTransformation(config.language) },
             filters = config.filters.map { it.createFilter() },
             labelExtractor = config.labelExtractor.createProblem(),
             storage = storage
         )
-        val pipeline = Pipeline(pipelineConfig)
 
         try {
-            pipeline.extract(dataset)
+            pipeline.extract(dataset, config.batchSize, config.printTrees)
             storage.printStatistic()
         } catch (e: Exception) {
             println("Failed with ${e::class.simpleName}: ${e.message}")

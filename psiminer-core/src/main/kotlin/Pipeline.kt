@@ -1,24 +1,38 @@
+import filter.Filter
+import labelextractor.LabelExtractor
 import psi.Parser
 import psi.language.JavaHandler
 import psi.language.KotlinHandler
 import psi.printTree
+import psi.transformations.PsiTreeTransformation
+import storage.Storage
 import java.io.File
 
-class Pipeline(private val config: PipelineConfig) {
+class Pipeline(
+    val language: Language,
+    psiTreeTransformations: List<PsiTreeTransformation>,
+    private val filters: List<Filter>,
+    val labelExtractor: LabelExtractor,
+    val storage: Storage
+) {
 
-    private val language = config.language
     private val languageHandler = when (language) {
         Language.Java -> JavaHandler()
         Language.Kotlin -> KotlinHandler()
     }
-    private val parser = Parser(languageHandler, config.psiTreeTransformations)
+
+    private val parser = Parser(languageHandler, psiTreeTransformations, labelExtractor.granularityLevel) { psiRoot ->
+        if (filters.all { it.validateTree(psiRoot, languageHandler) }) {
+            labelExtractor.extractLabel(psiRoot, languageHandler)
+        } else null
+    }
 
     private fun checkFolderIsDataset(folder: File): Boolean {
         val folderDirNames = folder.listFiles()?.filter { it.isDirectory }?.map { it.name } ?: return false
         return Dataset.values().all { folderDirNames.contains(it.folderName) }
     }
 
-    fun extract(inputDirectory: File) {
+    fun extract(inputDirectory: File, batchSize: Int = 10_000, printTrees: Boolean = false) {
         println("Starting data extraction using the following parser configuration\n$parser")
         val isDataset = checkFolderIsDataset(inputDirectory)
         if (isDataset) {
@@ -32,31 +46,27 @@ class Pipeline(private val config: PipelineConfig) {
                         "Process $holdout.${holdoutProjectFile.name} project " +
                                 "(${index + 1}/${holdoutProjects.size})"
                     )
-                    processProject(holdoutProjectFile, holdout)
+                    processProject(holdoutProjectFile, holdout, batchSize, printTrees)
                 }
             }
         } else {
             println("No dataset found. Process all sources under passed path")
-            processProject(inputDirectory, null)
+            processProject(inputDirectory, null, batchSize, printTrees)
         }
     }
 
-    private fun processProject(projectFile: File, holdout: Dataset?) {
+    private fun processProject(
+        projectFile: File,
+        holdout: Dataset?,
+        batchSize: Int = 10_000,
+        printTrees: Boolean = false
+    ) {
         // TODO: log why we can't process the project
         val project = openProject(projectFile) ?: return
-        parser.parseProject(
-            project,
-            config.labelExtractor.granularityLevel,
-            handlePsiFile = { psiRoot ->
-                if (config.filters.all { it.validateTree(psiRoot, languageHandler) }) {
-                    config.labelExtractor.extractLabel(psiRoot, languageHandler)
-                } else null
-            },
-            outputCallback = {
-                config.storage.store(it, holdout, language)
-                if (config.parameters.printTrees) it.root.printTree()
-            }
-        )
-//        closeProject(project)
+        parser.parseProject(project, batchSize) {
+            storage.store(it, holdout, language)
+            if (printTrees) it.root.printTree()
+        }
+        closeProject(project)
     }
 }

@@ -33,6 +33,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
       - run: ./gradlew build
 
       - name: Upload Test Report
@@ -50,7 +56,6 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      # Setup Java 11 environment for the next steps
       - name: Setup Java
         uses: actions/setup-java@v1
         with:
@@ -63,7 +68,6 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      # Setup Java 11 environment for the next steps
       - name: Setup Java
         uses: actions/setup-java@v1
         with:

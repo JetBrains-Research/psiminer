@@ -1,7 +1,7 @@
-package mock_data.train.mock_project
+package mock_project
 
-class Main {
-    Main {
+abstract class Main {
+    init {
         val a = 10
     }
 
@@ -27,7 +27,7 @@ class Main {
             hashMap[myString] = i
             if (i > 0) {
             }
-            hashMap.remove(i)
+            hashMap.remove(myString)
         }
         val f = 5
     }

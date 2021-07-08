@@ -28,8 +28,8 @@ allprojects {
         implementation(kotlin("stdlib"))
         implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.1")
 
-        testImplementation("junit:junit:4.13")
-        testImplementation(kotlin("test-junit"))
+        testImplementation(platform("org.junit:junit-bom:5.7.2"))
+        testImplementation("org.junit.jupiter:junit-jupiter")
 
         detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.17.0")
     }
@@ -54,6 +54,15 @@ allprojects {
         }
         compileTestKotlin {
             kotlinOptions.jvmTarget = "11"
+        }
+        test {
+            useJUnitPlatform()
+            testLogging {
+                events("passed", "skipped", "failed")
+            }
+            jvmArgs = listOf(
+                "-Djdk.module.illegalAccess.silent=true", "--add-exports", "java.base/jdk.internal.vm=ALL-UNNAMED"
+            )
         }
     }
 }

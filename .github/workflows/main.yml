@@ -13,19 +13,15 @@ jobs:
         with:
           java-version: 11
 
-      # Cache Gradle dependencies
-      - name: Setup Gradle Dependencies Cache
+      - name: Cache Gradle dependencies
         uses: actions/cache@v2
         with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-caches-${{ hashFiles('**/*.gradle', '**/*.gradle.kts', 'gradle.properties') }}
-
-      # Cache Gradle Wrapper
-      - name: Setup Gradle Wrapper Cache
-        uses: actions/cache@v2
-        with:
-          path: ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
 
   build:
     needs: setup
@@ -39,7 +35,32 @@ jobs:
         with:
           java-version: 11
 
-      - run: ./gradlew build
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Build plugin
+        run: ./gradlew buildPlugin
+
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      - name: Run JUnit tests
+        run: ./gradlew test
 
       - name: Upload Test Report
         uses: actions/upload-artifact@v2
@@ -49,29 +70,31 @@ jobs:
           path: |
             build/reports/tests/**/*
 
-      - name: Build plugin
-        run: ./gradlew buildPlugin
-
-  test:
+  process-test-data:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
+
       - name: Setup Java
         uses: actions/setup-java@v1
         with:
           java-version: 11
-      - uses: actions/checkout@v2
-      - name: Run JUnit tests
-        run: ./gradlew test
+
+      - name: Run on test data
+        run: |
+          ./psiminer.sh psiminer-core/src/test/resources output config.json
 
   code-style:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
+
       - name: Setup Java
         uses: actions/setup-java@v1
         with:
           java-version: 11
-      - uses: actions/checkout@v2
+
       - name: Run detekt
         run: ./gradlew detekt

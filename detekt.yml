@@ -23,3 +23,5 @@ style:
     active: false # due to config system
   WildcardImport:
     active: false
+  UnusedPrivateMember:
+    allowedNames: 'provideJavaMethodsSizes'

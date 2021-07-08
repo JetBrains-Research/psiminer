@@ -1,10 +1,10 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Run on mock data" type="GradleRunConfiguration" factoryName="Gradle">
+  <configuration default="false" name="Run on test data" type="GradleRunConfiguration" factoryName="Gradle">
     <ExternalSystemSettings>
       <option name="executionName" />
       <option name="externalProjectPath" value="$PROJECT_DIR$" />
       <option name="externalSystemIdString" value="GRADLE" />
-      <option name="scriptParameters" value="-Pdataset=$PROJECT_DIR$/psiminer-core/src/test/resources/mock_project -Poutput=$PROJECT_DIR$/output -Pconfig=$PROJECT_DIR$/config.json --stacktrace" />
+      <option name="scriptParameters" value="-Pdataset=$PROJECT_DIR$/psiminer-core/src/test/resources -Poutput=$PROJECT_DIR$/output -Pconfig=$PROJECT_DIR$/config.json --stacktrace" />
       <option name="taskDescriptions">
         <list />
       </option>

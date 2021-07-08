@@ -60,9 +60,7 @@ allprojects {
             testLogging {
                 events("passed", "skipped", "failed")
             }
-            jvmArgs = listOf(
-                "-Djdk.module.illegalAccess.silent=true", "--add-exports", "java.base/jdk.internal.vm=ALL-UNNAMED"
-            )
+            jvmArgs = listOf("-Djdk.module.illegalAccess.silent=true")
         }
     }
 }

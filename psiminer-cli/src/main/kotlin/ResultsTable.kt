@@ -12,6 +12,7 @@ class ResultsTable(private val metrics: List<Metric>, outputFile: File) : Closea
         val row = CsvRow(project.name, calculateResults(project))
         println("Calculated row $row")
         writer.println(row.toCsvString())
+        writer.flush()
     }
 
     override fun close() {

@@ -18,7 +18,9 @@ abstract class ReferencesMetric : Metric {
                 nResolvedReferences += 1
             }
         }
-        return (nResolvedReferences.toDouble() / nReferences.toDouble()) * 100
+        return if (nReferences > 0) {
+                (nResolvedReferences.toDouble() / nReferences.toDouble()) * 100
+        } else 100.0
     }
 
     abstract fun getReferences(psiJavaFile: PsiJavaFile): Sequence<PsiJavaCodeReferenceElement>

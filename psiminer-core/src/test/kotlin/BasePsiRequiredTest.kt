@@ -3,6 +3,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiMethod
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture
+import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.TestInstance
 import psi.language.JavaHandler
@@ -15,6 +16,11 @@ open class BasePsiRequiredTest(private val testDataRoot: String) : BasePlatformT
     @BeforeAll
     override fun setUp() {
         super.setUp()
+    }
+
+    @AfterAll
+    override fun tearDown() {
+        super.tearDown()
     }
 
     protected val javaHandler = JavaHandler()

@@ -34,3 +34,9 @@ fun PsiNamedElement.renameAllSubtreeOccurrences(newName: String) {
  */
 fun PsiElement.hideWhiteSpaces() =
     PsiTreeUtil.collectElementsOfType(this, PsiWhiteSpace::class.java).forEach { it.isHidden = true }
+
+/**
+ * Calculate size of PSI tree
+ */
+fun PsiElement.treeSize() =
+    PsiTreeUtil.collectElementsOfType(this, PsiElement::class.java).size

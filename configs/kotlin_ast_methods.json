@@ -1,0 +1,20 @@
+{
+  "filters": [
+    {"name":  "empty method"},
+    {
+      "name": "by modifiers",
+      "excludeModifiers": ["abstract"]
+    }
+  ],
+  "label": {"name": "method name prediction"},
+  "storage": {"name": "json typed tree"},
+
+  "language": "Kotlin",
+  "tree transformations": [
+    {"name": "exclude whitespace"},
+    {"name": "exclude empty grammar lists"},
+    {"name": "exclude keywords"}
+  ],
+
+  "printTrees": false
+}

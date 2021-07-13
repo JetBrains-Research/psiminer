@@ -81,9 +81,13 @@ jobs:
         with:
           java-version: 11
 
-      - name: Run on test data
+      - name: Run on Java test data
         run: |
-          ./psiminer.sh psiminer-core/src/test/resources output config.json
+          ./psiminer.sh psiminer-core/src/test/resources output configs/java_ast_methods.json
+
+      - name: Run on Kotlin test data
+        run: |
+          ./psiminer.sh psiminer-core/src/test/resources output configs/kotlin_ast_methods.json
 
   code-style:
     needs: build

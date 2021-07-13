@@ -1,6 +1,7 @@
 package filter
 
 import com.intellij.psi.PsiElement
+import getCleanCode
 import psi.language.LanguageHandler
 
 class ConstructorFilter : Filter {
@@ -29,6 +30,9 @@ class AnnotationFilter(private val ignoreAnnotations: List<String>) : Filter {
 }
 
 class EmptyMethodFilter : Filter {
-    override fun validateTree(root: PsiElement, languageHandler: LanguageHandler): Boolean =
-        languageHandler.methodProvider.getBody(root)?.isNotEmpty() ?: false
+    override fun validateTree(root: PsiElement, languageHandler: LanguageHandler): Boolean {
+        val body = languageHandler.methodProvider.getBody(root) ?: return false
+        val cleanCode = getCleanCode(body)
+        return cleanCode.isNotEmpty()
+    }
 }

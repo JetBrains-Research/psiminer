@@ -1,6 +1,7 @@
 package filter
 
 import com.intellij.psi.PsiElement
+import getCleanCode
 import psi.language.LanguageHandler
 
 /***
@@ -13,21 +14,5 @@ class CodeLinesFilter(private val minCodeLines: Int = 0, private val maxCodeLine
     override fun validateTree(root: PsiElement, languageHandler: LanguageHandler): Boolean {
         val cleanCodeLines = getCleanCode(root.text)
         return (minCodeLines <= cleanCodeLines.size) && (maxCodeLines == null || cleanCodeLines.size <= maxCodeLines)
-    }
-
-    /*
-    Adapt from
-    https://github.com/tech-srl/code2seq/blob/master/JavaExtractor/JPredict/src/main/java/JavaExtractor/Visitors/FunctionVisitor.java#L52
-     */
-    internal fun getCleanCode(code: String): List<String> {
-        val cleanCode = code
-            .replace("\r\n", "\n")
-            .replace("\t", " ")
-            .apply { if (startsWith("{\n")) substring(3).trim() }
-            .apply { if (endsWith("\n}")) substring(0, length - 2).trim() }
-        return cleanCode
-            .split("\n")
-            .map { it.trim() }
-            .filter { it != "{" && it != "}" && it != "" && !it.startsWith("/") && !it.startsWith("*") }
     }
 }

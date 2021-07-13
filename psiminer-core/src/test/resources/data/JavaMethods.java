@@ -1,6 +1,20 @@
 import java.util.Map;
 
 class Main {
+
+    public Main() { int a = 10; }
+
+    public abstract int abstractMethod(int n1, int n2);
+
+    @Override
+    public String overrideMethod() {
+        return "test"
+    }
+
+    public void emptyMethod() {
+
+    }
+
     public void smallMethod() {
         int a = 5;
         String s = "asd";

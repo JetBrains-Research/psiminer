@@ -12,7 +12,8 @@ class JavaMethodProvider : MethodProvider() {
     override fun getBody(root: PsiElement): String? {
         val methodRoot = root as? PsiMethod
             ?: throw IllegalArgumentException("Try to extract body not from the method")
-        return methodRoot.body?.toString()
+        val block = methodRoot.body ?: return null
+        return block.text
     }
 
     override fun isConstructor(root: PsiElement): Boolean =

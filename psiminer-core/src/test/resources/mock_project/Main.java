@@ -6,7 +6,7 @@ public class Main {
 
     public Main() { int a = 10; }
 
-    public abstract int sumOfTwo(int n1, int n2);
+    public abstract int abstractMethod(int n1, int n2);
 
     /**
      * This is JavaDoc

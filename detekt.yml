@@ -24,4 +24,4 @@ style:
   WildcardImport:
     active: false
   UnusedPrivateMember:
-    allowedNames: 'provideJavaMethodsSizes'
+    allowedNames: 'provide\w*'

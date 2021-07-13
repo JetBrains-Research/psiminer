@@ -1,21 +1,37 @@
-import com.intellij.openapi.application.ReadAction
-import com.intellij.psi.PsiFile
-import com.intellij.psi.PsiMethod
+import com.intellij.psi.PsiElement
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import com.intellij.testFramework.fixtures.CodeInsightTestFixture
+import org.jetbrains.kotlin.psi.KtFunction
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.TestInstance
 import psi.language.JavaHandler
+import psi.language.KotlinHandler
 import java.io.File
-import kotlin.reflect.KClass
+import kotlin.jvm.Throws
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-open class BasePsiRequiredTest(private val testDataRoot: String) : BasePlatformTestCase() {
+open class BasePsiRequiredTest : BasePlatformTestCase() {
+
+    protected val javaHandler = JavaHandler()
+    protected val kotlinHandler = KotlinHandler()
+
+    private val javaMethods = mutableMapOf<String?, PsiElement>()
+    private val kotlinMethods = mutableMapOf<String?, PsiElement>()
+
+    private class ResourceException(resourceRoot: String) : RuntimeException("Can't find resources in $resourceRoot")
+
+    // We should define the root resources folder
+    @Throws(ResourceException::class)
+    override fun getTestDataPath(): String =
+        BasePsiRequiredTest::class.java.getResource(resourcesRoot)?.path ?: throw ResourceException(resourcesRoot)
 
     @BeforeAll
     override fun setUp() {
         super.setUp()
+        val javaMethodsFile = File(testDataPath).resolve(javaMethodsFileName)
+        javaMethods.putAll(getAllMethods(javaMethodsFile, javaHandler, myFixture))
+        val kotlinMethodsFile = File(testDataPath).resolve(kotlinMethodsFileName)
+        kotlinMethods.putAll(getAllMethods(kotlinMethodsFile, kotlinHandler, myFixture))
     }
 
     @AfterAll
@@ -23,39 +39,20 @@ open class BasePsiRequiredTest(private val testDataRoot: String) : BasePlatformT
         super.tearDown()
     }
 
-    protected val javaHandler = JavaHandler()
-
-    private fun getPsiFile(fileName: String, fixture: CodeInsightTestFixture): PsiFile {
-        val file = File(testDataPath).resolve(fileName)
-        return fixture.configureByFile(file.path)
-    }
-
-    fun getAllJavaMethods(fileName: String, fixture: CodeInsightTestFixture): Map<String, PsiMethod> =
-        getPsiFile(fileName, fixture)
-            .let {
-                ReadAction.compute<Map<String, PsiMethod>, Exception> {
-                    javaHandler
-                        .splitByGranularity(it, GranularityLevel.Method)
-                        .associate {
-                            val psiMethod = it as PsiMethod
-                            psiMethod.name to psiMethod
-                        }
-                }
-            }
-
-    // We should define the root resources folder
-    override fun getTestDataPath() = testDataRoot
-
-    class UnknownMethodException(methodName: String, fileName: String) :
+    private class UnknownMethodException(methodName: String, fileName: String) :
         RuntimeException("Can't find method $methodName in $fileName")
+
+    protected fun getJavaMethod(methodName: String): PsiElement =
+        javaMethods[methodName] ?: throw UnknownMethodException(methodName, javaMethodsFileName)
+
+    protected fun getKotlinMethod(methodName: String): PsiElement =
+        kotlinMethods[methodName] as KtFunction
 
     companion object {
         // We can not get the root of the class resources automatically
         private const val resourcesRoot: String = "data"
 
-        class ResourceFindingException(clsName: String?) : RuntimeException("Can't find resources for $clsName")
-
-        fun getResourcesRootPath(cls: KClass<out BasePsiRequiredTest>): String =
-            cls.java.getResource(resourcesRoot)?.path ?: throw ResourceFindingException(cls.simpleName)
+        internal const val javaMethodsFileName = "JavaMethods.java"
+        internal const val kotlinMethodsFileName = "KotlinMethods.kt"
     }
 }

@@ -1,8 +1,7 @@
 package psi.language
 
 import Language
-import com.intellij.psi.PsiClass
-import com.intellij.psi.PsiMethod
+import com.intellij.psi.*
 import psi.method.JavaMethodProvider
 import psi.transformations.JavaTreeTransformation
 

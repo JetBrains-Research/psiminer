@@ -2,18 +2,23 @@ package psi.nodeProperties
 
 import astminer.common.splitToSubtokens
 import com.intellij.psi.PsiElement
+import com.intellij.psi.util.PsiTreeUtil
 import kotlin.reflect.KProperty
+
+const val EMPTY_TOKEN = "EMPTY"
 
 val PsiElement.token: String?
     get() = when {
-        children.isNotEmpty() -> null // if not leaf then there is no token
+        PsiTreeUtil.firstChild(this) != this -> null // if not leaf then there is no token
         technicalToken != null -> technicalToken
-        normalizedToken != "" -> normalizedToken
-        else -> text
+        else -> normalizedToken
     }
 
 val PsiElement.normalizedToken: String
-    get() = splitToSubtokens(text).joinToString("|")
+    get() = splitToSubtokens(text).let {
+        if (it.isEmpty()) EMPTY_TOKEN
+        else it.joinToString("|")
+    }
 
 var PsiElement.technicalToken: String? by TechnicalTokenDelegate()
 

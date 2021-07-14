@@ -1,31 +1,30 @@
 package psi
 
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiNamedElement
+import com.intellij.psi.PsiRecursiveElementVisitor
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.refactoring.rename.RenamePsiElementProcessor
-import com.intellij.usageView.UsageInfo
 import psi.nodeProperties.isHidden
 import psi.nodeProperties.nodeType
 import psi.nodeProperties.token
 
-fun PsiElement.printTree(indent: Int = 0, delimiter: String = "..", indentStep: Int = 2) {
-    var newIndent = indent
-    if (!isHidden) {
-        println("${delimiter.repeat(indent)} $nodeType -- $token")
-        newIndent += indentStep
-    }
-    children.forEach { it.printTree(newIndent, delimiter, indentStep) }
+fun PsiElement.printTree(delimiter: String = "..", indentStep: Int = 2) {
+    val visitor = PsiPrintVisitor(delimiter, indentStep)
+    accept(visitor)
 }
 
-fun PsiNamedElement.renameAllSubtreeOccurrences(newName: String) {
-    val usages = PsiTreeUtil
-        .collectElements(this) { it.textMatches(this.name ?: return@collectElements false) }
-        .map { UsageInfo(it) }
-        .toTypedArray()
-    val renameProcessor = RenamePsiElementProcessor.forElement(this)
-    renameProcessor.renameElement(this, newName, usages, null)
+class PsiPrintVisitor(
+    private val delimiter: String = "..",
+    private val indentStep: Int = 2
+) : PsiRecursiveElementVisitor() {
+    private val depths = mutableMapOf<PsiElement, Int>()
+
+    override fun visitElement(element: PsiElement) {
+        val indent = depths[element.parent]?.plus(1) ?: 0
+        depths[element] = indent
+        println("${delimiter.repeat(indent * indentStep)} ${element.nodeType} -- ${element.token}")
+        super.visitElement(element)
+    }
 }
 
 /**

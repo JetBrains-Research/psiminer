@@ -37,4 +37,10 @@ abstract class Main {
         }
         val f = 5
     }
+
+    private fun recursiveMethod() {
+        val a = 5
+        val recursiveMethod = 0
+        recursiveMethod()
+    }
 }

@@ -2,7 +2,7 @@ package config
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import labelextractor.MethodNamePrediction
+import labelextractor.MethodNameLabelExtractor
 import labelextractor.LabelExtractor
 
 @Serializable
@@ -11,7 +11,7 @@ abstract class LabelExtractorConfig {
 }
 
 @Serializable
-@SerialName("method name prediction")
-class MethodNamePredictionConfig : LabelExtractorConfig() {
-    override fun createProblem(): LabelExtractor = MethodNamePrediction()
+@SerialName("method name")
+class MethodNameLabelExtractorConfig : LabelExtractorConfig() {
+    override fun createProblem(): LabelExtractor = MethodNameLabelExtractor()
 }

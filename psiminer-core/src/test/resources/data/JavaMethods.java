@@ -35,4 +35,10 @@ class Main {
         }
         int f = 5;
     }
+
+    public void recursiveMethod() {
+        int a = 5;
+        int recursiveMethod = 0;
+        recursiveMethod();
+    }
 }

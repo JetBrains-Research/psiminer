@@ -2,8 +2,6 @@ package psi.method
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiMethod
-import com.intellij.psi.PsiMethodCallExpression
-import com.intellij.psi.util.PsiTreeUtil
 
 class JavaMethodProvider : MethodProvider() {
 
@@ -28,9 +26,4 @@ class JavaMethodProvider : MethodProvider() {
     override fun hasAnnotation(root: PsiElement, annotation: String): Boolean =
         (root as? PsiMethod)?.hasAnnotation(annotation)
             ?: throw IllegalArgumentException("Try to extract annotation not from the method")
-
-    override fun collectMethodCallsIdentifiers(root: PsiElement): List<PsiElement> =
-        PsiTreeUtil
-            .collectElementsOfType(root, PsiMethodCallExpression::class.java)
-            .map { it.methodExpression.lastChild }
 }

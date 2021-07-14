@@ -15,8 +15,7 @@ class MethodNameLabelExtractor : LabelExtractor() {
         // Mark all occurrences in subtree with METHOD_NAME token
         methodNameNode.technicalToken = METHOD_NAME
         languageHandler
-            .methodProvider
-            .collectMethodCallsIdentifiers(root)
+            .collectFunctionCallsIdentifiers(root)
             .forEach { it.technicalToken = METHOD_NAME }
         return splitToSubtokens(methodNameNode.text).joinToString("|")
     }

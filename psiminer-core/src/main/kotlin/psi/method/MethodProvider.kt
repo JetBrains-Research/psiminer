@@ -9,6 +9,4 @@ abstract class MethodProvider {
 
     open fun hasModifier(root: PsiElement, modifier: String): Boolean = false
     open fun hasAnnotation(root: PsiElement, annotation: String): Boolean = false
-
-    abstract fun collectMethodCallsIdentifiers(root: PsiElement): List<PsiElement>
 }

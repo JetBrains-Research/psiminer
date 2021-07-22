@@ -63,7 +63,7 @@ class PsiProjectParser(
                 }
                 samples.forEach {
                     withContext(Dispatchers.IO) {
-                        storeCallback(it.root, it.label, holdout)
+                        ReadAction.run<Throwable> { storeCallback(it.root, it.label, holdout) }
                         if (config.printTrees) printTree(it.root, true)
                     }
                 }

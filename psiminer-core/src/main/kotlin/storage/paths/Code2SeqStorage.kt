@@ -10,6 +10,7 @@ import com.intellij.psi.PsiElement
 import labelextractor.LabeledTree
 import psi.nodeProperties.nodeType
 import psi.nodeProperties.token
+import psi.transformations.typeresolve.resolvedTokenType
 import storage.Storage
 import java.io.File
 
@@ -40,7 +41,7 @@ open class Code2SeqStorage(
         override fun toString(): String =
             "#samples: $nSamples, #paths: $nPaths, #rate: ${nPaths.toDouble() / nSamples}"
     }
-    private val datasetStatistic = mutableMapOf<OutputDirection, HoldoutStatistic>()
+    private val datasetStatistic = mutableMapOf<Dataset?, HoldoutStatistic>()
 
     private fun unwrapAstPath(wrappedPath: ASTPath): List<PsiElement> =
         wrappedPath.upwardNodes.map { (it as AstminerNodeWrapper).psiNode } +
@@ -51,22 +52,33 @@ open class Code2SeqStorage(
         if (nodesToNumbers) nodeTypesIdStorage.record(node.nodeType).toString()
         else node.nodeType
 
-    protected open fun pathToString(path: List<PsiElement>): String = StringBuilder()
-        .append("\"${path.first().token?.replace("\n", "\\n")}\"")
-        .append(",")
-        .append(path.joinToString("|") { nodeToString(it) })
-        .append(",")
-        .append("\"${path.last().token?.replace("\n", "\\n")}\"")
-        .toString()
+    private fun csvShield(token: String) = token
+        .replace("\n", "\\n")
+        .replace(",", "\\,")
+        .replace(" ", "\\ ")
 
-    override fun convert(labeledTree: LabeledTree, outputDirection: OutputDirection): String {
+    private fun pathToString(path: List<PsiElement>): String {
+        val stringBuilder = StringBuilder()
+        val firstNode = path.first()
+        firstNode.resolvedTokenType?.let { stringBuilder.append(csvShield(it)) }
+        firstNode.token?.let { stringBuilder.append(csvShield(it)) }
+            ?: throw IllegalArgumentException("Found null token in first node in path")
+        stringBuilder.append(path.joinToString("|") { nodeToString(it) })
+        val lastNode = path.last()
+        lastNode.token?.let { stringBuilder.append(csvShield(it)) }
+            ?: throw IllegalArgumentException("Found null token in last node in path")
+        lastNode.resolvedTokenType?.let { stringBuilder.append(csvShield(it)) }
+        return stringBuilder.toString()
+    }
+
+    override fun convert(labeledTree: LabeledTree, holdout: Dataset?): String {
         val wrappedNode = AstminerNodeWrapper(labeledTree.root)
-        val maxPaths = if (outputDirection.holdout == Dataset.Train) maxPathsInTrain else maxPathsInTest
+        val maxPaths = if (holdout == Dataset.Train || holdout == null) maxPathsInTrain else maxPathsInTest
         val paths = miner.retrievePaths(wrappedNode).shuffled().let { it.take(maxPaths ?: it.size) }
         val unwrappedPaths = paths.map { unwrapAstPath(it) }
         val pathRepresentation = unwrappedPaths.joinToString(" ") { pathToString(it) }
 
-        datasetStatistic.getOrPut(outputDirection) { HoldoutStatistic(0, 0) }.apply {
+        datasetStatistic.getOrPut(holdout) { HoldoutStatistic(0, 0) }.apply {
             nSamples += 1
             nPaths += paths.size
         }

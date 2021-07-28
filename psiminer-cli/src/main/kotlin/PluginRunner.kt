@@ -23,9 +23,7 @@ class PluginRunner : ApplicationStarter {
 val module = SerializersModule {
     polymorphic(StorageConfig::class) {
         subclass(JsonTreeStorageConfig::class)
-        subclass(JsonTypedTreeStorageConfig::class)
         subclass(Code2SeqStorageConfig::class)
-        subclass(TypedCode2SeqStorageConfig::class)
     }
     polymorphic(FilterConfig::class) {
         subclass(CodeLinesFilterConfig::class)
@@ -48,6 +46,7 @@ val module = SerializersModule {
         subclass(ExcludePackageStatementTransformationConfig::class)
         subclass(ExcludeImportStatementsTransformationConfig::class)
         subclass(ExcludeLanguageSymbolsTransformationConfig::class)
+        subclass(ResolveTypeTransformationConfig::class)
     }
 }
 
@@ -68,10 +67,10 @@ class PsiExtractor : CliktCommand() {
             jsonFormat.decodeFromString<Config>(jsonConfig.readText())
         } catch (e: SerializationException) {
             println("Error during parsing the config:\n${e.message}")
-            exitProcess(0)
+            exitProcess(1)
         }
 
-        val storage = config.storage.createStorage(output)
+        val storage = config.storage.createStorage(output.resolve(config.language.name))
         val pipeline = Pipeline(
             language = config.language,
             psiTreeTransformations = config.treeTransformers.map { it.createTreeTransformation(config.language) },
@@ -83,11 +82,12 @@ class PsiExtractor : CliktCommand() {
         try {
             pipeline.extract(dataset, config.batchSize, config.printTrees)
             storage.printStatistic()
-        } catch (e: Exception) {
-            println("Failed with ${e::class.simpleName}: ${e.message}")
-        } finally {
             storage.close()
             exitProcess(0)
+        } catch (e: Exception) {
+            println("Failed with ${e::class.simpleName}: ${e.message}")
+            storage.close()
+            exitProcess(1)
         }
     }
 }

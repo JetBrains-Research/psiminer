@@ -4,6 +4,7 @@ import Language
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import psi.transformations.*
+import psi.transformations.typeresolve.JavaResolveTypeTransformation
 import java.lang.IllegalArgumentException
 
 @Serializable
@@ -46,4 +47,13 @@ class RemoveCommentsTransformationConfig(private val removeJavaDoc: Boolean = tr
             Language.Java -> JavaRemoveCommentsTransformation(removeJavaDoc)
             else -> throw UnsupportedLanguageTransformation("remove comments", language.name)
         }
+}
+
+@Serializable
+@SerialName("resolve type")
+class ResolveTypeTransformationConfig : PsiTreeTransformationConfig() {
+    override fun createTreeTransformation(language: Language): PsiTreeTransformation = when (language) {
+        Language.Java -> JavaResolveTypeTransformation()
+        else -> throw UnsupportedLanguageTransformation("remove comments", language.name)
+    }
 }

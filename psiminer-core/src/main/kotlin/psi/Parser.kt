@@ -9,19 +9,19 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
-import kotlinx.coroutines.*
-import labelextractor.LabeledTree
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import psi.language.LanguageHandler
 import psi.transformations.CommonTreeTransformation
 import psi.transformations.PsiTreeTransformation
-import psi.transformations.excludenode.ExcludeWhiteSpaceTransformation
 import kotlin.math.ceil
 
 class Parser(
     private val languageHandler: LanguageHandler,
     private val psiTreeTransformations: List<PsiTreeTransformation>,
-    private val granularity: GranularityLevel,
-    private val handlePsiFile: (PsiElement) -> LabeledTree?,
+    private val granularity: GranularityLevel
 ) {
 
     init {
@@ -33,7 +33,6 @@ class Parser(
     }
 
     val language = languageHandler.language
-    private val isWhiteSpaceHidden = psiTreeTransformations.any { it is ExcludeWhiteSpaceTransformation }
 
     override fun toString(): String =
         "$language parser with " +
@@ -52,7 +51,7 @@ class Parser(
     private suspend fun processPsiFilesAsync(
         psiManager: PsiManager,
         virtualFiles: List<VirtualFile>,
-        outputCallback: (LabeledTree) -> Unit
+        callback: (PsiElement) -> Any?
     ) = coroutineScope {
             virtualFiles.map { virtualFile ->
                 launch(Dispatchers.Default) {
@@ -62,15 +61,8 @@ class Parser(
                     val granularityPsiElements = ReadAction.compute<List<PsiElement>, Exception> {
                         languageHandler.splitByGranularity(psiFile, granularity)
                     }
-                    val labeledTrees = granularityPsiElements.mapNotNull { psiElement ->
-                        ReadAction.compute<LabeledTree, Exception> {
-                            handlePsiFile(psiElement)?.also { if (isWhiteSpaceHidden) it.root.hideWhiteSpaces() }
-                        }
-                    }
-                    labeledTrees.forEach {
-                        withContext(Dispatchers.IO) {
-                            ReadAction.run<Exception> { outputCallback(it) }
-                        }
+                    granularityPsiElements.forEach {
+                        ReadAction.run<Exception> { callback(it) }
                     }
                 }
             }
@@ -83,13 +75,13 @@ class Parser(
      * @return: list of all PSI Files in project that correspond to required language
      * @see PsiFile
      */
-    fun parseProject(project: Project, batchSize: Int = 10_000, outputCallback: (LabeledTree) -> Unit) {
+    fun parseProjectAsync(project: Project, batchSize: Int, callback: (PsiElement) -> Any?) {
         val psiManager = PsiManager.getInstance(project)
         val virtualFiles = extractProjectFiles(project)
         val nBatches = ceil(virtualFiles.size.toDouble() / batchSize).toInt()
         virtualFiles.chunked(batchSize).forEachIndexed { index, batch ->
             println("Processing batch ${index + 1}/$nBatches")
-            runBlocking { processPsiFilesAsync(psiManager, batch, outputCallback) }
+            runBlocking { processPsiFilesAsync(psiManager, batch, callback) }
         }
     }
 }

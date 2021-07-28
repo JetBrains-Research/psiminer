@@ -7,11 +7,12 @@
       "excludeModifiers": ["abstract"]
     }
   ],
-  "label": {"name": "method name prediction"},
-  "storage": {"name": "json typed tree"},
+  "label": {"name": "method name"},
+  "storage": {"name": "json tree"},
 
   "language": "Java",
   "tree transformations": [
+    {"name": "resolve type"},
     {"name": "exclude whitespace"},
     {"name": "exclude empty grammar lists"},
     {"name": "exclude keywords"},

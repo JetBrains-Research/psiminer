@@ -21,11 +21,7 @@ class Pipeline(
         Language.Kotlin -> KotlinHandler()
     }
 
-    private val parser = Parser(languageHandler, psiTreeTransformations, labelExtractor.granularityLevel) { psiRoot ->
-        if (filters.all { it.validateTree(psiRoot, languageHandler) }) {
-            labelExtractor.extractLabel(psiRoot, languageHandler)
-        } else null
-    }
+    private val parser = Parser(languageHandler, psiTreeTransformations, labelExtractor.granularityLevel)
 
     private fun checkFolderIsDataset(folder: File): Boolean {
         val folderDirNames = folder.listFiles()?.filter { it.isDirectory }?.map { it.name } ?: return false
@@ -63,9 +59,12 @@ class Pipeline(
     ) {
         // TODO: log why we can't process the project
         val project = openProject(projectFile) ?: return
-        parser.parseProject(project, batchSize) {
-            storage.store(it, holdout, language)
-            if (printTrees) it.root.printTree()
+        parser.parseProjectAsync(project, batchSize) { psiRoot ->
+            if (filters.any { !it.validateTree(psiRoot, languageHandler) }) return@parseProjectAsync false
+            val labeledTree = labelExtractor.extractLabel(psiRoot, languageHandler) ?: return@parseProjectAsync false
+            storage.store(labeledTree, holdout)
+            if (printTrees) labeledTree.root.printTree()
+            true
         }
         closeProject(project)
     }

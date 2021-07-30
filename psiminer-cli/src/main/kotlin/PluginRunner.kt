@@ -9,6 +9,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
+import org.jetbrains.research.pluginUtilities.openRepository.getKotlinJavaRepositoryOpener
 import kotlin.system.exitProcess
 
 class PluginRunner : ApplicationStarter {
@@ -73,6 +74,8 @@ class PsiExtractor : CliktCommand() {
         val storage = config.storage.createStorage(output.resolve(config.language.name))
         val pipeline = Pipeline(
             language = config.language,
+            preprocessorManager = null,
+            repositoryOpener = getKotlinJavaRepositoryOpener(),
             psiTreeTransformations = config.treeTransformers.map { it.createTreeTransformation(config.language) },
             filters = config.filters.map { it.createFilter() },
             labelExtractor = config.labelExtractor.createProblem(),

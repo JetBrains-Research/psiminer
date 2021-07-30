@@ -1,5 +1,6 @@
 import filter.Filter
 import labelextractor.LabelExtractor
+import org.jetbrains.research.pluginUtilities.openRepository.RepositoryOpener
 import psi.Parser
 import psi.language.JavaHandler
 import psi.language.KotlinHandler
@@ -7,17 +8,17 @@ import psi.printTree
 import psi.transformations.PsiTreeTransformation
 import storage.Storage
 import java.io.File
-import org.jetbrains.research.pluginUtilities.openRepository.getKotlinJavaRepositoryOpener
+import org.jetbrains.research.pluginUtilities.preprocessing.PreprocessorManager
 
 class Pipeline(
     val language: Language,
+    private val preprocessorManager: PreprocessorManager?,
+    private val repositoryOpener: RepositoryOpener,
     psiTreeTransformations: List<PsiTreeTransformation>,
     private val filters: List<Filter>,
     val labelExtractor: LabelExtractor,
     val storage: Storage
 ) {
-
-    private val repositoryOpener = getKotlinJavaRepositoryOpener()
 
     private val languageHandler = when (language) {
         Language.Java -> JavaHandler()
@@ -60,6 +61,9 @@ class Pipeline(
         batchSize: Int = 10_000,
         printTrees: Boolean = false
     ) {
+        if (preprocessorManager != null) {
+            preprocessorManager.preprocessRepositoryInplace(repositoryRoot)
+        }
         repositoryOpener.openRepository(repositoryRoot) { project ->
             parser.parseProjectAsync(project, batchSize) { psiRoot ->
                 if (filters.any { !it.validateTree(psiRoot, languageHandler) }) return@parseProjectAsync false

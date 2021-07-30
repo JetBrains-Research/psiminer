@@ -20,11 +20,12 @@
     {"name": "compress operators"},
     {
       "name": "hide literals",
-      "hideNumbers": true
+      "hideNumbers": true,
+      "hideStrings": true
     },
     {
       "name": "remove comments",
-      "removeJavaDoc": false
+      "removeDoc": true
     }
   ],
 

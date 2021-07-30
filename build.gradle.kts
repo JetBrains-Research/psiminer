@@ -1,9 +1,11 @@
 group = "org.jetbrains.research.psiminer"
-version = "1.0-SNAPSHOT"
+version = "2.0"
+
+fun getProperty(key: String) = project.findProperty(key).toString()
 
 plugins {
     id("java")
-    id("org.jetbrains.intellij") version "0.7.3"
+    id("org.jetbrains.intellij") version "1.1.4"
     id("io.gitlab.arturbosch.detekt") version "1.17.0"
 
     kotlin("jvm") version "1.5.10"
@@ -36,9 +38,11 @@ allprojects {
 
     // See https://github.com/JetBrains/gradle-intellij-plugin/
     intellij {
-        type = "IC"
-        version = "2021.1"
-        setPlugins("java", "org.jetbrains.kotlin:211-1.5.0-release-759-IJ6693.72")
+        version.set(getProperty("platformVersion"))
+        type.set(getProperty("platformType"))
+        downloadSources.set(getProperty("platformDownloadSources").toBoolean())
+        updateSinceUntilBuild.set(true)
+        plugins.set(getProperty("platformPlugins").split(',').map(String::trim).filter(String::isNotEmpty))
     }
 
     detekt {

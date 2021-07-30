@@ -3,10 +3,10 @@ version = "1.0-SNAPSHOT"
 
 plugins {
     id("java")
-    id("org.jetbrains.intellij") version "0.7.3"
+    id("org.jetbrains.intellij") version "1.1.3"
     id("io.gitlab.arturbosch.detekt") version "1.17.0"
 
-    kotlin("jvm") version "1.5.10"
+    kotlin("jvm") version "1.5.21"
     kotlin("plugin.serialization") version "1.5.0"
 }
 
@@ -32,13 +32,20 @@ allprojects {
         testImplementation("org.junit.jupiter:junit-jupiter")
 
         detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.17.0")
+
+        val utilitiesProjectName = "org.jetbrains.research.pluginUtilities"
+        implementation("$utilitiesProjectName:plugin-utilities-core") {
+            version {
+                branch = "main"
+            }
+        }
     }
 
     // See https://github.com/JetBrains/gradle-intellij-plugin/
     intellij {
-        type = "IC"
-        version = "2021.1"
-        setPlugins("java", "org.jetbrains.kotlin:211-1.5.0-release-759-IJ6693.72")
+        type.set("IC")
+        version.set("212.4037.9-EAP-SNAPSHOT")
+        plugins.set(listOf("java", "Kotlin", "android", "maven", "gradle", "Groovy"))
     }
 
     detekt {
@@ -54,13 +61,6 @@ allprojects {
         }
         compileTestKotlin {
             kotlinOptions.jvmTarget = "11"
-        }
-        test {
-            useJUnitPlatform()
-            testLogging {
-                events("passed", "skipped", "failed")
-            }
-            jvmArgs = listOf("-Djdk.module.illegalAccess.silent=true")
         }
     }
 }

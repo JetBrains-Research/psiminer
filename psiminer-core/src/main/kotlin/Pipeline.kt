@@ -7,6 +7,7 @@ import psi.printTree
 import psi.transformations.PsiTreeTransformation
 import storage.Storage
 import java.io.File
+import org.jetbrains.research.pluginUtilities.openRepository.getKotlinJavaRepositoryOpener
 
 class Pipeline(
     val language: Language,
@@ -15,6 +16,8 @@ class Pipeline(
     val labelExtractor: LabelExtractor,
     val storage: Storage
 ) {
+
+    private val repositoryOpener = getKotlinJavaRepositoryOpener()
 
     private val languageHandler = when (language) {
         Language.Java -> JavaHandler()
@@ -35,37 +38,36 @@ class Pipeline(
             println("Dataset structure is detected.")
             Dataset.values().forEach { holdout ->
                 val holdoutFolder = inputDirectory.resolve(holdout.folderName)
-                val holdoutProjects = holdoutFolder
+                val holdoutRepositories = holdoutFolder
                     .walk().maxDepth(1).toList().filter { it.name != holdout.folderName && !it.isFile }
-                holdoutProjects.forEachIndexed { index, holdoutProjectFile ->
+                holdoutRepositories.forEachIndexed { index, holdoutRepositoryRoot ->
                     println(
-                        "Process $holdout.${holdoutProjectFile.name} project " +
-                                "(${index + 1}/${holdoutProjects.size})"
+                        "Process $holdout.${holdoutRepositoryRoot.name} project " +
+                                "(${index + 1}/${holdoutRepositories.size})"
                     )
-                    processProject(holdoutProjectFile, holdout, batchSize, printTrees)
+                    processRepository(holdoutRepositoryRoot, holdout, batchSize, printTrees)
                 }
             }
         } else {
             println("No dataset found. Process all sources under passed path")
-            processProject(inputDirectory, null, batchSize, printTrees)
+            processRepository(inputDirectory, null, batchSize, printTrees)
         }
     }
 
-    private fun processProject(
-        projectFile: File,
+    private fun processRepository(
+        repositoryRoot: File,
         holdout: Dataset?,
         batchSize: Int = 10_000,
         printTrees: Boolean = false
     ) {
-        // TODO: log why we can't process the project
-        val project = openProject(projectFile) ?: return
-        parser.parseProjectAsync(project, batchSize) { psiRoot ->
-            if (filters.any { !it.validateTree(psiRoot, languageHandler) }) return@parseProjectAsync false
-            val labeledTree = labelExtractor.extractLabel(psiRoot, languageHandler) ?: return@parseProjectAsync false
-            storage.store(labeledTree, holdout)
-            if (printTrees) labeledTree.root.printTree()
-            true
+        repositoryOpener.openRepository(repositoryRoot) { project ->
+            parser.parseProjectAsync(project, batchSize) { psiRoot ->
+                if (filters.any { !it.validateTree(psiRoot, languageHandler) }) return@parseProjectAsync false
+                val labeledTree = labelExtractor.extractLabel(psiRoot, languageHandler) ?: return@parseProjectAsync false
+                storage.store(labeledTree, holdout)
+                if (printTrees) labeledTree.root.printTree()
+                true
+            }
         }
-        closeProject(project)
     }
 }

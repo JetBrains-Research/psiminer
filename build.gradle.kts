@@ -38,6 +38,9 @@ allprojects {
             version {
                 branch = "main"
             }
+            exclude("org.slf4j", "slf4j-simple")
+            exclude("org.slf4j", "slf4j-api")
+            exclude("org.slf4j", "slf4j")
         }
     }
 

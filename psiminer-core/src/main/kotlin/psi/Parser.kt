@@ -9,7 +9,6 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -53,20 +52,17 @@ class Parser(
         virtualFiles: List<VirtualFile>,
         callback: (PsiElement) -> Any?
     ) = coroutineScope {
-            virtualFiles.map { virtualFile ->
-                launch(Dispatchers.Default) {
-                    val psiFile =
-                        ReadAction.compute<PsiFile?, Exception> { psiManager.findFile(virtualFile) } ?: return@launch
-                    psiTreeTransformations.forEach { ReadAction.run<Exception> { it.transform(psiFile) } }
-                    val granularityPsiElements = ReadAction.compute<List<PsiElement>, Exception> {
-                        languageHandler.splitByGranularity(psiFile, granularity)
-                    }
-                    granularityPsiElements.forEach {
-                        ReadAction.run<Exception> { callback(it) }
-                    }
+        virtualFiles.map { virtualFile ->
+            launch {
+                ReadAction.run<Exception> {
+                    val psiFile = psiManager.findFile(virtualFile) ?: return@run
+                    psiTreeTransformations.forEach { it.transform(psiFile) }
+                    val granularityPsiElements = languageHandler.splitByGranularity(psiFile, granularity)
+                    granularityPsiElements.forEach { callback(it) }
                 }
             }
         }
+    }
 
     /***
      * Collect all files from project that correspond to given language

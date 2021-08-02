@@ -7,9 +7,17 @@ import com.intellij.psi.util.PsiTreeUtil
 import psi.nodeProperties.isHidden
 
 class JavaRemoveCommentsTransformation(private val removeJavaDoc: Boolean) : JavaTreeTransformation {
-    override fun transform(root: PsiElement) =
+    override fun transform(root: PsiElement) {
+        // Hide simple comments
         PsiTreeUtil
             .collectElementsOfType(root, PsiComment::class.java)
-            .filter { if (!removeJavaDoc) it !is PsiDocComment else true }
+            .filter { it !is PsiDocComment }
             .forEach { it.isHidden = true }
+        // Hide JavaDoc if necessary
+        if (removeJavaDoc) {
+            PsiTreeUtil
+                .collectElementsOfType(root, PsiDocComment::class.java)
+                .forEach { it.isHidden }
+        }
+    }
 }

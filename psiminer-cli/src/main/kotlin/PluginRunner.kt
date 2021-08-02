@@ -72,7 +72,7 @@ class PsiExtractor : CliktCommand() {
             exitProcess(1)
         }
 
-        val storage = config.storage.createStorage(output.resolve(config.language.name))
+        val storage = config.storage.createStorage(output)
         val pipeline = Pipeline(
             language = config.language,
             preprocessorManager = config.additionalPreprocessing?.let { getKotlinJavaPreprocessorManager(it.androidSdkPath) },

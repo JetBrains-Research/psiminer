@@ -41,10 +41,10 @@ class CompressOperatorsTransformationConfig : PsiTreeTransformationConfig() {
 
 @Serializable
 @SerialName("remove comments")
-class RemoveCommentsTransformationConfig(private val removeJavaDoc: Boolean = true) : PsiTreeTransformationConfig() {
+class RemoveCommentsTransformationConfig(private val removeDoc: Boolean = true) : PsiTreeTransformationConfig() {
     override fun createTreeTransformation(language: Language): PsiTreeTransformation =
         when (language) {
-            Language.Java -> JavaRemoveCommentsTransformation(removeJavaDoc)
+            Language.Java -> JavaRemoveCommentsTransformation(removeDoc)
             else -> throw UnsupportedLanguageTransformation("remove comments", language.name)
         }
 }

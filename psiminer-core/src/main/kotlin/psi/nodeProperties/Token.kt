@@ -9,7 +9,7 @@ const val EMPTY_TOKEN = "EMPTY"
 
 val PsiElement.token: String?
     get() = when {
-        PsiTreeUtil.firstChild(this) != this -> null // if not leaf then there is no token
+        PsiTreeUtil.firstChild(this) != this -> EMPTY_TOKEN // if not leaf then there is no token
         technicalToken != null -> technicalToken
         else -> normalizedToken
     }

@@ -75,7 +75,9 @@ class PsiExtractor : CliktCommand() {
         val storage = config.storage.createStorage(output)
         val pipeline = Pipeline(
             language = config.language,
-            preprocessorManager = config.additionalPreprocessing?.let { getKotlinJavaPreprocessorManager(it.androidSdkPath) },
+            preprocessorManager = config.additionalPreprocessing?.let {
+                getKotlinJavaPreprocessorManager(it.androidSdkPath)
+            },
             repositoryOpener = getKotlinJavaRepositoryOpener(),
             psiTreeTransformations = config.treeTransformers.map { it.createTreeTransformation(config.language) },
             filters = config.filters.map { it.createFilter() },

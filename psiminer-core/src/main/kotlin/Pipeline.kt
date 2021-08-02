@@ -65,7 +65,8 @@ class Pipeline(
         repositoryOpener.openRepository(repositoryRoot) { project ->
             parser.parseProjectAsync(project, batchSize) { psiRoot ->
                 if (filters.any { !it.validateTree(psiRoot, languageHandler) }) return@parseProjectAsync false
-                val labeledTree = labelExtractor.extractLabel(psiRoot, languageHandler) ?: return@parseProjectAsync false
+                val labeledTree =
+                    labelExtractor.extractLabel(psiRoot, languageHandler) ?: return@parseProjectAsync false
                 storage.store(labeledTree, holdout)
                 if (printTrees) labeledTree.root.printTree()
                 true

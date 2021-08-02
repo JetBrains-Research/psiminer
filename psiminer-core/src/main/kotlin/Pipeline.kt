@@ -1,3 +1,5 @@
+import com.intellij.psi.PsiElement
+import com.intellij.openapi.project.Project
 import filter.Filter
 import labelextractor.LabelExtractor
 import psi.Parser
@@ -28,7 +30,12 @@ class Pipeline(
         return Dataset.values().all { folderDirNames.contains(it.folderName) }
     }
 
-    fun extract(inputDirectory: File, batchSize: Int = 10_000, printTrees: Boolean = false) {
+    fun extract(
+        inputDirectory: File,
+        parseAsync: Boolean = false,
+        batchSize: Int? = null,
+        printTrees: Boolean = false
+    ) {
         println("Starting data extraction using the following parser configuration\n$parser")
         val isDataset = checkFolderIsDataset(inputDirectory)
         if (isDataset) {
@@ -42,30 +49,41 @@ class Pipeline(
                         "Process $holdout.${holdoutProjectFile.name} project " +
                                 "(${index + 1}/${holdoutProjects.size})"
                     )
-                    processProject(holdoutProjectFile, holdout, batchSize, printTrees)
+                    processProject(holdoutProjectFile, holdout, parseAsync, batchSize, printTrees)
                 }
             }
         } else {
             println("No dataset found. Process all sources under passed path")
-            processProject(inputDirectory, null, batchSize, printTrees)
+            processProject(inputDirectory, null, parseAsync, batchSize, printTrees)
         }
     }
 
     private fun processProject(
         projectFile: File,
         holdout: Dataset?,
-        batchSize: Int = 10_000,
+        parseAsync: Boolean = false,
+        batchSize: Int? = null,
         printTrees: Boolean = false
     ) {
         // TODO: log why we can't process the project
         val project = openProject(projectFile) ?: return
-        parser.parseProjectAsync(project, batchSize) { psiRoot ->
-            if (filters.any { !it.validateTree(psiRoot, languageHandler) }) return@parseProjectAsync false
-            val labeledTree = labelExtractor.extractLabel(psiRoot, languageHandler) ?: return@parseProjectAsync false
+        applyParserToProject(project, parseAsync, batchSize) { psiRoot: PsiElement ->
+            if (filters.any { !it.validateTree(psiRoot, languageHandler) }) return@applyParserToProject false
+            val labeledTree = labelExtractor.extractLabel(psiRoot, languageHandler) ?: return@applyParserToProject false
             storage.store(labeledTree, holdout)
             if (printTrees) labeledTree.root.printTree()
             true
         }
-        closeProject(project)
+//        closeProject(project)
+    }
+
+    private fun applyParserToProject(
+        project: Project,
+        parseAsync: Boolean,
+        batchSize: Int?,
+        callback: (PsiElement) -> Any
+    ) {
+        if (parseAsync) parser.parseProjectAsync(project, batchSize, callback)
+        else parser.parseProject(project, callback)
     }
 }

@@ -61,9 +61,7 @@ class Pipeline(
         batchSize: Int = 10_000,
         printTrees: Boolean = false
     ) {
-        if (preprocessorManager != null) {
-            preprocessorManager.preprocessRepositoryInplace(repositoryRoot)
-        }
+        preprocessorManager?.preprocessRepositoryInplace(repositoryRoot)
         repositoryOpener.openRepository(repositoryRoot) { project ->
             parser.parseProjectAsync(project, batchSize) { psiRoot ->
                 if (filters.any { !it.validateTree(psiRoot, languageHandler) }) return@parseProjectAsync false

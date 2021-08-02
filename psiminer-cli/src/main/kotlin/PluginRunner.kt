@@ -10,6 +10,7 @@ import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
 import org.jetbrains.research.pluginUtilities.openRepository.getKotlinJavaRepositoryOpener
+import org.jetbrains.research.pluginUtilities.preprocessing.getKotlinJavaPreprocessorManager
 import kotlin.system.exitProcess
 
 class PluginRunner : ApplicationStarter {
@@ -74,7 +75,7 @@ class PsiExtractor : CliktCommand() {
         val storage = config.storage.createStorage(output.resolve(config.language.name))
         val pipeline = Pipeline(
             language = config.language,
-            preprocessorManager = null,
+            preprocessorManager = config.additionalPreprocessing?.let { getKotlinJavaPreprocessorManager(it.androidSdkPath) },
             repositoryOpener = getKotlinJavaRepositoryOpener(),
             psiTreeTransformations = config.treeTransformers.map { it.createTreeTransformation(config.language) },
             filters = config.filters.map { it.createFilter() },

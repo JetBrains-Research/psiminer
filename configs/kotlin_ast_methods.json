@@ -1,4 +1,7 @@
 {
+  "additional preprocessing": {
+    "android sdk absolute path": "/Users/Egor.Porsev/android_sdk/sdk"
+  },
   "filters": [
     {"name":  "empty method"},
     {

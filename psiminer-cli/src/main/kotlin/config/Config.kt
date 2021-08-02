@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable data class Config(
     // ====== How to open repositories =====
-    @SerialName("additional preprocessing") val additionalPreprocessing: PreprocessingConfig?,
+    @SerialName("additional preprocessing") val additionalPreprocessing: PreprocessingConfig? = null,
 
     // ====== Pipeline configuration =====
     val filters: List<FilterConfig>,

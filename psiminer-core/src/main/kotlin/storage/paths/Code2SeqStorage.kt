@@ -60,12 +60,12 @@ open class Code2SeqStorage(
     private fun pathToString(path: List<PsiElement>): String {
         val stringBuilder = StringBuilder()
         val firstNode = path.first()
-        firstNode.resolvedTokenType?.let { stringBuilder.append(csvShield(it)) }
-        firstNode.token?.let { stringBuilder.append(csvShield(it)) }
+        firstNode.resolvedTokenType?.let { stringBuilder.append(csvShield(it)).append(",") }
+        firstNode.token?.let { stringBuilder.append(csvShield(it)).append(",") }
             ?: throw IllegalArgumentException("Found null token in first node in path")
-        stringBuilder.append(path.joinToString("|") { nodeToString(it) })
+        stringBuilder.append(path.joinToString("|") { nodeToString(it) }).append(",")
         val lastNode = path.last()
-        lastNode.token?.let { stringBuilder.append(csvShield(it)) }
+        lastNode.token?.let { stringBuilder.append(csvShield(it)).append(",") }
             ?: throw IllegalArgumentException("Found null token in last node in path")
         lastNode.resolvedTokenType?.let { stringBuilder.append(csvShield(it)) }
         return stringBuilder.toString()

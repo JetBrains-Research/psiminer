@@ -53,7 +53,7 @@ class Pipeline(
                         "Process $holdout.${holdoutRepositoryRoot.name} project " +
                                 "(${index + 1}/${holdoutRepositories.size})"
                     )
-                    processRepository(holdoutProjectFile, holdout, parseAsync, batchSize, printTrees)
+                    processRepository(holdoutRepositoryRoot, holdout, parseAsync, batchSize, printTrees)
                 }
             }
         } else {
@@ -73,7 +73,8 @@ class Pipeline(
         repositoryOpener.openRepository(repositoryRoot) { project ->
             applyParserToProject(project, parseAsync, batchSize) { psiRoot: PsiElement ->
                 if (filters.any { !it.validateTree(psiRoot, languageHandler) }) return@applyParserToProject false
-                val labeledTree = labelExtractor.extractLabel(psiRoot, languageHandler) ?: return@applyParserToProject false
+                val labeledTree =
+                    labelExtractor.extractLabel(psiRoot, languageHandler) ?: return@applyParserToProject false
                 storage.store(labeledTree, holdout)
                 if (printTrees) labeledTree.root.printTree()
                 true

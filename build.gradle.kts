@@ -22,13 +22,12 @@ allprojects {
     }
     repositories {
         mavenCentral()
-        maven(url = "https://dl.bintray.com/jetbrains/intellij-plugin-service")
         maven(url = "https://packages.jetbrains.team/maven/p/astminer/astminer")
     }
 
     dependencies {
         implementation(kotlin("stdlib"))
-        implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.1")
+        implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2")
 
         testImplementation(platform("org.junit:junit-bom:5.7.2"))
         testImplementation("org.junit.jupiter:junit-jupiter")

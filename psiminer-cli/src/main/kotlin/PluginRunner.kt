@@ -86,7 +86,7 @@ class PsiExtractor : CliktCommand() {
         )
 
         try {
-            pipeline.extract(dataset, config.batchSize, config.printTrees)
+            pipeline.extract(dataset, config.parseAsync, config.batchSize, config.printTrees)
             storage.printStatistic()
             storage.close()
             exitProcess(0)

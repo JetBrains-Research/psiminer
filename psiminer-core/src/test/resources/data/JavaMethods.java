@@ -21,7 +21,16 @@ class Main {
         Boolean t = false;
     }
 
-    public void largeMethod() {
+    /**
+     * This is JavaDoc
+     * @param x
+     * @param y
+     */
+    public void largeMethod(int x, int y) {
+        // test comment
+        /*
+            another comment
+        */
         int mySuperVal = 0 + 123;
         String myString = "asd";
         boolean a = !mySuperVal;

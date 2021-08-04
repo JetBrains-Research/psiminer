@@ -65,9 +65,9 @@ open class Code2SeqStorage(
             ?: throw IllegalArgumentException("Found null token in first node in path")
         stringBuilder.append(path.joinToString("|") { nodeToString(it) }).append(",")
         val lastNode = path.last()
-        lastNode.token?.let { stringBuilder.append(csvShield(it)).append(",") }
+        lastNode.token?.let { stringBuilder.append(csvShield(it)) }
             ?: throw IllegalArgumentException("Found null token in last node in path")
-        lastNode.resolvedTokenType?.let { stringBuilder.append(csvShield(it)) }
+        lastNode.resolvedTokenType?.let { stringBuilder.append(",").append(csvShield(it)) }
         return stringBuilder.toString()
     }
 

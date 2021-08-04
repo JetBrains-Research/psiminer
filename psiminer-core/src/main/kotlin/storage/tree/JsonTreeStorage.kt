@@ -35,7 +35,7 @@ class JsonTreeStorage(outputDirectory: File) : Storage(outputDirectory) {
 
     private fun collectNodeRepresentation(root: PsiElement): List<NodeRepresentation> {
         val nodeToId = hashMapOf<PsiElement, Int>()
-        root.preOrder {
+        root.preOrder().forEach {
             nodeToId[it] = nodeToId.size
         }
         return nodeToId.entries.sortedBy { it.value }.map { it.key }.map {

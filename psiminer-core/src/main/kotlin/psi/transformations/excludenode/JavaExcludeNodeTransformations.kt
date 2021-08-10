@@ -1,8 +1,6 @@
 package psi.transformations.excludenode
 
-import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiImportStatement
-import com.intellij.psi.PsiPackageStatement
+import com.intellij.psi.*
 import com.intellij.psi.impl.source.tree.ElementType
 import com.intellij.psi.util.elementType
 import psi.transformations.JavaTreeTransformation
@@ -31,4 +29,19 @@ class ExcludeJavaSymbolsTransformation : JavaTreeTransformation, ExcludeNodeTran
     )
 
     override fun isIgnored(node: PsiElement): Boolean = node.elementType in skipElementTypes
+}
+
+class ExcludeKeywordTransformation : JavaTreeTransformation, ExcludeNodeTransformation() {
+    override fun isIgnored(node: PsiElement): Boolean = node is PsiKeyword
+}
+
+class ExcludeEmptyGrammarListsTransformation : JavaTreeTransformation, ExcludeNodeTransformation() {
+    private val listTypes = listOf(
+        PsiReferenceParameterList::class, PsiModifierList::class, PsiReferenceList::class,
+        PsiTypeParameterList::class, PsiExpressionList::class, PsiParameterList::class,
+        PsiExpressionListStatement::class, PsiAnnotationParameterList::class
+    )
+
+    override fun isIgnored(node: PsiElement): Boolean =
+        (node.children.isEmpty() || node.text == "()") && listTypes.any { it.isInstance(node) }
 }

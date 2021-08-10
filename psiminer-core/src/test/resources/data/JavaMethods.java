@@ -42,7 +42,7 @@ class Main {
             if (i > 0) {}
             hashMap.remove(i);
         }
-        int f = 5;
+        float f = 5;
         Qwerty qwerty = new Qwerty()
     }
 

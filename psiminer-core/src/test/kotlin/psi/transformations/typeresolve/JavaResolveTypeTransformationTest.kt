@@ -46,7 +46,7 @@ internal class JavaResolveTypeTransformationTest : BasePsiRequiredTest() {
             "b" to "boolean",
             "hashMap" to "map|string|integer",
             "i" to "int",
-            "f" to "int",
+            "f" to "float",
             "qwerty" to "qwerty"
         )
     }

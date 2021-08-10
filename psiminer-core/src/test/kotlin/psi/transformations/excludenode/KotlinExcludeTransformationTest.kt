@@ -3,8 +3,6 @@ package psi.transformations.excludenode
 import BasePsiRequiredTest
 import com.intellij.openapi.application.ReadAction
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiWhiteSpace
-import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 import psi.nodeProperties.isHidden

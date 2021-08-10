@@ -8,7 +8,6 @@ internal class JavaExcludeWhiteSpaceTransformationTest : JavaExcludeTransformati
     override val excludeType = PsiWhiteSpace::class
 }
 
-
 internal class KotlinExcludeWhiteSpaceTransformationTest : KotlinExcludeTransformationTest() {
 
     override val transformation = ExcludeWhiteSpaceTransformation()

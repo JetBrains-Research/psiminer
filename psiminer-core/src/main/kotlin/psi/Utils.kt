@@ -6,6 +6,7 @@ import com.intellij.psi.util.PsiTreeUtil
 import psi.nodeProperties.isHidden
 import psi.nodeProperties.nodeType
 import psi.nodeProperties.token
+import psi.transformations.typeresolve.resolvedTokenType
 
 /**
  * Calculate size of PSI tree
@@ -46,6 +47,9 @@ fun PsiElement.printTree(delimiter: String = "..", indentStep: Int = 2) {
     preOrder().forEach {
         val indent = depths[it.parent]?.plus(1) ?: 0
         depths[it] = indent
-        println("${delimiter.repeat(indent * indentStep)} ${it.nodeType} -- ${it.token}")
+        val representation =
+            StringBuilder("${delimiter.repeat(indent * indentStep)} ${it.nodeType} -- ${it.token}")
+        if (it.resolvedTokenType != null) representation.append(" (${it.resolvedTokenType})")
+        println(representation.toString())
     }
 }

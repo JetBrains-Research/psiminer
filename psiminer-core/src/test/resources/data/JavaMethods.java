@@ -43,6 +43,7 @@ class Main {
             hashMap.remove(i);
         }
         int f = 5;
+        Qwerty qwerty = new Qwerty()
     }
 
     public void recursiveMethod() {

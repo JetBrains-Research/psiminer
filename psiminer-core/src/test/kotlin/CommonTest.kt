@@ -7,7 +7,7 @@ import org.junit.jupiter.params.provider.MethodSource
 internal class CommonTest : BasePsiRequiredTest() {
 
     private fun provideMethodsSizes(): Array<Arguments> = arrayOf(
-        Arguments.of("smallMethod", 4), Arguments.of("largeMethod", 13)
+        Arguments.of("smallMethod", 4), Arguments.of("largeMethod", 14)
     )
 
     @ParameterizedTest

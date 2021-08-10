@@ -2,11 +2,9 @@ package psi.transformations
 
 import com.intellij.psi.JavaRecursiveElementVisitor
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiJavaToken
 import com.intellij.psi.PsiLiteralExpression
 import com.intellij.psi.impl.source.tree.ElementType
 import com.intellij.psi.tree.TokenSet
-import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.elementType
 import psi.nodeProperties.technicalToken
 
@@ -20,7 +18,7 @@ class JavaHideLiteralsTransformation(
         root.accept(javaHideLiteralsTransformation)
     }
 
-    private inner class JavaHideLiteralsVisitor: JavaRecursiveElementVisitor() {
+    private inner class JavaHideLiteralsVisitor : JavaRecursiveElementVisitor() {
         override fun visitLiteralExpression(expression: PsiLiteralExpression?) {
             super.visitLiteralExpression(expression)
             expression?.children?.forEach {

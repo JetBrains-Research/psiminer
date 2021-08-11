@@ -17,7 +17,7 @@ tasks {
             "-Djava.awt.headless=true", "-Djdk.module.illegalAccess.silent=true",
             "--add-exports", "java.base/jdk.internal.vm=ALL-UNNAMED"
         )
-        maxHeapSize = "20g"
+        maxHeapSize = "32g"
     }
     register("runPSIMiner") {
         dependsOn(runIde)

@@ -29,5 +29,6 @@
     }
   ],
 
+  "numThreads": 14,
   "printTrees": false
 }

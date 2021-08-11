@@ -35,6 +35,10 @@ allprojects {
         detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.17.0")
     }
 
+    configurations.all {
+        exclude("org.slf4j")
+    }
+
     // See https://github.com/JetBrains/gradle-intellij-plugin/
     intellij {
         version.set(getProperty("platformVersion"))

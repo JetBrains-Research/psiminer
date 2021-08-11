@@ -6,12 +6,10 @@ import psi.nodeProperties.isHidden
 import psi.nodeProperties.nodeType
 import psi.nodeProperties.token
 
-class AstminerNodeWrapper(val psiNode: PsiElement, override val parent: Node? = null) : Node() {
+class AstminerNodeWrapper(val psiNode: PsiElement, override val parent: Node? = null) : Node(psiNode.token) {
     override val children: MutableList<AstminerNodeWrapper> by lazy {
         psiNode.children.filter { !it.isHidden }.map { AstminerNodeWrapper(it, this) }.toMutableList()
     }
-
-    override val token: String = psiNode.token ?: ""
 
     override val typeLabel: String = psiNode.nodeType
 

@@ -3,14 +3,9 @@ package psi.nodeProperties
 import com.intellij.psi.PsiElement
 import kotlin.reflect.KProperty
 
-var PsiElement.isHidden: Boolean by HideElementDelegate()
+var PsiElement.isHidden by HideElementDelegate().also { registerPropertyDelegate(it) }
 
-class HideElementDelegate {
-    private val hiddenElementStorage = HashMap<PsiElement, Boolean>()
-
-    operator fun getValue(thisRef: PsiElement, property: KProperty<*>): Boolean = hiddenElementStorage[thisRef] ?: false
-
-    operator fun setValue(thisRef: PsiElement, property: KProperty<*>, newValue: Boolean) {
-        hiddenElementStorage[thisRef] = newValue
-    }
+class HideElementDelegate : PropertyDelegate<Boolean>() {
+    override operator fun getValue(thisRef: PsiElement, property: KProperty<*>): Boolean =
+        values[thisRef] ?: false
 }

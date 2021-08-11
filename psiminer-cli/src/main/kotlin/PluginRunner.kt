@@ -9,6 +9,8 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
+import org.apache.log4j.PropertyConfigurator
+import org.slf4j.LoggerFactory
 import kotlin.system.exitProcess
 
 class PluginRunner : ApplicationStarter {
@@ -16,6 +18,9 @@ class PluginRunner : ApplicationStarter {
     override fun getCommandName(): String = "psiminer"
 
     override fun main(args: Array<out String>) {
+        val logPropertyFile = PluginRunner::class.java.getResource("log4j.properties")
+        PropertyConfigurator.configure(logPropertyFile)
+
         PsiExtractor().main(args.slice(1 until args.size))
     }
 }
@@ -62,12 +67,14 @@ class PsiExtractor : CliktCommand() {
     private val output by argument(help = "Output directory").file(canBeFile = false)
     private val jsonConfig by argument(help = "JSON config").file(mustExist = true, canBeDir = false)
 
+    private val logger = LoggerFactory.getLogger(javaClass)
+
     override fun run() {
         val config = try {
             jsonFormat.decodeFromString<Config>(jsonConfig.readText())
         } catch (e: SerializationException) {
-            println("Error during parsing the config:\n${e.message}")
-            exitProcess(1)
+            logger.error("Error during parsing the config:\n${e.message}")
+            exitProcess(0)
         }
 
         val storage = config.storage.createStorage(output)
@@ -80,14 +87,15 @@ class PsiExtractor : CliktCommand() {
         )
 
         try {
-            pipeline.extract(dataset, config.parseAsync, config.batchSize, config.printTrees)
+            logger.warn("Start processing data.")
+            pipeline.extract(dataset, config.numThreads, config.printTrees)
             storage.printStatistic()
             storage.close()
-            exitProcess(0)
         } catch (e: Exception) {
-            println("Failed with ${e::class.simpleName}: ${e.message}")
+            logger.error("Failed with ${e::class.simpleName}: ${e.message}")
             storage.close()
-            exitProcess(1)
+        } finally {
+            exitProcess(0)
         }
     }
 }

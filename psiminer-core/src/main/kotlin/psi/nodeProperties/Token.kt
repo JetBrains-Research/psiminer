@@ -3,7 +3,6 @@ package psi.nodeProperties
 import astminer.common.splitToSubtokens
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
-import kotlin.reflect.KProperty
 
 const val EMPTY_TOKEN = "EMPTY"
 
@@ -20,14 +19,6 @@ val PsiElement.normalizedToken: String
         else it.joinToString("|")
     }
 
-var PsiElement.technicalToken: String? by TechnicalTokenDelegate()
+var PsiElement.technicalToken: String? by TechnicalTokenDelegate().also { registerPropertyDelegate(it) }
 
-class TechnicalTokenDelegate {
-    private val technicalTokens = HashMap<PsiElement, String>()
-
-    operator fun getValue(thisRef: PsiElement, property: KProperty<*>): String? = technicalTokens[thisRef]
-
-    operator fun setValue(thisRef: PsiElement, property: KProperty<*>, newValue: String?) {
-        if (newValue != null) technicalTokens[thisRef] = newValue
-    }
-}
+class TechnicalTokenDelegate : PropertyDelegate<String>()

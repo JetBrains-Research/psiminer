@@ -1,3 +1,8 @@
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.roots.ProjectRootManager
+import com.intellij.openapi.vfs.VfsUtil
+import com.intellij.openapi.vfs.VirtualFile
+
 enum class GranularityLevel {
     File,
     Class,
@@ -30,3 +35,20 @@ fun getCleanCode(code: String): List<String> {
         .map { it.trim() }
         .filter { it != "{" && it != "}" && it != "" && !it.startsWith("/") && !it.startsWith("*") }
 }
+
+/**
+ * Collect all files from project that correspond to given language
+ * Search is based on checking extension of each file
+ * @param project: project where run search
+ * @return: list of all Virtual Files in project that correspond to required language.
+ * @see VirtualFile
+ */
+fun extractProjectFiles(project: Project, language: Language): List<VirtualFile> =
+    ProjectRootManager
+        .getInstance(project)
+        .contentRoots
+        .flatMap { root ->
+            VfsUtil.collectChildrenRecursively(root).filter {
+                it.extension in language.extensions && it.canonicalPath != null
+            }
+        }

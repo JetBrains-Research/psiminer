@@ -29,6 +29,6 @@
     }
   ],
 
-  "numThreads": 14,
+  "batchSize": 1000,
   "printTrees": false
 }

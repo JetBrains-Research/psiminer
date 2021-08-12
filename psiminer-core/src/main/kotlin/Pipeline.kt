@@ -1,3 +1,4 @@
+import com.intellij.openapi.project.ex.ProjectManagerEx
 import com.intellij.psi.PsiManager
 import filter.Filter
 import labelextractor.LabelExtractor
@@ -13,7 +14,6 @@ import psi.transformations.PsiTreeTransformation
 import storage.Storage
 import java.io.File
 import kotlin.concurrent.thread
-import kotlin.math.ceil
 
 class Pipeline(
     val language: Language,
@@ -39,10 +39,10 @@ class Pipeline(
 
     fun extract(
         inputDirectory: File,
-        numThreads: Int = 1,
+        batchSize: Int = 1,
         printTrees: Boolean = false
     ) {
-        require(numThreads > 0) { "Amount threads must be positive." }
+        require(batchSize > 0) { "Amount threads must be positive." }
         println("Parser configuration:\n$parser")
         val isDataset = checkFolderIsDataset(inputDirectory)
         if (isDataset) {
@@ -55,22 +55,21 @@ class Pipeline(
                     println(
                         "Process ${holdoutProjectFile.name} from $holdout (${index + 1}/${holdoutProjects.size})"
                     )
-                    processProject(holdoutProjectFile, holdout, numThreads, printTrees)
+                    processProject(holdoutProjectFile, holdout, batchSize, printTrees)
                 }
             }
         } else {
             println("No dataset found. Process all sources under passed path")
-            processProject(inputDirectory, null, numThreads, printTrees)
+            processProject(inputDirectory, null, batchSize, printTrees)
         }
     }
 
     private fun processProject(
         projectFile: File,
         holdout: Dataset?,
-        numThreads: Int = 1,
+        batchSize: Int = 1,
         printTrees: Boolean = false
     ) {
-        // TODO: log why we can't process the project
         val project = openProject(projectFile) ?: return
         logger.warn("Process project ${project.name}")
         val psiManager = PsiManager.getInstance(project)
@@ -78,26 +77,23 @@ class Pipeline(
 
         val progressBar = ProgressBar(project.name, projectFiles.size.toLong())
 
-        projectFiles.chunked(releasePropertyDelegateRate).forEach { files ->
-            val batchSize = ceil(files.size.toDouble() / numThreads).toInt()
-            val threads = files.chunked(batchSize).map { batch ->
+        projectFiles.chunked(batchSize).forEach { files ->
+            val threads = files.map { file ->
                 thread {
-                    batch.forEach { file ->
-                        try {
-                            parser.parseFile(file, psiManager) { psiRoot ->
-                                if (filters.any { !it.validateTree(psiRoot, languageHandler) }) return@parseFile
-                                val labeledTree =
-                                    labelExtractor.extractLabel(psiRoot, languageHandler) ?: return@parseFile
-                                synchronized(storage) {
-                                    storage.store(labeledTree, holdout)
-                                    if (printTrees) labeledTree.root.printTree()
-                                }
+                    try {
+                        parser.parseFile(file, psiManager) { psiRoot ->
+                            if (filters.any { !it.validateTree(psiRoot, languageHandler) }) return@parseFile
+                            val labeledTree =
+                                labelExtractor.extractLabel(psiRoot, languageHandler) ?: return@parseFile
+                            synchronized(storage) {
+                                storage.store(labeledTree, holdout)
+                                if (printTrees) labeledTree.root.printTree()
                             }
-                        } catch (exception: ParserException) {
-                            logger.error("Error while parsing ${exception.filepath}")
-                        } finally {
-                            progressBar.step()
                         }
+                    } catch (exception: ParserException) {
+                        logger.error("Error while parsing ${exception.filepath}")
+                    } finally {
+                        progressBar.step()
                     }
                 }
             }
@@ -106,9 +102,6 @@ class Pipeline(
         }
 
         progressBar.close()
-    }
-
-    companion object {
-        private const val releasePropertyDelegateRate = 1_000
+        ProjectManagerEx.getInstanceEx().closeAndDisposeAllProjects(false)
     }
 }

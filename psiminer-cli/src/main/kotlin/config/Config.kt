@@ -15,6 +15,6 @@ import kotlinx.serialization.Serializable
     @SerialName("tree transformations") val treeTransformers: List<PsiTreeTransformationConfig>,
 
     // ===== Other parameters =====
-    val numThreads: Int = 1,
+    val batchSize: Int = 1,
     val printTrees: Boolean = false
 )

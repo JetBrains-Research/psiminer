@@ -17,7 +17,7 @@ class JavaRemoveCommentsTransformation(private val removeJavaDoc: Boolean) : Jav
         if (removeJavaDoc) {
             PsiTreeUtil
                 .collectElementsOfType(root, PsiDocComment::class.java)
-                .forEach { it.isHidden }
+                .forEach { it.isHidden = true }
         }
     }
 }

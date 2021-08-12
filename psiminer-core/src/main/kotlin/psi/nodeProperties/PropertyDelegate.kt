@@ -1,12 +1,13 @@
 package psi.nodeProperties
 
 import com.intellij.psi.PsiElement
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
 open class PropertyDelegate<T> : ReadWriteProperty<PsiElement, T?> {
 
-    protected val values: HashMap<PsiElement, T> = hashMapOf()
+    protected val values = ConcurrentHashMap<PsiElement, T>()
 
     override operator fun getValue(thisRef: PsiElement, property: KProperty<*>): T? = values[thisRef]
 

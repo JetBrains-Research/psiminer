@@ -31,7 +31,7 @@ class Parser(
     fun <T> parseFile(virtualFile: VirtualFile, psiManager: PsiManager, callback: (PsiElement) -> T): List<T> =
         ReadAction.compute<List<T>, Exception> {
             val psiFile = psiManager.findFile(virtualFile) ?: throw ParserException(virtualFile.path)
-            psiTreeTransformations.forEach { synchronized(it) { it.transform(psiFile) } }
+            psiTreeTransformations.forEach { it.transform(psiFile) }
             val granularityPsiElements = languageHandler.splitByGranularity(psiFile, granularity)
             granularityPsiElements.map { callback(it) }
         }

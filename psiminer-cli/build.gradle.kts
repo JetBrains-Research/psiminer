@@ -15,7 +15,7 @@ tasks {
         args = listOfNotNull("psiminer", dataset, output, config)
         jvmArgs = listOf(
             "-Djava.awt.headless=true", "-Djdk.module.illegalAccess.silent=true",
-            "--add-exports", "java.base/jdk.internal.vm=ALL-UNNAMED"
+            "--add-exports", "java.base/jdk.internal.vm=ALL-UNNAMED", "-Xmx32G"
         )
         maxHeapSize = "32g"
     }

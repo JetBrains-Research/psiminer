@@ -1,0 +1,18 @@
+{
+  "filters": [
+    {"name":  "empty method"},
+    {
+      "name": "by modifiers",
+      "excludeModifiers": ["abstract"]
+    }
+  ],
+  "label": {"name": "method name"},
+  "storage": {"name": "json tree"},
+
+  "language": "Kotlin",
+  "tree transformations": [
+    {"name": "exclude whitespace"}
+  ],
+
+  "printTrees": true
+}

@@ -1,10 +1,14 @@
 {
   "filters": [
     {"name": "constructor"},
-    {"name":  "empty method"},
+    {"name": "empty method"},
     {
       "name": "by modifiers",
       "excludeModifiers": ["abstract"]
+    },
+    {
+      "name": "by annotations",
+      "excludeAnnotations": ["Override"]
     }
   ],
   "label": {"name": "method name"},
@@ -15,9 +19,7 @@
     {"name": "resolve type"},
     {"name": "exclude whitespace"},
     {"name": "exclude empty grammar lists"},
-    {"name": "exclude keywords"},
     {"name": "exclude language symbols"},
-    {"name": "compress operators"},
     {
       "name": "hide literals",
       "hideNumbers": true,

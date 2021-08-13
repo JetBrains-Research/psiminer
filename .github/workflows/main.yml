@@ -1,4 +1,4 @@
-name: Build with lint
+name: Run lint, test & build
 
 on: [push, pull_request]
 

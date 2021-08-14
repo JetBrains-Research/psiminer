@@ -37,7 +37,7 @@ allprojects {
         val utilitiesProjectName = "org.jetbrains.research.pluginUtilities"
         implementation("$utilitiesProjectName:plugin-utilities-core") {
             version {
-                branch = "main"
+                branch = "open_repo"
             }
             exclude("org.slf4j", "slf4j-simple")
             exclude("org.slf4j", "slf4j-api")

@@ -4,8 +4,7 @@ import Language
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.jetbrains.research.pluginUtilities.preprocessing.PreprocessorManager
-import org.jetbrains.research.pluginUtilities.preprocessing.android.AndroidSdkPreprocessor
-import org.jetbrains.research.pluginUtilities.preprocessing.common.DeleteFilesPreprocessor
+import org.jetbrains.research.pluginUtilities.preprocessing.getKotlinJavaPreprocessorManager
 
 @Serializable
 data class Config(
@@ -35,19 +34,10 @@ data class PreprocessingConfig(
     val androidSdk: String? = null
 ) {
     fun createPreprocessorManager(): PreprocessorManager? {
-        // TODO: use getKotlinJavaPreprocessorManager. Do not accept PR if this todo is not resolved
         return if (enable) {
-            val preprocessors = listOfNotNull(
-                androidSdk?.let { AndroidSdkPreprocessor(it) },
-                DeleteFilesPreprocessor(listOf(IDEA_FOLDER_NAME))
-            )
-            PreprocessorManager(preprocessors)
+            getKotlinJavaPreprocessorManager(androidSdk)
         } else {
             null
         }
-    }
-
-    companion object {
-        const val IDEA_FOLDER_NAME = ".idea"
     }
 }

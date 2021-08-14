@@ -4,7 +4,7 @@ include(
     "psiminer-core"
 )
 
-val utilitiesRepo = "https://github.com/Furetur/plugin-utilities.git"
+val utilitiesRepo = "https://github.com/JetBrains-Research/plugin-utilities.git"
 val utilitiesProjectName = "org.jetbrains.research.pluginUtilities"
 
 sourceControl {

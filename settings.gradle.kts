@@ -4,19 +4,12 @@ include(
     "psiminer-core"
 )
 
-val utilitiesRepo = "https://github.com/JetBrains-Research/plugin-utilities.git"
-val utilitiesProjectName = "org.jetbrains.research.pluginUtilities"
+
+val utilitiesRepo: String by settings
+val utilitiesProjectName: String by settings
 
 sourceControl {
     gitRepository(java.net.URI.create(utilitiesRepo)) {
         producesModule("$utilitiesProjectName:plugin-utilities-core")
-    }
-}
-
-pluginManagement {
-    repositories {
-        gradlePluginPortal()
-        jcenter()
-        maven(url = "https://nexus.gluonhq.com/nexus/content/repositories/releases")
     }
 }

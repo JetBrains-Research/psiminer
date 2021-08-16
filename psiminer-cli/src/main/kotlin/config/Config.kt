@@ -32,11 +32,6 @@ data class PreprocessingConfig(
     val enable: Boolean = true,
     val androidSdkHome: String? = null
 ) {
-    fun createPreprocessorManager(): PreprocessorManager? {
-        return if (enable) {
-            getKotlinJavaPreprocessorManager(androidSdkHome)
-        } else {
-            null
-        }
-    }
+    fun createPreprocessorManager(): PreprocessorManager? =
+        if (enable) getKotlinJavaPreprocessorManager(androidSdkHome) else null
 }

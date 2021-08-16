@@ -1,7 +1,4 @@
 {
-  "additional preprocessing": {
-    "enable": true
-  },
   "filters": [
     {"name":  "empty method"},
     {

@@ -1,4 +1,7 @@
 {
+  "additional preprocessing": {
+    "enable": true
+  },
   "filters": [
     {"name": "constructor"},
     {"name":  "empty method"},

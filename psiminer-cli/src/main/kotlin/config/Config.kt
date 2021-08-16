@@ -23,8 +23,7 @@ data class Config(
     @SerialName("tree transformations") val treeTransformers: List<PsiTreeTransformationConfig>,
 
     // ===== Other parameters =====
-    val parseAsync: Boolean = false,
-    val batchSize: Int? = null,
+    val batchSize: Int = 1,
     val printTrees: Boolean = false
 )
 

@@ -1,15 +1,20 @@
-import com.intellij.psi.PsiElement
-import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.ex.ProjectManagerEx
+import com.intellij.psi.PsiManager
 import filter.Filter
 import labelextractor.LabelExtractor
+import me.tongfei.progressbar.ProgressBar
+import org.slf4j.LoggerFactory
 import org.jetbrains.research.pluginUtilities.openRepository.RepositoryOpener
 import psi.Parser
+import psi.ParserException
 import psi.language.JavaHandler
 import psi.language.KotlinHandler
+import psi.nodeProperties.resetRegisteredPropertyDelegates
 import psi.printTree
 import psi.transformations.PsiTreeTransformation
 import storage.Storage
 import java.io.File
+import kotlin.concurrent.thread
 import org.jetbrains.research.pluginUtilities.preprocessing.PreprocessorManager
 
 class Pipeline(
@@ -21,6 +26,8 @@ class Pipeline(
     val labelExtractor: LabelExtractor,
     val storage: Storage
 ) {
+
+    private val logger = LoggerFactory.getLogger(javaClass)
 
     private val languageHandler = when (language) {
         Language.Java -> JavaHandler()
@@ -36,11 +43,11 @@ class Pipeline(
 
     fun extract(
         inputDirectory: File,
-        parseAsync: Boolean = false,
-        batchSize: Int? = null,
+        batchSize: Int = 1,
         printTrees: Boolean = false
     ) {
-        println("Starting data extraction using the following parser configuration\n$parser")
+        require(batchSize > 0) { "Amount threads must be positive." }
+        println("Parser configuration:\n$parser")
         val isDataset = checkFolderIsDataset(inputDirectory)
         if (isDataset) {
             println("Dataset structure is detected.")
@@ -50,45 +57,55 @@ class Pipeline(
                     .walk().maxDepth(1).toList().filter { it.name != holdout.folderName && !it.isFile }
                 holdoutRepositories.forEachIndexed { index, holdoutRepositoryRoot ->
                     println(
-                        "Process $holdout.${holdoutRepositoryRoot.name} project " +
-                                "(${index + 1}/${holdoutRepositories.size})"
+                        "Process ${holdoutRepositoryRoot.name} from $holdout (${index + 1}/${holdoutRepositories.size})"
                     )
-                    processRepository(holdoutRepositoryRoot, holdout, parseAsync, batchSize, printTrees)
+                    processProject(holdoutRepositoryRoot, holdout, batchSize, printTrees)
                 }
             }
         } else {
             println("No dataset found. Process all sources under passed path")
-            processRepository(inputDirectory, null, parseAsync, batchSize, printTrees)
+            processRepository(inputDirectory, null, batchSize, printTrees)
         }
     }
 
     private fun processRepository(
         repositoryRoot: File,
         holdout: Dataset?,
-        parseAsync: Boolean = false,
-        batchSize: Int? = null,
+        batchSize: Int = 1,
         printTrees: Boolean = false
     ) {
-        preprocessorManager?.preprocessRepositoryInplace(repositoryRoot)
-        repositoryOpener.openRepository(repositoryRoot) { project ->
-            applyParserToProject(project, parseAsync, batchSize) { psiRoot: PsiElement ->
-                if (filters.any { !it.validateTree(psiRoot, languageHandler) }) return@applyParserToProject false
-                val labeledTree =
-                    labelExtractor.extractLabel(psiRoot, languageHandler) ?: return@applyParserToProject false
-                storage.store(labeledTree, holdout)
-                if (printTrees) labeledTree.root.printTree()
-                true
-            }
-        }
-    }
+        val project = openProject(repositoryRoot) ?: return
+        logger.warn("Process project ${project.name}")
+        val psiManager = PsiManager.getInstance(project)
+        val projectFiles = extractProjectFiles(project, language)
 
-    private fun applyParserToProject(
-        project: Project,
-        parseAsync: Boolean,
-        batchSize: Int?,
-        callback: (PsiElement) -> Any
-    ) {
-        if (parseAsync) parser.parseProjectAsync(project, batchSize, callback)
-        else parser.parseProject(project, callback)
+        val progressBar = ProgressBar(project.name, projectFiles.size.toLong())
+
+        projectFiles.chunked(batchSize).forEach { files ->
+            val threads = files.map { file ->
+                thread {
+                    try {
+                        parser.parseFile(file, psiManager) { psiRoot ->
+                            if (filters.any { !it.validateTree(psiRoot, languageHandler) }) return@parseFile
+                            val labeledTree =
+                                labelExtractor.extractLabel(psiRoot, languageHandler) ?: return@parseFile
+                            synchronized(storage) {
+                                storage.store(labeledTree, holdout)
+                                if (printTrees) labeledTree.root.printTree()
+                            }
+                        }
+                    } catch (exception: ParserException) {
+                        logger.error("Error while parsing ${exception.filepath}")
+                    } finally {
+                        progressBar.step()
+                    }
+                }
+            }
+            threads.forEach { it.join() }
+            resetRegisteredPropertyDelegates()
+        }
+
+        progressBar.close()
+        ProjectManagerEx.getInstanceEx().closeAndDisposeAllProjects(false)
     }
 }

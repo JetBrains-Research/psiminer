@@ -21,7 +21,16 @@ class Main {
         Boolean t = false;
     }
 
-    public void largeMethod() {
+    /**
+     * This is JavaDoc
+     * @param x
+     * @param y
+     */
+    public void largeMethod(int x, int y) {
+        // test comment
+        /*
+            another comment
+        */
         int mySuperVal = 0 + 123;
         String myString = "asd";
         boolean a = !mySuperVal;
@@ -33,7 +42,8 @@ class Main {
             if (i > 0) {}
             hashMap.remove(i);
         }
-        int f = 5;
+        float f = 5;
+        Qwerty qwerty = new Qwerty()
     }
 
     public void recursiveMethod() {

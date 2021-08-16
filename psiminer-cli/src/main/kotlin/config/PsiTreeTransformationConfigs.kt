@@ -54,6 +54,6 @@ class RemoveCommentsTransformationConfig(private val removeDoc: Boolean = true) 
 class ResolveTypeTransformationConfig : PsiTreeTransformationConfig() {
     override fun createTreeTransformation(language: Language): PsiTreeTransformation = when (language) {
         Language.Java -> JavaResolveTypeTransformation()
-        else -> throw UnsupportedLanguageTransformation("remove comments", language.name)
+        else -> throw UnsupportedLanguageTransformation("resolve type", language.name)
     }
 }

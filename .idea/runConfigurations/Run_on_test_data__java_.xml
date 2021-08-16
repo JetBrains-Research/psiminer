@@ -1,17 +1,18 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Run on test data (java)" type="GradleRunConfiguration" factoryName="Gradle">
+    <selectedOptions>
+      <option name="external.system.vm.parameters.fragment" />
+    </selectedOptions>
     <ExternalSystemSettings>
       <option name="executionName" />
       <option name="externalProjectPath" value="$PROJECT_DIR$" />
       <option name="externalSystemIdString" value="GRADLE" />
-      <option name="scriptParameters" value="-Pdataset=$PROJECT_DIR$/psiminer-core/src/test/resources -Poutput=$PROJECT_DIR$/output -Pconfig=$PROJECT_DIR$/configs/java_ast_methods.json" />
+      <option name="scriptParameters" value="runPSIMiner -Pdataset=$PROJECT_DIR$/psiminer-core/src/test/resources -Poutput=$PROJECT_DIR$/output -Pconfig=$PROJECT_DIR$/configs/java_ast_methods.json" />
       <option name="taskDescriptions">
         <list />
       </option>
       <option name="taskNames">
-        <list>
-          <option value="runPSIMiner" />
-        </list>
+        <list />
       </option>
       <option name="vmOptions" value="" />
     </ExternalSystemSettings>

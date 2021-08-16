@@ -45,6 +45,10 @@ allprojects {
         }
     }
 
+    configurations.all {
+        exclude("org.slf4j")
+    }
+
     // See https://github.com/JetBrains/gradle-intellij-plugin/
     intellij {
         version.set(getProperty("platformVersion"))

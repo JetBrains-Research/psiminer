@@ -35,7 +35,7 @@ class JavaResolveTypeTransformation : JavaTreeTransformation {
 
         override fun visitLiteralExpression(expression: PsiLiteralExpression?) {
             super.visitLiteralExpression(expression)
-            expression?.also {
+            expression?.children?.forEach {
                 it.resolvedTokenType =
                     it.parentOfType<PsiLiteralExpression>()?.type?.presentableText ?: NO_TYPE
             }

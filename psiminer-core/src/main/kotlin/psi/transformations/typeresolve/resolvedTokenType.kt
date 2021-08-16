@@ -2,39 +2,43 @@ package psi.transformations.typeresolve
 
 import astminer.common.normalizeToken
 import com.intellij.psi.PsiElement
+import psi.nodeProperties.PropertyDelegate
+import psi.nodeProperties.registerPropertyDelegate
 import kotlin.reflect.KProperty
 
 const val KEYWORD = "<KWRD>"
 const val OPERATOR = "<OP>"
 const val NO_TYPE = "<NT>"
 
-var PsiElement.resolvedTokenType: String? by TokenTypeDelegate()
+var PsiElement.resolvedTokenType: String? by TokenTypeDelegate().also { registerPropertyDelegate(it) }
 
-class TokenTypeDelegate {
-    private val tokenType = HashMap<PsiElement, String>()
-
+class TokenTypeDelegate : PropertyDelegate<String>() {
     private var enable = false
 
-    operator fun getValue(thisRef: PsiElement, property: KProperty<*>): String? =
+    override operator fun getValue(thisRef: PsiElement, property: KProperty<*>): String? =
         if (!enable) null
         else {
-            val tokenType = tokenType[thisRef] ?: NO_TYPE
+            val tokenType = values[thisRef] ?: NO_TYPE
             if (tokenType in listOf(NO_TYPE, KEYWORD, OPERATOR)) tokenType
             else splitTypeToSubtypes(tokenType).joinToString("|")
         }
 
-    operator fun setValue(thisRef: PsiElement, property: KProperty<*>, newValue: String?) {
+    override operator fun setValue(thisRef: PsiElement, property: KProperty<*>, value: String?) {
+        super.setValue(thisRef, property, value)
         enable = true
-        if (newValue == null) throw IllegalArgumentException("try to set null to resolved token type")
-        tokenType[thisRef] = newValue
     }
 
     private fun splitTypeToSubtypes(type: String): List<String> = type
-        .split("[<>]".toRegex()).flatMap {
+        .split(genericRegex).flatMap {
             it.trim()
-                .split("(?<=[a-z])(?=[A-Z])|_|[0-9]|(?<=[A-Z])(?=[A-Z][a-z])|\\s+".toRegex())
+                .split(subtypesRegex)
                 .map { s -> normalizeToken(s, "") }
                 .filter { token -> token.isNotEmpty() }
                 .toList()
         }
+
+    companion object {
+        private val genericRegex = "[<>]".toRegex()
+        private val subtypesRegex = "(?<=[a-z])(?=[A-Z])|_|[0-9]|(?<=[A-Z])(?=[A-Z][a-z])|\\s+".toRegex()
+    }
 }

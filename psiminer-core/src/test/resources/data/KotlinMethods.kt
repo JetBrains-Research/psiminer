@@ -22,7 +22,16 @@ abstract class Main {
         val t = false
     }
 
-    fun largeMethod() {
+    /**
+     * This is KDoc
+     * @param x
+     * @param y
+     */
+    fun largeMethod(x: Int, y: Int) {
+        // test comment
+        /*
+            another comment
+        */
         var mySuperVal = 0 + 123
         val myString = "asd"
         val b = true

@@ -20,8 +20,7 @@ import org.jetbrains.research.pluginUtilities.preprocessing.PreprocessorManager
 
 class Pipeline(
     val language: Language,
-    private val preprocessorManager: PreprocessorManager?,
-    private val repositoryOpener: RepositoryOpener,
+    private val repositoryOpener: PipelineRepositoryOpener,
     psiTreeTransformations: List<PsiTreeTransformation>,
     private val filters: List<Filter>,
     val labelExtractor: LabelExtractor,
@@ -75,7 +74,6 @@ class Pipeline(
         batchSize: Int = 1,
         printTrees: Boolean = false
     ) {
-        preprocessorManager?.preprocessRepositoryInplace(repositoryRoot)
         repositoryOpener.openRepository(repositoryRoot) { project ->
             processProject(project, holdout, batchSize, printTrees)
         }
@@ -118,6 +116,5 @@ class Pipeline(
         }
 
         progressBar.close()
-        ProjectManagerEx.getInstanceEx().closeAndDisposeAllProjects(false)
     }
 }

@@ -11,7 +11,6 @@ import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
 import org.apache.log4j.PropertyConfigurator
 import org.slf4j.LoggerFactory
-import org.jetbrains.research.pluginUtilities.openRepository.getKotlinJavaRepositoryOpener
 import kotlin.system.exitProcess
 
 class PluginRunner : ApplicationStarter {
@@ -81,8 +80,9 @@ class PsiExtractor : CliktCommand() {
         val storage = config.storage.createStorage(output)
         val pipeline = Pipeline(
             language = config.language,
-            preprocessorManager = config.additionalPreprocessing.createPreprocessorManager(),
-            repositoryOpener = getKotlinJavaRepositoryOpener(),
+            repositoryOpener = PipelineRepositoryOpener(
+                preprocessorManager = config.additionalPreprocessing.createPreprocessorManager(),
+            ),
             psiTreeTransformations = config.treeTransformers.map { it.createTreeTransformation(config.language) },
             filters = config.filters.map { it.createFilter() },
             labelExtractor = config.labelExtractor.createProblem(),

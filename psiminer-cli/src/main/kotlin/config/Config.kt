@@ -30,11 +30,11 @@ data class Config(
 @Serializable
 data class PreprocessingConfig(
     val enable: Boolean = true,
-    val androidSdk: String? = null
+    val androidSdkHome: String? = null
 ) {
     fun createPreprocessorManager(): PreprocessorManager? {
         return if (enable) {
-            getKotlinJavaPreprocessorManager(androidSdk)
+            getKotlinJavaPreprocessorManager(androidSdkHome)
         } else {
             null
         }

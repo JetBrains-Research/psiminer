@@ -1,3 +1,4 @@
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ex.ProjectManagerEx
 import com.intellij.psi.PsiManager
 import filter.Filter
@@ -59,7 +60,7 @@ class Pipeline(
                     println(
                         "Process ${holdoutRepositoryRoot.name} from $holdout (${index + 1}/${holdoutRepositories.size})"
                     )
-                    processProject(holdoutRepositoryRoot, holdout, batchSize, printTrees)
+                    processRepository(holdoutRepositoryRoot, holdout, batchSize, printTrees)
                 }
             }
         } else {
@@ -74,7 +75,18 @@ class Pipeline(
         batchSize: Int = 1,
         printTrees: Boolean = false
     ) {
-        val project = openProject(repositoryRoot) ?: return
+        preprocessorManager?.preprocessRepositoryInplace(repositoryRoot)
+        repositoryOpener.openRepository(repositoryRoot) { project ->
+            processProject(project, holdout, batchSize, printTrees)
+        }
+    }
+
+    private fun processProject(
+        project: Project,
+        holdout: Dataset?,
+        batchSize: Int = 1,
+        printTrees: Boolean = false
+    ) {
         logger.warn("Process project ${project.name}")
         val psiManager = PsiManager.getInstance(project)
         val projectFiles = extractProjectFiles(project, language)

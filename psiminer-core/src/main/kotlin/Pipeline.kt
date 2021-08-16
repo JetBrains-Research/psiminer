@@ -1,11 +1,9 @@
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.project.ex.ProjectManagerEx
 import com.intellij.psi.PsiManager
 import filter.Filter
 import labelextractor.LabelExtractor
 import me.tongfei.progressbar.ProgressBar
 import org.slf4j.LoggerFactory
-import org.jetbrains.research.pluginUtilities.openRepository.RepositoryOpener
 import psi.Parser
 import psi.ParserException
 import psi.language.JavaHandler
@@ -16,7 +14,6 @@ import psi.transformations.PsiTreeTransformation
 import storage.Storage
 import java.io.File
 import kotlin.concurrent.thread
-import org.jetbrains.research.pluginUtilities.preprocessing.PreprocessorManager
 
 class Pipeline(
     val language: Language,

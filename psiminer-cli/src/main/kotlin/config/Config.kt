@@ -9,9 +9,8 @@ import org.jetbrains.research.pluginUtilities.preprocessing.getKotlinJavaPreproc
 @Serializable
 data class Config(
     // ====== How to open repositories =====
-    @SerialName("additional preprocessing") val additionalPreprocessing: PreprocessingConfig = PreprocessingConfig(
-        enable = false
-    ),
+    @SerialName("additional preprocessing") val additionalPreprocessing: PreprocessingConfig =
+        PreprocessingConfig(enable = false),
 
     // ====== Pipeline configuration =====
     val filters: List<FilterConfig>,

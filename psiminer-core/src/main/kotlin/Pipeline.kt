@@ -1,4 +1,4 @@
-import com.intellij.openapi.project.ex.ProjectManagerEx
+import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiManager
 import filter.Filter
 import labelextractor.LabelExtractor
@@ -17,6 +17,7 @@ import kotlin.concurrent.thread
 
 class Pipeline(
     val language: Language,
+    private val repositoryOpener: PipelineRepositoryOpener,
     psiTreeTransformations: List<PsiTreeTransformation>,
     private val filters: List<Filter>,
     val labelExtractor: LabelExtractor,
@@ -49,28 +50,38 @@ class Pipeline(
             println("Dataset structure is detected.")
             Dataset.values().forEach { holdout ->
                 val holdoutFolder = inputDirectory.resolve(holdout.folderName)
-                val holdoutProjects = holdoutFolder
+                val holdoutRepositories = holdoutFolder
                     .walk().maxDepth(1).toList().filter { it.name != holdout.folderName && !it.isFile }
-                holdoutProjects.forEachIndexed { index, holdoutProjectFile ->
+                holdoutRepositories.forEachIndexed { index, holdoutRepositoryRoot ->
                     println(
-                        "Process ${holdoutProjectFile.name} from $holdout (${index + 1}/${holdoutProjects.size})"
+                        "Process ${holdoutRepositoryRoot.name} from $holdout (${index + 1}/${holdoutRepositories.size})"
                     )
-                    processProject(holdoutProjectFile, holdout, batchSize, printTrees)
+                    processRepository(holdoutRepositoryRoot, holdout, batchSize, printTrees)
                 }
             }
         } else {
             println("No dataset found. Process all sources under passed path")
-            processProject(inputDirectory, null, batchSize, printTrees)
+            processRepository(inputDirectory, null, batchSize, printTrees)
         }
     }
 
-    private fun processProject(
-        projectFile: File,
+    private fun processRepository(
+        repositoryRoot: File,
         holdout: Dataset?,
         batchSize: Int = 1,
         printTrees: Boolean = false
     ) {
-        val project = openProject(projectFile) ?: return
+        repositoryOpener.openRepository(repositoryRoot) { project ->
+            processProject(project, holdout, batchSize, printTrees)
+        }
+    }
+
+    private fun processProject(
+        project: Project,
+        holdout: Dataset?,
+        batchSize: Int = 1,
+        printTrees: Boolean = false
+    ) {
         logger.warn("Process project ${project.name}")
         val psiManager = PsiManager.getInstance(project)
         val projectFiles = extractProjectFiles(project, language)
@@ -102,6 +113,5 @@ class Pipeline(
         }
 
         progressBar.close()
-        ProjectManagerEx.getInstanceEx().closeAndDisposeAllProjects(false)
     }
 }

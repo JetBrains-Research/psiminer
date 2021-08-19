@@ -1,14 +1,15 @@
 group = "org.jetbrains.research.psiminer"
 version = "2.0"
 
-fun getProperty(key: String) = project.findProperty(key).toString()
+fun getProperty(key: String) =
+    project.findProperty(key)?.toString() ?: error("Property $key in gradle.properties is not set")
 
 plugins {
     id("java")
     id("org.jetbrains.intellij") version "1.1.4"
     id("io.gitlab.arturbosch.detekt") version "1.17.0"
 
-    kotlin("jvm") version "1.5.10"
+    kotlin("jvm") version "1.5.21"
     kotlin("plugin.serialization") version "1.5.0"
 }
 
@@ -33,6 +34,15 @@ allprojects {
         testImplementation("org.junit.jupiter:junit-jupiter")
 
         detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.17.0")
+
+        implementation("${getProperty("utilitiesProjectName")}:plugin-utilities-core") {
+            version {
+                branch = getProperty("utilitiesBranch")
+            }
+            exclude("org.slf4j", "slf4j-simple")
+            exclude("org.slf4j", "slf4j-api")
+            exclude("org.slf4j", "slf4j")
+        }
     }
 
     configurations.all {

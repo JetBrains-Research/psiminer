@@ -59,6 +59,14 @@ e.g. code2seq format or JSONL format.
 There are also a few fields to define a parser and pipeline options.
 For example, setting up `Language`.
 
+## Additional preprocessing
+
+If you turn on additional preprocessing:
+* ✅ more projects will be opened successfully by IDEA
+* ⚠️ files in your original dataset will be **changed**
+
+[More about additional preprocessing](docs/additional_preprocessing.md)
+
 ## Language support
 
 Currently, `PSIMiner` supports `Java` and `Kotlin` datasets.

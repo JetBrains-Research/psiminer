@@ -3,14 +3,11 @@ package storage.tree
 import Dataset
 import PATH_KEY
 import com.intellij.openapi.project.ProjectManager
-import com.intellij.openapi.util.Key
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiManager
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import labelextractor.LabeledTree
-import org.jetbrains.kotlin.idea.util.getSourceRoot
 import psi.nodeProperties.nodeType
 import psi.nodeProperties.token
 import psi.preOrder

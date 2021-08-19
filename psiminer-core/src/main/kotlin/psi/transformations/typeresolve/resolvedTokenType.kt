@@ -1,44 +1,35 @@
 package psi.transformations.typeresolve
 
+import RESOLVED_TYPE_KEY
 import astminer.common.normalizeToken
 import com.intellij.psi.PsiElement
-import psi.nodeProperties.PropertyDelegate
-import psi.nodeProperties.registerPropertyDelegate
-import kotlin.reflect.KProperty
 
 const val KEYWORD = "<KWRD>"
 const val OPERATOR = "<OP>"
 const val NO_TYPE = "<NT>"
 
-var PsiElement.resolvedTokenType: String? by TokenTypeDelegate().also { registerPropertyDelegate(it) }
+private val genericRegex = "[<>]".toRegex()
+private val subtypesRegex = "(?<=[a-z])(?=[A-Z])|_|[0-9]|(?<=[A-Z])(?=[A-Z][a-z])|\\s+".toRegex()
 
-class TokenTypeDelegate : PropertyDelegate<String>() {
-    private var enable = false
+private var enable = false
 
-    override operator fun getValue(thisRef: PsiElement, property: KProperty<*>): String? =
-        if (!enable) null
-        else {
-            val tokenType = values[thisRef] ?: NO_TYPE
-            if (tokenType in listOf(NO_TYPE, KEYWORD, OPERATOR)) tokenType
-            else splitTypeToSubtypes(tokenType).joinToString("|")
-        }
-
-    override operator fun setValue(thisRef: PsiElement, property: KProperty<*>, value: String?) {
-        super.setValue(thisRef, property, value)
+var PsiElement.resolvedTokenType: String?
+    get() {
+        if (!enable) return null
+        val tokenType = getUserData(RESOLVED_TYPE_KEY) ?: NO_TYPE
+        return if (tokenType in listOf(NO_TYPE, KEYWORD, OPERATOR)) tokenType
+        else splitTypeToSubtypes(tokenType).joinToString("|")
+    }
+    set(value) {
+        putUserData(RESOLVED_TYPE_KEY, value)
         enable = true
     }
 
-    private fun splitTypeToSubtypes(type: String): List<String> = type
-        .split(genericRegex).flatMap {
-            it.trim()
-                .split(subtypesRegex)
-                .map { s -> normalizeToken(s, "") }
-                .filter { token -> token.isNotEmpty() }
-                .toList()
-        }
-
-    companion object {
-        private val genericRegex = "[<>]".toRegex()
-        private val subtypesRegex = "(?<=[a-z])(?=[A-Z])|_|[0-9]|(?<=[A-Z])(?=[A-Z][a-z])|\\s+".toRegex()
+private fun splitTypeToSubtypes(type: String): List<String> =
+    type.split(genericRegex).flatMap {
+        it.trim()
+            .split(subtypesRegex)
+            .map { s -> normalizeToken(s, "") }
+            .filter { token -> token.isNotEmpty() }
+            .toList()
     }
-}

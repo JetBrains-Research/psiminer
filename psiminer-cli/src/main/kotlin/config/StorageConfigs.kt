@@ -14,8 +14,10 @@ abstract class StorageConfig {
 
 @Serializable
 @SerialName("json tree")
-class JsonTreeStorageConfig : StorageConfig() {
-    override fun createStorage(outputDirectory: File): Storage = JsonTreeStorage(outputDirectory)
+class JsonTreeStorageConfig(
+    private val withPaths: Boolean = false
+) : StorageConfig() {
+    override fun createStorage(outputDirectory: File): Storage = JsonTreeStorage(outputDirectory, withPaths)
 }
 
 @Serializable

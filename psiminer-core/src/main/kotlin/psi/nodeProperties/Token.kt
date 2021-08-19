@@ -1,5 +1,6 @@
 package psi.nodeProperties
 
+import TECHNICAL_TOKEN_KEY
 import astminer.common.splitToSubtokens
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
@@ -19,6 +20,6 @@ val PsiElement.normalizedToken: String
         else it.joinToString("|")
     }
 
-var PsiElement.technicalToken: String? by TechnicalTokenDelegate().also { registerPropertyDelegate(it) }
-
-class TechnicalTokenDelegate : PropertyDelegate<String>()
+var PsiElement.technicalToken: String?
+    get() = getUserData(TECHNICAL_TOKEN_KEY)
+    set(value) = putUserData(TECHNICAL_TOKEN_KEY, value)

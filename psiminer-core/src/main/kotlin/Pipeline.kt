@@ -1,5 +1,4 @@
 import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiManager
 import filter.Filter
 import labelextractor.LabelExtractor
 import me.tongfei.progressbar.ProgressBar
@@ -8,7 +7,6 @@ import psi.Parser
 import psi.ParserException
 import psi.language.JavaHandler
 import psi.language.KotlinHandler
-import psi.nodeProperties.resetRegisteredPropertyDelegates
 import psi.printTree
 import psi.transformations.PsiTreeTransformation
 import storage.Storage
@@ -83,7 +81,6 @@ class Pipeline(
         printTrees: Boolean = false
     ) {
         logger.warn("Process project ${project.name}")
-        val psiManager = PsiManager.getInstance(project)
         val projectFiles = extractProjectFiles(project, language)
 
         val progressBar = ProgressBar(project.name, projectFiles.size.toLong())
@@ -92,7 +89,7 @@ class Pipeline(
             val threads = files.map { file ->
                 thread {
                     try {
-                        parser.parseFile(file, psiManager) { psiRoot ->
+                        parser.parseFile(file, project) { psiRoot ->
                             if (filters.any { !it.validateTree(psiRoot, languageHandler) }) return@parseFile
                             val labeledTree =
                                 labelExtractor.extractLabel(psiRoot, languageHandler) ?: return@parseFile
@@ -109,7 +106,6 @@ class Pipeline(
                 }
             }
             threads.forEach { it.join() }
-            resetRegisteredPropertyDelegates()
         }
 
         progressBar.close()

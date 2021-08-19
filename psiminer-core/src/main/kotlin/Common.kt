@@ -1,7 +1,14 @@
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
+import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
+
+val PATH_KEY = Key<String>("path")
+val IS_HIDDEN_KEY = Key<Boolean>("hidden")
+val NODE_TYPE_KEY = Key<String>("node type")
+val TECHNICAL_TOKEN_KEY = Key<String>("tech token")
+val RESOLVED_TYPE_KEY = Key<String>("resolved type")
 
 enum class GranularityLevel {
     File,

@@ -1,11 +1,8 @@
 package psi.nodeProperties
 
+import IS_HIDDEN_KEY
 import com.intellij.psi.PsiElement
-import kotlin.reflect.KProperty
 
-var PsiElement.isHidden by HideElementDelegate().also { registerPropertyDelegate(it) }
-
-class HideElementDelegate : PropertyDelegate<Boolean>() {
-    override operator fun getValue(thisRef: PsiElement, property: KProperty<*>): Boolean =
-        values[thisRef] ?: false
-}
+var PsiElement.isHidden
+    get() = getUserData(IS_HIDDEN_KEY) ?: false
+    set(value) = putUserData(IS_HIDDEN_KEY, value)

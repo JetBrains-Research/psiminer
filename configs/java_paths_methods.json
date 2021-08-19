@@ -16,8 +16,10 @@
   ],
   "label": {"name": "method name"},
   "storage": {
-    "name": "json tree",
-    "withPaths": true
+    "name": "code2seq",
+    "pathWidth": 4,
+    "pathLength": 9,
+    "nodesToNumbers": true
   },
 
   "language": "Java",

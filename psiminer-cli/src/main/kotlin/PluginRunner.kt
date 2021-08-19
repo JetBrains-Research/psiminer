@@ -91,7 +91,7 @@ class PsiExtractor : CliktCommand() {
 
         try {
             logger.warn("Start processing data.")
-            pipeline.extract(dataset, config.batchSize, config.printTrees)
+            pipeline.extract(dataset, config.numThreads, config.printTrees)
             storage.printStatistic()
             storage.close()
         } catch (e: Exception) {

@@ -1,4 +1,5 @@
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.ProjectManager
 import filter.Filter
 import labelextractor.LabelExtractor
 import me.tongfei.progressbar.ProgressBar
@@ -15,7 +16,7 @@ import kotlin.concurrent.thread
 
 class Pipeline(
     val language: Language,
-    private val repositoryOpener: PipelineRepositoryOpener,
+//    private val repositoryOpener: PipelineRepositoryOpener,
     psiTreeTransformations: List<PsiTreeTransformation>,
     private val filters: List<Filter>,
     val labelExtractor: LabelExtractor,
@@ -38,10 +39,10 @@ class Pipeline(
 
     fun extract(
         inputDirectory: File,
-        batchSize: Int = 1,
+        numThreads: Int = 1,
         printTrees: Boolean = false
     ) {
-        require(batchSize > 0) { "Amount threads must be positive." }
+        require(numThreads > 0) { "Amount threads must be positive." }
         println("Parser configuration:\n$parser")
         val isDataset = checkFolderIsDataset(inputDirectory)
         if (isDataset) {
@@ -52,42 +53,46 @@ class Pipeline(
                     .walk().maxDepth(1).toList().filter { it.name != holdout.folderName && !it.isFile }
                 holdoutRepositories.forEachIndexed { index, holdoutRepositoryRoot ->
                     println(
-                        "Process ${holdoutRepositoryRoot.name} from $holdout (${index + 1}/${holdoutRepositories.size})"
+                        "Start working with ${holdoutRepositoryRoot.name} from " +
+                                "$holdout (${index + 1}/${holdoutRepositories.size})"
                     )
-                    processRepository(holdoutRepositoryRoot, holdout, batchSize, printTrees)
+                    processRepository(holdoutRepositoryRoot, holdout, numThreads, printTrees)
                 }
             }
         } else {
-            println("No dataset found. Process all sources under passed path")
-            processRepository(inputDirectory, null, batchSize, printTrees)
+            println("No dataset found. Process all sources from passed path")
+            processRepository(inputDirectory, null, numThreads, printTrees)
         }
     }
 
     private fun processRepository(
         repositoryRoot: File,
         holdout: Dataset?,
-        batchSize: Int = 1,
+        numThreads: Int = 1,
         printTrees: Boolean = false
     ) {
-        repositoryOpener.openRepository(repositoryRoot) { project ->
-            processProject(project, holdout, batchSize, printTrees)
-        }
+//        repositoryOpener.openRepository(repositoryRoot) { project ->
+        val project = openProject(repositoryRoot) ?: return
+        logger.warn("Process project ${project.name}")
+        println("Successfully opened ${project.name}")
+        processProject(project, holdout, numThreads, printTrees)
+        ProjectManager.getInstance().closeAndDispose(project)
+        assert(ProjectManager.getInstance().openProjects.isEmpty())
     }
 
     private fun processProject(
         project: Project,
         holdout: Dataset?,
-        batchSize: Int = 1,
+        numThreads: Int = 1,
         printTrees: Boolean = false
     ) {
-        logger.warn("Process project ${project.name}")
         val projectFiles = extractProjectFiles(project, language)
 
         val progressBar = ProgressBar(project.name, projectFiles.size.toLong())
 
-        projectFiles.chunked(batchSize).forEach { files ->
-            val threads = files.map { file ->
-                thread {
+        val threads = projectFiles.chunked(numThreads).map { files ->
+            thread {
+                files.map { file ->
                     try {
                         parser.parseFile(file, project) { psiRoot ->
                             if (filters.any { !it.validateTree(psiRoot, languageHandler) }) return@parseFile
@@ -105,9 +110,9 @@ class Pipeline(
                     }
                 }
             }
-            threads.forEach { it.join() }
         }
 
+        threads.forEach { it.join() }
         progressBar.close()
     }
 }

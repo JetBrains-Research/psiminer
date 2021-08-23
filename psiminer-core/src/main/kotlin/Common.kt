@@ -59,3 +59,4 @@ fun extractProjectFiles(project: Project, language: Language): List<VirtualFile>
                 it.extension in language.extensions && it.canonicalPath != null
             }
         }
+        .distinct()

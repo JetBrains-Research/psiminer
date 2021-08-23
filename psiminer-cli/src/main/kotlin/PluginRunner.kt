@@ -80,9 +80,9 @@ class PsiExtractor : CliktCommand() {
         val storage = config.storage.createStorage(output)
         val pipeline = Pipeline(
             language = config.language,
-            repositoryOpener = PipelineRepositoryOpener(
-                preprocessorManager = config.additionalPreprocessing.createPreprocessorManager(),
-            ),
+//            repositoryOpener = PipelineRepositoryOpener(
+//                preprocessorManager = config.additionalPreprocessing.createPreprocessorManager(),
+//            ),
             psiTreeTransformations = config.treeTransformers.map { it.createTreeTransformation(config.language) },
             filters = config.filters.map { it.createFilter() },
             labelExtractor = config.labelExtractor.createProblem(),

@@ -1,5 +1,4 @@
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.project.ProjectManager
 import filter.Filter
 import labelextractor.LabelExtractor
 import me.tongfei.progressbar.ProgressBar
@@ -16,7 +15,7 @@ import kotlin.concurrent.thread
 
 class Pipeline(
     val language: Language,
-//    private val repositoryOpener: PipelineRepositoryOpener,
+    private val repositoryOpener: PipelineRepositoryOpener,
     psiTreeTransformations: List<PsiTreeTransformation>,
     private val filters: List<Filter>,
     val labelExtractor: LabelExtractor,
@@ -71,13 +70,11 @@ class Pipeline(
         numThreads: Int = 1,
         printTrees: Boolean = false
     ) {
-//        repositoryOpener.openRepository(repositoryRoot) { project ->
-        val project = openProject(repositoryRoot) ?: return
-        logger.warn("Process project ${project.name}")
-        println("Successfully opened ${project.name}")
-        processProject(project, holdout, numThreads, printTrees)
-        ProjectManager.getInstance().closeAndDispose(project)
-        assert(ProjectManager.getInstance().openProjects.isEmpty())
+        repositoryOpener.openRepository(repositoryRoot) { project ->
+            logger.warn("Process project ${project.name}")
+            println("Successfully opened ${project.name}")
+            processProject(project, holdout, numThreads, printTrees)
+        }
     }
 
     private fun processProject(

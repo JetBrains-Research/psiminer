@@ -1,8 +1,8 @@
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.Key
-import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vfs.VirtualFileManager
+import java.io.File
 
 val PATH_KEY = Key<String>("path")
 val IS_HIDDEN_KEY = Key<Boolean>("hidden")
@@ -50,13 +50,11 @@ fun getCleanCode(code: String): List<String> {
  * @return: list of all Virtual Files in project that correspond to required language.
  * @see VirtualFile
  */
-fun extractProjectFiles(project: Project, language: Language): List<VirtualFile> =
-    ProjectRootManager
-        .getInstance(project)
-        .contentRoots
-        .flatMap { root ->
-            VfsUtil.collectChildrenRecursively(root).filter {
-                it.extension in language.extensions && it.canonicalPath != null
-            }
-        }
-        .distinct()
+fun extractProjectFiles(project: Project, language: Language): List<VirtualFile> {
+    val virtualFileManager = VirtualFileManager.getInstance()
+    return File(project.basePath ?: "")
+        .walkTopDown()
+        .filter { it.extension in language.extensions }
+        .mapNotNull { virtualFileManager.findFileByNioPath(it.toPath()) }
+        .toList()
+}

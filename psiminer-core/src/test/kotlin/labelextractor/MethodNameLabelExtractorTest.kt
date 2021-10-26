@@ -49,6 +49,28 @@ internal class MethodNameLabelExtractorTest : BasePsiRequiredTest() {
     }
 
     @Test
+    fun `test java no recursion no mask`() = ReadAction.run<Exception> {
+        val psiRoot = getJavaMethod(largeMethod)
+        methodNameLabelExtractor.extractLabel(psiRoot, javaHandler)
+        val hiddenNodes = PsiTreeUtil.collectElements(psiRoot) {
+            it.token == METHOD_NAME
+        }
+        // Since there is no recursion in the function, only the method name itself should be masked.
+        Assert.assertEquals(1, hiddenNodes.size)
+    }
+
+    @Test
+    fun `test kotlin no recursion no mask`() = ReadAction.run<Exception> {
+        val psiRoot = getKotlinMethod(largeMethod)
+        methodNameLabelExtractor.extractLabel(psiRoot, kotlinHandler)
+        val hiddenNodes = PsiTreeUtil.collectElements(psiRoot) {
+            it.token == METHOD_NAME
+        }
+        // Since there is no recursion in the function, only the method name itself should be masked.
+        Assert.assertEquals(1, hiddenNodes.size)
+    }
+
+    @Test
     fun `test kotlin method name hiding`() = ReadAction.run<Exception> {
         val psiRoot = getKotlinMethod(methodWithRecursion)
         val methodNameNormalized = splitToSubtokens(methodWithRecursion).joinToString("|")
@@ -65,6 +87,7 @@ internal class MethodNameLabelExtractorTest : BasePsiRequiredTest() {
 
     companion object {
         const val simpleMethod = "smallMethod"
+        const val largeMethod = "largeMethod"
         const val methodWithRecursion = "recursiveMethod"
     }
 }

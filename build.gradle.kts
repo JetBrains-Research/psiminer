@@ -9,7 +9,7 @@ plugins {
     id("org.jetbrains.intellij") version "1.1.4"
     id("io.gitlab.arturbosch.detekt") version "1.17.0"
 
-    kotlin("jvm") version "1.5.21"
+    kotlin("jvm") version "1.5.31"
     kotlin("plugin.serialization") version "1.5.0"
 }
 
@@ -27,13 +27,13 @@ allprojects {
     }
 
     dependencies {
-        implementation(kotlin("stdlib"))
-        implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2")
+        implementation("org.jetbrains.kotlin:kotlin-stdlib:1.5.31")
+        implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
 
         testImplementation(platform("org.junit:junit-bom:5.7.2"))
-        testImplementation("org.junit.jupiter:junit-jupiter")
+        testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
 
-        detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.17.0")
+        detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.18.1")
 
         implementation("${getProperty("utilitiesProjectName")}:plugin-utilities-core") {
             version {

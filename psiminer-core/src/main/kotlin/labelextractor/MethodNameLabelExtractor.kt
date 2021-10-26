@@ -16,6 +16,7 @@ class MethodNameLabelExtractor : LabelExtractor() {
         methodNameNode.technicalToken = METHOD_NAME
         languageHandler
             .collectFunctionCallsIdentifiers(root)
+            .filter { it.textMatches(methodNameNode) }
             .forEach { it.technicalToken = METHOD_NAME }
         return splitToSubtokens(methodNameNode.text).joinToString("|")
     }

@@ -51,4 +51,12 @@ class Main {
         int recursiveMethod = 0;
         recursiveMethod();
     }
+
+    /**
+     * Returns the size of this big array in bytes.
+     */
+    public long sizeOf()
+    {
+        return SizeOf.sizeOf(array) + (segments * SIZE_OF_SEGMENT);
+    }
 }

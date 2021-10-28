@@ -52,4 +52,11 @@ abstract class Main {
         val recursiveMethod = 0
         recursiveMethod()
     }
+
+    /**
+     * Returns the size of this big array in bytes.
+     */
+    fun sizeOf(): Long {
+        return SizeOf.sizeOf(array) + segments * SIZE_OF_SEGMENT
+    }
 }

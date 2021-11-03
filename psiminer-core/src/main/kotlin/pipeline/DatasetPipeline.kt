@@ -1,35 +1,35 @@
+package pipeline
+
+import Dataset
+import Language
 import com.intellij.openapi.project.Project
+import extractProjectFiles
 import filter.Filter
 import labelextractor.LabelExtractor
 import me.tongfei.progressbar.ProgressBar
 import org.slf4j.LoggerFactory
-import psi.Parser
 import psi.ParserException
-import psi.language.JavaHandler
-import psi.language.KotlinHandler
 import psi.printTree
 import psi.transformations.PsiTreeTransformation
-import storage.Storage
+import storage.DatasetStorage
 import java.io.File
 import kotlin.concurrent.thread
 
-class Pipeline(
-    val language: Language,
-    private val repositoryOpener: PipelineRepositoryOpener,
+class DatasetPipeline(
+    language: Language,
     psiTreeTransformations: List<PsiTreeTransformation>,
-    private val filters: List<Filter>,
-    val labelExtractor: LabelExtractor,
-    val storage: Storage
+    labelExtractor: LabelExtractor,
+    filters: List<Filter>,
+    private val repositoryOpener: PipelineRepositoryOpener,
+    val datasetStorage: DatasetStorage,
+) : AbstractPipeline(
+    language,
+    labelExtractor,
+    filters,
+    psiTreeTransformations
 ) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
-
-    private val languageHandler = when (language) {
-        Language.Java -> JavaHandler()
-        Language.Kotlin -> KotlinHandler()
-    }
-
-    private val parser = Parser(languageHandler, psiTreeTransformations, labelExtractor.granularityLevel)
 
     private fun checkFolderIsDataset(folder: File): Boolean {
         val folderDirNames = folder.listFiles()?.filter { it.isDirectory }?.map { it.name } ?: return false
@@ -95,8 +95,8 @@ class Pipeline(
                             if (filters.any { !it.validateTree(psiRoot, languageHandler) }) return@parseFile
                             val labeledTree =
                                 labelExtractor.extractLabel(psiRoot, languageHandler) ?: return@parseFile
-                            synchronized(storage) {
-                                storage.store(labeledTree, holdout)
+                            synchronized(datasetStorage) {
+                                datasetStorage.store(labeledTree, holdout)
                                 if (printTrees) labeledTree.root.printTree()
                             }
                         }

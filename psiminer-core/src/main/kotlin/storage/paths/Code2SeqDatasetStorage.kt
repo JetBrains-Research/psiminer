@@ -11,7 +11,7 @@ import labelextractor.LabeledTree
 import psi.nodeProperties.nodeType
 import psi.nodeProperties.token
 import psi.transformations.typeresolve.resolvedTokenType
-import storage.Storage
+import storage.DatasetStorage
 import java.io.File
 
 /***
@@ -23,14 +23,14 @@ import java.io.File
  * @param maxPathsInTest: If not null then use only this number of paths to represent val or test trees
  * @param nodesToNumbers: If true then each node type is replaced with number
  ***/
-open class Code2SeqStorage(
+open class Code2SeqDatasetStorage(
     outputDirectory: File,
     private val pathWidth: Int,
     private val pathLength: Int,
     private val maxPathsInTrain: Int? = null,
     private val maxPathsInTest: Int? = null,
     private val nodesToNumbers: Boolean = false
-) : Storage(outputDirectory) {
+) : DatasetStorage(outputDirectory) {
 
     override val fileExtension: String = "c2s"
 

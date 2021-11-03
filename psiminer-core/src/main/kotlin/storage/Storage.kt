@@ -5,7 +5,9 @@ import labelextractor.LabeledTree
 import java.io.File
 import java.io.PrintWriter
 
-abstract class Storage(protected val outputDirectory: File) {
+abstract class Storage
+
+abstract class DatasetStorage(protected val outputDirectory: File) : Storage() {
 
     private val datasetFileWriters = mutableMapOf<Dataset?, PrintWriter>()
     private val datasetStatistic = mutableMapOf<Dataset?, Int>()
@@ -41,4 +43,16 @@ abstract class Storage(protected val outputDirectory: File) {
         }
 
     open fun close() = datasetFileWriters.forEach { it.value.close() }
+}
+
+abstract class MemoryStorage : Storage() {
+    private val _collected = mutableListOf<String>()
+    val collected: List<String>
+        get() = _collected
+
+    fun store(labeledTree: LabeledTree) {
+        _collected.add(convert(labeledTree))
+    }
+
+    protected abstract fun convert(labeledTree: LabeledTree): String
 }

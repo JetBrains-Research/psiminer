@@ -15,7 +15,7 @@ data class Config(
     // ====== Pipeline configuration =====
     val filters: List<FilterConfig>,
     @SerialName("label") val labelExtractor: LabelExtractorConfig,
-    val storage: StorageConfig,
+    val storage: DatasetStorageConfig,
 
     // ===== Parser configuration =====
     val language: Language,

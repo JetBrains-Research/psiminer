@@ -6,6 +6,7 @@ import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import psi.language.LanguageHandler
 import psi.transformations.CommonTreeTransformation
@@ -31,12 +32,18 @@ class Parser(
     override fun toString(): String =
         "$language parser with ${psiTreeTransformations.joinToString { it::class.simpleName ?: "" }}"
 
-    fun <T> parseFile(virtualFile: VirtualFile, project: Project, callback: (PsiElement) -> T): List<T> =
-        ReadAction.compute<List<T>, Exception> {
+    fun <T> parseFile(virtualFile: VirtualFile, project: Project, callback: (PsiElement) -> T): List<T> {
+        val psiFile = ReadAction.compute<PsiFile, Exception> {
             val psiManager = PsiManager.getInstance(project)
-            val psiFile = psiManager.findFile(virtualFile) ?: throw ParserException(virtualFile.path)
-            psiTreeTransformations.forEach { it.transform(psiFile) }
-            val granularityPsiElements = languageHandler.splitByGranularity(psiFile, granularity)
+            psiManager.findFile(virtualFile) ?: throw ParserException(virtualFile.path)
+        }
+        return parsePsi(psiFile, project, callback)
+    }
+
+    fun <T> parsePsi(psiElement: PsiElement, project: Project, callback: (PsiElement) -> T): List<T> =
+        ReadAction.compute<List<T>, Exception> {
+            psiTreeTransformations.forEach { it.transform(psiElement) }
+            val granularityPsiElements = languageHandler.splitByGranularity(psiElement, granularity)
             granularityPsiElements.map {
                 val path = File(project.basePath ?: "")
                     .toPath()

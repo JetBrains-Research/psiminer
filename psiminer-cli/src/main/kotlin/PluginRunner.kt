@@ -11,6 +11,8 @@ import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
 import org.apache.log4j.PropertyConfigurator
 import org.slf4j.LoggerFactory
+import pipeline.DatasetPipeline
+import pipeline.PipelineRepositoryOpener
 import kotlin.system.exitProcess
 
 class PluginRunner : ApplicationStarter {
@@ -26,9 +28,9 @@ class PluginRunner : ApplicationStarter {
 }
 
 val module = SerializersModule {
-    polymorphic(StorageConfig::class) {
-        subclass(JsonTreeStorageConfig::class)
-        subclass(Code2SeqStorageConfig::class)
+    polymorphic(DatasetStorageConfig::class) {
+        subclass(JsonTreeDatasetStorageConfig::class)
+        subclass(Code2SeqDatasetStorageConfig::class)
     }
     polymorphic(FilterConfig::class) {
         subclass(CodeLinesFilterConfig::class)
@@ -40,6 +42,7 @@ val module = SerializersModule {
     }
     polymorphic(LabelExtractorConfig::class) {
         subclass(MethodNameLabelExtractorConfig::class)
+        subclass(CodeCompletionLabelExtractorConfig::class)
     }
     polymorphic(PsiTreeTransformationConfig::class) {
         subclass(HideLiteralsTransformationConfig::class)
@@ -77,26 +80,26 @@ class PsiExtractor : CliktCommand() {
             exitProcess(0)
         }
 
-        val storage = config.storage.createStorage(output)
-        val pipeline = Pipeline(
+        val datasetStorage = config.storage.createDatasetStorage(output)
+        val datasetPipeline = DatasetPipeline(
             language = config.language,
+            psiTreeTransformations = config.treeTransformers.map { it.createTreeTransformation(config.language) },
+            labelExtractor = config.labelExtractor.createProblem(),
+            filters = config.filters.map { it.createFilter() },
             repositoryOpener = PipelineRepositoryOpener(
                 preprocessorManager = config.additionalPreprocessing.createPreprocessorManager(),
             ),
-            psiTreeTransformations = config.treeTransformers.map { it.createTreeTransformation(config.language) },
-            filters = config.filters.map { it.createFilter() },
-            labelExtractor = config.labelExtractor.createProblem(),
-            storage = storage
+            datasetStorage = datasetStorage
         )
 
         try {
             logger.warn("Start processing data.")
-            pipeline.extract(dataset, config.numThreads, config.printTrees)
-            storage.printStatistic()
-            storage.close()
+            datasetPipeline.extract(dataset, config.numThreads, config.printTrees)
+            datasetStorage.printStatistic()
+            datasetStorage.close()
         } catch (e: Exception) {
             logger.error("Failed with ${e::class.simpleName}: ${e.message}")
-            storage.close()
+            datasetStorage.close()
         } finally {
             exitProcess(0)
         }

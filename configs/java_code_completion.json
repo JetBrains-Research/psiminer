@@ -1,0 +1,23 @@
+{
+  "additional preprocessing": {
+    "enable": false
+  },
+  "filters": [],
+  "label": {"name": "code completion"},
+  "storage": {
+    "name": "json tree",
+    "withPaths": true
+  },
+
+  "language": "Java",
+  "tree transformations": [
+    {"name": "exclude whitespace"},
+    {
+      "name": "remove comments",
+      "removeDoc": false
+    }
+  ],
+
+  "numThreads": 10,
+  "printTrees": false
+}

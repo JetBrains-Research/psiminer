@@ -2,34 +2,35 @@ package config
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import storage.tree.JsonTreeStorage
-import storage.Storage
-import storage.paths.Code2SeqStorage
+import storage.DatasetStorage
+import storage.paths.Code2SeqDatasetStorage
+import storage.tree.JsonTreeDatasetStorage
 import java.io.File
 
 @Serializable
-abstract class StorageConfig {
-    abstract fun createStorage(outputDirectory: File): Storage
+abstract class DatasetStorageConfig {
+    abstract fun createDatasetStorage(outputDirectory: File): DatasetStorage
 }
 
 @Serializable
 @SerialName("json tree")
-class JsonTreeStorageConfig(
+class JsonTreeDatasetStorageConfig(
     private val withPaths: Boolean = false
-) : StorageConfig() {
-    override fun createStorage(outputDirectory: File): Storage = JsonTreeStorage(outputDirectory, withPaths)
+) : DatasetStorageConfig() {
+    override fun createDatasetStorage(outputDirectory: File): DatasetStorage =
+        JsonTreeDatasetStorage(outputDirectory, withPaths)
 }
 
 @Serializable
 @SerialName("code2seq")
-class Code2SeqStorageConfig(
+class Code2SeqDatasetStorageConfig(
     private val pathWidth: Int, // Maximum distance between two children of path LCA node
     private val pathLength: Int, // Maximum length of path
     private val maxPathsInTrain: Int? = null, // If passed then use only this number of paths to represent train trees
     private val maxPathsInTest: Int? = null, // If passed then use only this number of paths to represent val/test trees
     private val nodesToNumbers: Boolean = false // If true then each node type is replaced with number
-) : StorageConfig() {
-    override fun createStorage(outputDirectory: File): Storage = Code2SeqStorage(
+) : DatasetStorageConfig() {
+    override fun createDatasetStorage(outputDirectory: File): DatasetStorage = Code2SeqDatasetStorage(
         outputDirectory, pathWidth, pathLength, maxPathsInTrain, maxPathsInTest, nodesToNumbers
     )
 }

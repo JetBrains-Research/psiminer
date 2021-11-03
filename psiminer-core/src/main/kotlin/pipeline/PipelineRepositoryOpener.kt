@@ -1,3 +1,5 @@
+package pipeline
+
 import com.intellij.openapi.project.Project
 import org.jetbrains.research.pluginUtilities.openRepository.getKotlinJavaRepositoryOpener
 import org.jetbrains.research.pluginUtilities.preprocessing.PreprocessorManager

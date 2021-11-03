@@ -28,6 +28,13 @@ class ExcludeEmptyGrammarListTransformationConfig : PsiTreeTransformationConfig(
         ExcludeEmptyGrammarListsTransformation()
 }
 
+@Serializable
+@SerialName("exclude asterisks")
+class ExcludeAsterisksTransformationConfig : PsiTreeTransformationConfig() {
+    override fun createTreeTransformation(language: Language): PsiTreeTransformation =
+        ExcludeAsterisksTransformation()
+}
+
 // ===== Language-specific exclude node transformations =====
 
 @Serializable

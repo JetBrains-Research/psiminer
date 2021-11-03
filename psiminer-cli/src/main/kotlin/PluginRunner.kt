@@ -30,6 +30,7 @@ class PluginRunner : ApplicationStarter {
 val module = SerializersModule {
     polymorphic(DatasetStorageConfig::class) {
         subclass(JsonTreeDatasetStorageConfig::class)
+        subclass(JsonTreeV1DatasetStorageConfig::class)
         subclass(Code2SeqDatasetStorageConfig::class)
     }
     polymorphic(FilterConfig::class) {
@@ -51,6 +52,7 @@ val module = SerializersModule {
         subclass(ExcludeWhiteSpaceTransformationConfig::class)
         subclass(ExcludeKeywordTransformationConfig::class)
         subclass(ExcludeEmptyGrammarListTransformationConfig::class)
+        subclass(ExcludeAsterisksTransformationConfig::class)
         subclass(ExcludePackageStatementTransformationConfig::class)
         subclass(ExcludeImportStatementsTransformationConfig::class)
         subclass(ExcludeLanguageSymbolsTransformationConfig::class)

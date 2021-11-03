@@ -24,7 +24,7 @@ class JsonTreeDatasetStorageConfig(
 
 @Serializable
 @SerialName("json tree v1")
-class JsonTreeDatasetStorageV1Config(
+class JsonTreeV1DatasetStorageConfig(
     private val withPaths: Boolean = false
 ) : DatasetStorageConfig() {
     override fun createDatasetStorage(outputDirectory: File): DatasetStorage =

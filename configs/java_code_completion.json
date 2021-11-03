@@ -15,7 +15,8 @@
     {
       "name": "remove comments",
       "removeDoc": false
-    }
+    },
+    {"name": "exclude asterisks"}
   ],
 
   "numThreads": 10,

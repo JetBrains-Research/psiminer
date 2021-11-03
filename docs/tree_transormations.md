@@ -22,6 +22,7 @@ Here is the table of supported transformations for each language.
 | Compress operators          | ✅    | ❓      |
 | Hide literals               | ✅    | ⚙️      |
 | Remove comments             | ✅    | ⚙️      |
+| Exclude asterisks            | ✅    | ❓️      |
 | Resolve types               | ✅    | ⚙️      |
 
 Legend:\

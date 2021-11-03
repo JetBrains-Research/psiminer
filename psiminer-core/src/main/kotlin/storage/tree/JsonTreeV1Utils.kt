@@ -3,6 +3,7 @@ package storage.tree
 import PATH_KEY
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.psi.PsiElement
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -26,7 +27,7 @@ private data class NodeRepresentationV1(
 private data class TreeRepresentationV1(
     val label: String,
     val path: String? = null,
-    val AST: List<NodeRepresentationV1>
+    @SerialName("AST") val tree: List<NodeRepresentationV1>
 )
 
 private fun collectNodeRepresentation(root: PsiElement): List<NodeRepresentationV1> {

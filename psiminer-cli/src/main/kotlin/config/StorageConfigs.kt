@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 import storage.DatasetStorage
 import storage.paths.Code2SeqDatasetStorage
 import storage.tree.JsonTreeDatasetStorage
+import storage.tree.JsonTreeV1DatasetStorage
 import java.io.File
 
 @Serializable
@@ -19,6 +20,15 @@ class JsonTreeDatasetStorageConfig(
 ) : DatasetStorageConfig() {
     override fun createDatasetStorage(outputDirectory: File): DatasetStorage =
         JsonTreeDatasetStorage(outputDirectory, withPaths)
+}
+
+@Serializable
+@SerialName("json tree v1")
+class JsonTreeDatasetStorageV1Config(
+    private val withPaths: Boolean = false
+) : DatasetStorageConfig() {
+    override fun createDatasetStorage(outputDirectory: File): DatasetStorage =
+        JsonTreeV1DatasetStorage(outputDirectory, withPaths)
 }
 
 @Serializable

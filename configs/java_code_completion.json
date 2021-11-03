@@ -5,7 +5,7 @@
   "filters": [],
   "label": {"name": "code completion"},
   "storage": {
-    "name": "json tree",
+    "name": "json tree v1",
     "withPaths": true
   },
 

@@ -8,10 +8,8 @@ import storage.MemoryStorage
  * Format description: https://jsonlines.org
  * Tree saves in Python150K format: https://www.sri.inf.ethz.ch/py150
  */
-class JsonTreeMemoryStorage(
+class JsonTreeV1MemoryStorage(
     private val withPaths: Boolean
 ) : MemoryStorage() {
-    override fun convert(labeledTree: LabeledTree): String {
-        return convert(labeledTree, withPaths)
-    }
+    override fun convert(labeledTree: LabeledTree) = convertV1(labeledTree, withPaths)
 }

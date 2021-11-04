@@ -11,7 +11,7 @@ import com.intellij.psi.PsiManager
 import psi.language.LanguageHandler
 import psi.transformations.CommonTreeTransformation
 import psi.transformations.PsiTreeTransformation
-import java.io.File
+import java.nio.file.Paths
 
 class Parser(
     private val languageHandler: LanguageHandler,
@@ -44,13 +44,16 @@ class Parser(
         ReadAction.compute<List<T>, Exception> {
             psiTreeTransformations.forEach { it.transform(psiElement) }
             val granularityPsiElements = languageHandler.splitByGranularity(psiElement, granularity)
-            granularityPsiElements.map {
-                val path = File(project.basePath ?: "")
-                    .toPath()
-                    .parent
-                    .relativize(File(it.containingFile.virtualFile.path).toPath())
-                it.putUserData(PATH_KEY, path.toString())
-                callback(it)
+            granularityPsiElements.map { element ->
+                val relativeFilePath = element.containingFile
+                    ?.virtualFile
+                    ?.path
+                    ?.let { Paths.get(it) }
+                val projectPath = Paths.get(project.basePath ?: "").parent
+                val filePath = relativeFilePath?.let { projectPath.relativize(it) }
+
+                element.putUserData(PATH_KEY, filePath.toString())
+                callback(element)
             }
         }
 }

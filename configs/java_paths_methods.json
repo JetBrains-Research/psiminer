@@ -1,0 +1,43 @@
+{
+  "additional preprocessing": {
+    "enable": false
+  },
+  "filters": [
+    {"name": "constructor"},
+    {"name": "empty method"},
+    {
+      "name": "by modifiers",
+      "excludeModifiers": ["abstract"]
+    },
+    {
+      "name": "by annotations",
+      "excludeAnnotations": ["Override"]
+    }
+  ],
+  "label": {"name": "method name"},
+  "storage": {
+    "name": "code2seq",
+    "pathWidth": 4,
+    "pathLength": 9,
+    "nodesToNumbers": true
+  },
+
+  "language": "Java",
+  "tree transformations": [
+    {"name": "exclude whitespace"},
+    {"name": "exclude empty grammar lists"},
+    {"name": "exclude language symbols"},
+    {
+      "name": "hide literals",
+      "hideNumbers": true,
+      "hideStrings": true
+    },
+    {
+      "name": "remove comments",
+      "removeDoc": true
+    }
+  ],
+
+  "numThreads": 16,
+  "printTrees": false
+}

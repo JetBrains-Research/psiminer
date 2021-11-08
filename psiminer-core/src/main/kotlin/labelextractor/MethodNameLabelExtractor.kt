@@ -14,7 +14,7 @@ class MethodNameLabelExtractor : LabelExtractor() {
         val methodNameNode = languageHandler.methodProvider.getNameNode(root)
         // Mark all occurrences in subtree with METHOD_NAME token
         methodNameNode.technicalToken = METHOD_NAME
-        languageHandler.actionOnRecursiveCall(root) {
+        languageHandler.actionOnRecursiveCallIdentifier(root) {
             it.technicalToken = METHOD_NAME
         }
         return splitToSubtokens(methodNameNode.text).joinToString("|")

@@ -28,13 +28,15 @@ class KotlinHandler : LanguageHandler() {
             }
         }
 
-    override fun actionOnRecursiveCall(root: PsiElement, action: (PsiElement) -> Unit) {
+    override fun actionOnRecursiveCallIdentifier(root: PsiElement, action: (PsiElement) -> Unit) {
         PsiTreeUtil.collectElements(root) { it is KtCallExpression }
             .filter {
                 val resolved = (it as KtCallExpression).resolveToElement
                 PsiManager.getInstance(root.project).areElementsEquivalent(root, resolved)
             }
             .forEach { callExpr ->
+                // There is only one node with IDENTIFIER element type in call expression subtree.
+                // Maybe there is a better way to retrieve it.
                 PsiTreeUtil.collectElements(callExpr) { it.elementType.toString() == "IDENTIFIER" }.forEach(action)
             }
     }

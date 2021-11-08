@@ -16,7 +16,7 @@ class Main {
     }
 
     public void smallMethod() {
-        int a = 5;
+        int small = 5;
         String s = "asd";
         Boolean t = false;
     }

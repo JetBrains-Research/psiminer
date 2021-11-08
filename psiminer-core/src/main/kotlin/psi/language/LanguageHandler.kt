@@ -18,11 +18,11 @@ abstract class LanguageHandler {
     abstract val methodPsiType: Class<out PsiElement>
 
     /**
-     * An abstract method to perform action on each recursion call inside the tree
-     * @param root: root of tree
-     * @param action: perfomed action
+     * Perform an action on the identifier node of recursive call, e.g. mask the real name.
+     * @param root of the target method.
+     * @param action to perform.
      */
-    abstract fun actionOnRecursiveCall(root: PsiElement, action: (PsiElement) -> Unit)
+    abstract fun actionOnRecursiveCallIdentifier(root: PsiElement, action: (PsiElement) -> Unit)
 
     fun splitByGranularity(psiFile: PsiFile, granularity: GranularityLevel): List<PsiElement> =
         when (granularity) {

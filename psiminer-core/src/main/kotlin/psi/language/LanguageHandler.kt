@@ -18,11 +18,11 @@ abstract class LanguageHandler {
     abstract val methodPsiType: Class<out PsiElement>
 
     /**
-     * Abstract method to collect identifiers of functions that are called in subtree of root
-     * @param root: root of tree
-     * @return: list of PsiElement that correspond to identifiers of function calls
+     * Perform an action on the identifier node of recursive call, e.g. mask the real name.
+     * @param root of the target method.
+     * @param action to perform.
      */
-    abstract fun collectFunctionCallsIdentifiers(root: PsiElement): List<PsiElement>
+    abstract fun actionOnRecursiveCallIdentifier(root: PsiElement, action: (PsiElement) -> Unit)
 
     fun splitByGranularity(psiFile: PsiFile, granularity: GranularityLevel): List<PsiElement> =
         when (granularity) {

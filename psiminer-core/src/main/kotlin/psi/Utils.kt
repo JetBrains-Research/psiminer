@@ -1,8 +1,12 @@
 package psi
 
+import com.intellij.openapi.editor.Document
+import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiRecursiveElementVisitor
 import com.intellij.psi.util.PsiTreeUtil
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import psi.nodeProperties.isHidden
 import psi.nodeProperties.nodeType
 import psi.nodeProperties.token
@@ -51,5 +55,33 @@ fun PsiElement.printTree(delimiter: String = "..", indentStep: Int = 2) {
             StringBuilder("${delimiter.repeat(indent * indentStep)} ${it.nodeType} -- ${it.token}")
         if (it.resolvedTokenType != null) representation.append(" (${it.resolvedTokenType})")
         println(representation.toString())
+    }
+}
+
+@Serializable
+data class Position(
+    @SerialName("l") val line: Int,
+    @SerialName("c") val column: Int
+)
+
+@Serializable
+data class NodeRange(
+    val start: Position,
+    val end: Position
+)
+
+class PositionConverter(private val document: Document?) {
+    constructor(root: PsiElement) : this(PsiDocumentManager.getInstance(root.project).getDocument(root.containingFile))
+
+    fun generateNodeRange(el: PsiElement): NodeRange? {
+        if (document == null) return null
+        val startLine = document.getLineNumber(el.textRange.startOffset)
+        val endLine = document.getLineNumber(el.textRange.endOffset)
+        val startColumn = el.textRange.startOffset - document.getLineStartOffset(startLine)
+        val endColumn = el.textRange.endOffset - document.getLineStartOffset(endLine)
+        return NodeRange(
+            Position(startLine + 1, startColumn + 1),
+            Position(endLine + 1, endColumn + 1)
+        )
     }
 }

@@ -2,15 +2,14 @@ package storage.tree
 
 import Dataset
 import PATH_KEY
-import com.intellij.openapi.editor.Document
 import com.intellij.openapi.project.ProjectManager
-import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import labelextractor.LabeledTree
+import psi.NodeRange
+import psi.PositionConverter
 import psi.nodeProperties.nodeType
 import psi.nodeProperties.token
 import psi.preOrder
@@ -33,18 +32,6 @@ class JsonTreeStorage(
     private val jsonSerializer = Json { encodeDefaults = false }
 
     @Serializable
-    data class Position(
-        @SerialName("l") val line: Int,
-        @SerialName("c") val column: Int
-    )
-
-    @Serializable
-    data class NodeRange(
-        val start: Position,
-        val end: Position
-    )
-
-    @Serializable
     private data class NodeRepresentation(
         val token: String?,
         val nodeType: String,
@@ -60,22 +47,9 @@ class JsonTreeStorage(
         val tree: List<NodeRepresentation>
     )
 
-    private fun generateNodeRange(el: PsiElement, document: Document?): NodeRange? {
-        if (document == null) return null
-        val startLine = document.getLineNumber(el.textRange.startOffset)
-        val endLine = document.getLineNumber(el.textRange.endOffset)
-        val startColumn = el.textRange.startOffset - document.getLineStartOffset(startLine)
-        val endColumn = el.textRange.endOffset - document.getLineStartOffset(endLine)
-        return NodeRange(
-            Position(startLine + 1, startColumn + 1),
-            Position(endLine + 1, endColumn + 1)
-        )
-    }
-
     private fun collectNodeRepresentation(root: PsiElement): List<NodeRepresentation> {
         val nodeToId = hashMapOf<PsiElement, Int>()
-        val documentManager = PsiDocumentManager.getInstance(root.project)
-        val document = documentManager.getDocument(root.containingFile)
+        val converter = PositionConverter(root)
         root.preOrder().forEach {
             nodeToId[it] = nodeToId.size
         }
@@ -85,7 +59,7 @@ class JsonTreeStorage(
                 it.token,
                 it.nodeType,
                 it.resolvedTokenType,
-                if (withRanges) generateNodeRange(it, document) else null,
+                if (withRanges) converter.generateNodeRange(it) else null,
                 childrenIds
             )
         }

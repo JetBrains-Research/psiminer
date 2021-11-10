@@ -59,29 +59,27 @@ fun PsiElement.printTree(delimiter: String = "..", indentStep: Int = 2) {
 }
 
 @Serializable
-data class Position(
-    @SerialName("l") val line: Int,
-    @SerialName("c") val column: Int
-)
-
-@Serializable
 data class NodeRange(
     val start: Position,
     val end: Position
 )
 
-class PositionConverter(private val document: Document?) {
-    constructor(root: PsiElement) : this(PsiDocumentManager.getInstance(root.project).getDocument(root.containingFile))
+@Serializable
+data class Position(@SerialName("l") val line: Int, @SerialName("c") val column: Int) {
+    constructor(document: Document, offset: Int) : this(
+        document.getLineNumber(offset) + 1,
+        offset - document.getLineStartOffset(document.getLineNumber(offset)) + 1
+    )
+}
 
-    fun generateNodeRange(el: PsiElement): NodeRange? {
-        if (document == null) return null
-        val startLine = document.getLineNumber(el.textRange.startOffset)
-        val endLine = document.getLineNumber(el.textRange.endOffset)
-        val startColumn = el.textRange.startOffset - document.getLineStartOffset(startLine)
-        val endColumn = el.textRange.endOffset - document.getLineStartOffset(endLine)
-        return NodeRange(
-            Position(startLine + 1, startColumn + 1),
-            Position(endLine + 1, endColumn + 1)
-        )
-    }
+fun PsiElement.nodeRange(document: Document): NodeRange {
+    val textRange = textRange
+    val startPosition = Position(document, textRange.startOffset)
+    val endPosition = Position(document, textRange.endOffset)
+    return NodeRange(startPosition, endPosition)
+}
+
+fun PsiElement.nodeRange(): NodeRange? {
+    val document = PsiDocumentManager.getInstance(project).getDocument(containingFile) ?: return null
+    return this.nodeRange(document)
 }

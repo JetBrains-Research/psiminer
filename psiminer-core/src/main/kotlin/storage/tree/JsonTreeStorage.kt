@@ -9,9 +9,9 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import labelextractor.LabeledTree
 import psi.NodeRange
-import psi.PositionConverter
 import psi.nodeProperties.nodeType
 import psi.nodeProperties.token
+import psi.nodeRange
 import psi.preOrder
 import psi.transformations.typeresolve.resolvedTokenType
 import storage.Storage
@@ -49,7 +49,6 @@ class JsonTreeStorage(
 
     private fun collectNodeRepresentation(root: PsiElement): List<NodeRepresentation> {
         val nodeToId = hashMapOf<PsiElement, Int>()
-        val converter = PositionConverter(root)
         root.preOrder().forEach {
             nodeToId[it] = nodeToId.size
         }
@@ -59,7 +58,7 @@ class JsonTreeStorage(
                 it.token,
                 it.nodeType,
                 it.resolvedTokenType,
-                if (withRanges) converter.generateNodeRange(it) else null,
+                if (withRanges) it.nodeRange() else null,
                 childrenIds
             )
         }

@@ -6,12 +6,20 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 
 const val EMPTY_TOKEN = "EMPTY"
+const val EMPTY_TOKEN_OLD = "<EMPTY>"
 
 val PsiElement.token: String?
     get() = when {
         PsiTreeUtil.firstChild(this) != this -> EMPTY_TOKEN // if not leaf then there is no token
         technicalToken != null -> technicalToken
         else -> normalizedToken
+    }
+
+val PsiElement.tokenOldFormat: String?
+    get() = when {
+        PsiTreeUtil.firstChild(this) != this -> EMPTY_TOKEN_OLD // if not leaf then there is no token
+        technicalToken != null -> technicalToken
+        else -> text
     }
 
 val PsiElement.normalizedToken: String

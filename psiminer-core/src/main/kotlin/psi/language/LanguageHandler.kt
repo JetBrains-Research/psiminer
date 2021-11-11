@@ -3,7 +3,6 @@ package psi.language
 import GranularityLevel
 import Language
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
 import psi.method.MethodProvider
 import psi.transformations.CommonTreeTransformation
@@ -24,10 +23,10 @@ abstract class LanguageHandler {
      */
     abstract fun actionOnRecursiveCallIdentifier(root: PsiElement, action: (PsiElement) -> Unit)
 
-    fun splitByGranularity(psiFile: PsiFile, granularity: GranularityLevel): List<PsiElement> =
+    fun splitByGranularity(psiElement: PsiElement, granularity: GranularityLevel): List<PsiElement> =
         when (granularity) {
-            GranularityLevel.File -> listOf(psiFile)
-            GranularityLevel.Class -> PsiTreeUtil.collectElementsOfType(psiFile, classPsiType).toList()
-            GranularityLevel.Method -> PsiTreeUtil.collectElementsOfType(psiFile, methodPsiType).toList()
+            GranularityLevel.File -> listOf(psiElement)
+            GranularityLevel.Class -> PsiTreeUtil.collectElementsOfType(psiElement, classPsiType).toList()
+            GranularityLevel.Method -> PsiTreeUtil.collectElementsOfType(psiElement, methodPsiType).toList()
         }
 }

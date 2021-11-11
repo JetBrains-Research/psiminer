@@ -22,6 +22,8 @@ import java.io.File
  * @param maxPathsInTrain: If not null then use only this number of paths to represent train trees
  * @param maxPathsInTest: If not null then use only this number of paths to represent val or test trees
  * @param nodesToNumbers: If true then each node type is replaced with number
+ *
+ * TODO extract the formatting logic into formatter.paths.Code2SeqFormatter
  ***/
 open class Code2SeqStorage(
     outputDirectory: File,

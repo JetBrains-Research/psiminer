@@ -12,7 +12,7 @@ fun getAllMethods(file: File, handler: LanguageHandler, fixture: CodeInsightTest
         .let {
             ReadAction.compute<Map<String?, PsiElement>, Exception> {
                 handler
-                    .splitByGranularity(it, GranularityLevel.Method)
+                    .splitByGranularity(it as PsiElement, GranularityLevel.Method)
                     .associateBy { handler.methodProvider.getNameNode(it).text }
             }
         }

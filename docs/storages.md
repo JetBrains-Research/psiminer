@@ -20,6 +20,26 @@ Json format of AST inspired by the [150k Python](https://www.sri.inf.ethz.ch/py1
 }
 ```
 
+Possible configuration options for Json storage:
+
+```json
+{
+  "name": "json tree",
+  "withPaths": true
+}
+```
+
+_For every saved tree also save its filepath._
+
+```json
+{
+  "name": "json tree",
+  "withRanges": true
+}
+```
+
+_For each node, store the start and end positions of the code snippet that this node represents._
+
 ## Path-based representations
 
 Path-based representation was introduced by [Alon et al.](https://arxiv.org/abs/1803.09544).

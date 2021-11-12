@@ -24,9 +24,9 @@ Json format of AST inspired by the [150k Python](https://www.sri.inf.ethz.ch/py1
 
 Possible configuration options for Json storage:
 1. `withPaths` allows for each tree to save the path to the file where it appears. 
-Can be omitted, default: `false`.
+Can be omitted. Default: `false`.
 2. `withRanges` allows for each node to save start and end positions in the corresponding source code. 
-Can be omitted, default: `false`.
+Can be omitted. Default: `false`.
 
 ## Path-based representations
 

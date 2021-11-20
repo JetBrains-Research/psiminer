@@ -18,7 +18,7 @@ class Pipeline(
     private val repositoryOpener: PipelineRepositoryOpener,
     psiTreeTransformations: List<PsiTreeTransformation>,
     private val filters: List<Filter>,
-    val labelExtractor: LabelExtractor,
+    val labelExtractor: LabelExtractor<Any>,
     val storage: Storage
 ) {
 

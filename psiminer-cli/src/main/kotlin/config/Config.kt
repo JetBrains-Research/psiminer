@@ -1,6 +1,7 @@
 package config
 
 import Language
+import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.jetbrains.research.pluginUtilities.preprocessing.PreprocessorManager
@@ -14,7 +15,7 @@ data class Config(
 
     // ====== Pipeline configuration =====
     val filters: List<FilterConfig>,
-    @SerialName("label") val labelExtractor: LabelExtractorConfig,
+    @SerialName("label") val labelExtractor: LabelExtractorConfig<@Polymorphic Any>,
     val storage: StorageConfig,
 
     // ===== Parser configuration =====

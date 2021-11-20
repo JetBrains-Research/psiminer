@@ -68,7 +68,7 @@ class JsonTreeStorage(
         val nodeRepresentations = collectNodeRepresentation(labeledTree.root)
         ProjectManager.getInstance()
         val path = if (withPaths) labeledTree.root.getUserData(PATH_KEY) else null
-        val treeRepresentation = TreeRepresentation(labeledTree.label, path, nodeRepresentations)
+        val treeRepresentation = TreeRepresentation(labeledTree.label as String, path, nodeRepresentations)
         return jsonSerializer.encodeToString(treeRepresentation)
     }
 }

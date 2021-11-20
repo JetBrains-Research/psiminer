@@ -6,7 +6,7 @@ import com.intellij.psi.PsiElement
 import psi.language.LanguageHandler
 import psi.nodeProperties.technicalToken
 
-class MethodNameLabelExtractor : LabelExtractor() {
+class MethodNameLabelExtractor : LabelExtractor<String>() {
 
     override val granularityLevel = GranularityLevel.Method
 

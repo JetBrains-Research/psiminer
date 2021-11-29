@@ -1,6 +1,6 @@
 package psi.transformations.excludenode
 
-import BasePsiRequiredTest
+import JavaPsiRequiredTest
 import com.intellij.openapi.application.ReadAction
 import com.intellij.psi.PsiElement
 import org.junit.jupiter.params.ParameterizedTest
@@ -10,17 +10,17 @@ import psi.preOrder
 import psi.transformations.PsiTreeTransformation
 import kotlin.reflect.KClass
 
-abstract class JavaExcludeTransformationTest : BasePsiRequiredTest() {
+abstract class JavaExcludeTransformationTest : JavaPsiRequiredTest("JavaMethods") {
 
     abstract val transformation: PsiTreeTransformation
     abstract val excludeType: KClass<out PsiElement>
 
     @ParameterizedTest
     @ValueSource(
-        strings = ["abstractMethod", "overrideMethod", "emptyMethod", "smallMethod", "largeMethod", "recursiveMethod"]
+        strings = ["abstractMethod", "emptyMethod", "smallMethod", "largeMethod", "recursiveMethod"]
     )
     fun `test ignoring in Java methods`(methodName: String) = ReadAction.run<Exception> {
-        val psiRoot = getJavaMethod(methodName)
+        val psiRoot = getMethod(methodName)
         transformation.transform(psiRoot)
         val notHiddenNodes = psiRoot.preOrder().count { excludeType.isInstance(it) && !it.isHidden }
         assertEquals(0, notHiddenNodes)

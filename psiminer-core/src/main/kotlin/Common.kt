@@ -35,12 +35,12 @@ fun getCleanCode(code: String): List<String> {
     val cleanCode = code
         .replace("\r\n", "\n")
         .replace("\t", " ")
-        .apply { if (startsWith("{\n")) substring(3).trim() }
-        .apply { if (endsWith("\n}")) substring(0, length - 2).trim() }
+        .replace("{", "")
+        .replace("}", "")
     return cleanCode
         .split("\n")
         .map { it.trim() }
-        .filter { it != "{" && it != "}" && it != "" && !it.startsWith("/") && !it.startsWith("*") }
+        .filter { it != "" && !it.startsWith("/") && !it.startsWith("*") }
 }
 
 /**

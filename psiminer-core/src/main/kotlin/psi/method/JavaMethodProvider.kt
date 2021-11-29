@@ -9,11 +9,10 @@ class JavaMethodProvider : MethodProvider() {
         (root as? PsiMethod)?.nameIdentifier
             ?: throw IllegalArgumentException("Try to extract name not from the method")
 
-    override fun getBody(root: PsiElement): String? {
+    override fun getBodyNode(root: PsiElement): PsiElement? {
         val methodRoot = root as? PsiMethod
             ?: throw IllegalArgumentException("Try to extract body not from the method")
-        val block = methodRoot.body ?: return null
-        return block.text
+        return methodRoot.body
     }
 
     override fun isConstructor(root: PsiElement): Boolean =

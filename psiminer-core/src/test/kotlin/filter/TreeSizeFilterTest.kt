@@ -1,38 +1,42 @@
 package filter
 
-import BasePsiRequiredTest
+import JavaPsiRequiredTest
+import KotlinPsiRequiredTest
 import com.intellij.openapi.application.ReadAction
 import org.junit.Assert
 import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.ValueSource
+import org.junit.jupiter.params.provider.MethodSource
 import psi.treeSize
 
-internal class TreeSizeFilterTest : BasePsiRequiredTest() {
+/**
+ * Since it is unclear how to manually build PSI tree of the specific size for the test,
+ * filter initializes with size of small method.
+ * It would accept small method and decline large method.
+ */
+interface TreeSizeFilterTest {
+    val smallMethodName: String
+        get() = "smallMethod"
+    fun provideMethodNames(): Array<String> = arrayOf("smallMethod", "largeMethod")
+}
 
+class JavaTreeSizeFilterTest : TreeSizeFilterTest, JavaPsiRequiredTest("JavaMethods") {
     @ParameterizedTest
-    @ValueSource(strings = [smallMethodName, largeMethodName])
+    @MethodSource("provideMethodNames")
     fun `test filtering java by tree size`(methodName: String) = ReadAction.run<Exception> {
-        // Since its unclear how to manually build PSI tree of the specific size the test is checking
-        // filter that was initialized with size of small method would accept small method and decline large.
-        val smallPsiTreeSize = getJavaMethod(smallMethodName).treeSize()
+        val smallPsiTreeSize = getMethod(smallMethodName).treeSize()
         val treeSizeFilter = TreeSizeFilter(maxSize = smallPsiTreeSize)
-        val psiRoot = getJavaMethod(methodName)
-        Assert.assertEquals(methodName == smallMethodName, treeSizeFilter.validateTree(psiRoot, javaHandler))
+        val psiRoot = getMethod(methodName)
+        Assert.assertEquals(methodName == smallMethodName, treeSizeFilter.validateTree(psiRoot, handler))
     }
+}
 
+class KotlinTreeSizeFilterTest : TreeSizeFilterTest, KotlinPsiRequiredTest("KotlinMethods") {
     @ParameterizedTest
-    @ValueSource(strings = [smallMethodName, largeMethodName])
-    fun `test filtering kotlin by tree size`(methodName: String) = ReadAction.run<Exception> {
-        // Since its unclear how to manually build PSI tree of the specific size the test is checking
-        // filter that was initialized with size of small method would accept small method and decline large.
-        val smallPsiTreeSize = getKotlinMethod(smallMethodName).treeSize()
+    @MethodSource("provideMethodNames")
+    fun `test filtering java by tree size`(methodName: String) = ReadAction.run<Exception> {
+        val smallPsiTreeSize = getMethod(smallMethodName).treeSize()
         val treeSizeFilter = TreeSizeFilter(maxSize = smallPsiTreeSize)
-        val psiRoot = getKotlinMethod(methodName)
-        Assert.assertEquals(methodName == smallMethodName, treeSizeFilter.validateTree(psiRoot, kotlinHandler))
-    }
-
-    companion object {
-        const val smallMethodName = "smallMethod"
-        const val largeMethodName = "largeMethod"
+        val psiRoot = getMethod(methodName)
+        Assert.assertEquals(methodName == smallMethodName, treeSizeFilter.validateTree(psiRoot, handler))
     }
 }

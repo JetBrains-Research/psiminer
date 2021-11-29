@@ -14,11 +14,10 @@ class KotlinMethodProvider : MethodProvider() {
         (root as? KtNamedFunction)?.nameIdentifier
             ?: throw IllegalArgumentException("Try to extract body not from the method")
 
-    override fun getBody(root: PsiElement): String? {
+    override fun getBodyNode(root: PsiElement): PsiElement? {
         val methodRoot = root as? KtNamedFunction
             ?: throw IllegalArgumentException("Try to extract body not from the method")
-        val block = methodRoot.bodyBlockExpression ?: return null
-        return (block as PsiElement).text
+        return methodRoot.bodyBlockExpression
     }
 
     override fun isConstructor(root: PsiElement): Boolean = root::class.isSubclassOf(KtConstructor::class)

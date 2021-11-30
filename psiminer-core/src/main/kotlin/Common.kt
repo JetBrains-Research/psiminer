@@ -38,9 +38,9 @@ fun getCleanCode(code: String): List<String> {
         .replace("{", "")
         .replace("}", "")
     return cleanCode
-        .split("\n")
+        .lines()
         .map { it.trim() }
-        .filter { it != "" && !it.startsWith("/") && !it.startsWith("*") }
+        .filter { it.isNotEmpty() && !it.startsWith("/") && !it.startsWith("*") }
 }
 
 /**

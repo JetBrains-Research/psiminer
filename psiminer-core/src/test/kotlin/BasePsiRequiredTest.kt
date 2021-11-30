@@ -64,7 +64,7 @@ open class JavaPsiRequiredTest(source: String) : BasePsiRequiredTest(dataFolder.
 }
 
 open class KotlinPsiRequiredTest(source: String) : BasePsiRequiredTest(dataFolder.resolve("$source.$ext")) {
-    override val handler : LanguageHandler = KotlinHandler()
+    override val handler: LanguageHandler = KotlinHandler()
     companion object {
         val dataFolder = File("kotlin")
         const val ext = "kt"

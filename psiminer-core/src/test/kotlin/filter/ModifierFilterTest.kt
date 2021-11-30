@@ -36,4 +36,3 @@ class KotlinModifierFilterTest : ModifierFilterTest, KotlinPsiRequiredTest("Kotl
         Assert.assertEquals(!isAbstract, modifierFilter.validateTree(psiRoot, handler))
     }
 }
-

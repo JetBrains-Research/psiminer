@@ -3,7 +3,7 @@ internal interface Interface {
     fun interfaceMethod()
 }
 
-internal abstract class InternetProvider {
+internal abstract class AbstractClass {
     abstract fun abstractMethod()
 } // brackets only methods
 
@@ -16,8 +16,9 @@ internal class BracketsOnly {
     {
 
     }
-} // no-op methods
+}
 
+// no-op methods
 internal class NoOpMethods {
     fun commentInline() { /* no-op */ }
 

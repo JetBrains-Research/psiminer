@@ -3,7 +3,7 @@ interface Interface {
     void interfaceMethod();
 }
 
-abstract class InternetProvider {
+abstract class AbstractClass {
     abstract public void abstractMethod();
 }
 

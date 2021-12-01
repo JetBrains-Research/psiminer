@@ -1,6 +1,6 @@
 package psi.transformations
 
-import BasePsiRequiredTest
+import JavaPsiRequiredTest
 import com.intellij.openapi.application.ReadAction
 import com.intellij.psi.util.elementType
 import org.junit.jupiter.api.Test
@@ -9,11 +9,11 @@ import psi.preOrder
 import psi.transformations.JavaHideLiteralsTransformation.Companion.NUMBER_LITERAL
 import psi.transformations.JavaHideLiteralsTransformation.Companion.STRING_LITERAL
 
-internal class JavaHideLiteralsTransformationTest : BasePsiRequiredTest() {
+internal class JavaHideLiteralsTransformationTest : JavaPsiRequiredTest("JavaMethods") {
 
     @Test
     fun `test not hiding whitelist literals in Java method`() = ReadAction.run<Exception> {
-        val psiRoot = getJavaMethod(methodName)
+        val psiRoot = getMethod(methodName)
         val transformation = JavaHideLiteralsTransformation(true, numberWhiteList, true)
         transformation.transform(psiRoot)
         psiRoot.preOrder()
@@ -24,7 +24,7 @@ internal class JavaHideLiteralsTransformationTest : BasePsiRequiredTest() {
 
     @Test
     fun `test hiding int literals in Java method`() = ReadAction.run<Exception> {
-        val psiRoot = getJavaMethod(methodName)
+        val psiRoot = getMethod(methodName)
         val transformation = JavaHideLiteralsTransformation(true, numberWhiteList, true)
         transformation.transform(psiRoot)
         psiRoot.preOrder()
@@ -35,7 +35,7 @@ internal class JavaHideLiteralsTransformationTest : BasePsiRequiredTest() {
 
     @Test
     fun `test hiding string literals in Java method`() = ReadAction.run<Exception> {
-        val psiRoot = getJavaMethod(methodName)
+        val psiRoot = getMethod(methodName)
         val transformation = JavaHideLiteralsTransformation(true, numberWhiteList, true)
         transformation.transform(psiRoot)
         psiRoot.preOrder()

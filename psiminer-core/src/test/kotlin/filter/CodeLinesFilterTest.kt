@@ -1,35 +1,49 @@
 package filter
 
-import BasePsiRequiredTest
+import JavaPsiRequiredTest
+import KotlinPsiRequiredTest
 import com.intellij.openapi.application.ReadAction
 import org.junit.Assert
+import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 
-class CodeLinesFilterTest : BasePsiRequiredTest() {
+interface CodeLinesFilterTest {
+    val codeLinesFilter: CodeLinesFilter
+        get() = CodeLinesFilter(maxCodeLines = upBorder)
 
-    private val codeLinesFilter = CodeLinesFilter(maxCodeLines = upBorder)
-
-    private fun provideMethodsSizes(): Array<Arguments> = arrayOf(
+    fun provideMethodsSizes(): Array<Arguments> = arrayOf(
         Arguments.of("smallMethod", 4), Arguments.of("largeMethod", 12)
     )
-
-    @ParameterizedTest
-    @MethodSource("provideMethodsSizes")
-    fun `test accepting java method`(methodName: String, methodLength: Int) = ReadAction.run<Exception> {
-        val psiRoot = getJavaMethod(methodName)
-        Assert.assertEquals(methodLength <= upBorder, codeLinesFilter.validateTree(psiRoot, javaHandler))
-    }
-
-    @ParameterizedTest
-    @MethodSource("provideMethodsSizes")
-    fun `test accepting kotlin method`(methodName: String, methodLength: Int) = ReadAction.run<Exception> {
-        val psiRoot = getKotlinMethod(methodName)
-        Assert.assertEquals(methodLength <= upBorder, codeLinesFilter.validateTree(psiRoot, kotlinHandler))
-    }
 
     companion object {
         const val upBorder = 10
     }
+}
+
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+class JavaCodeLinesFilterTest : CodeLinesFilterTest, JavaPsiRequiredTest("JavaMethods") {
+    @ParameterizedTest
+    @MethodSource("provideMethodsSizes")
+    fun `test accepting java method by code lines`(methodName: String, methodLength: Int) = ReadAction.run<Exception> {
+        val psiRoot = getMethod(methodName)
+        Assert.assertEquals(
+            methodLength <= CodeLinesFilterTest.upBorder,
+            codeLinesFilter.validateTree(psiRoot, handler)
+        )
+    }
+}
+
+class KotlinCodeLinesFilterTest : CodeLinesFilterTest, KotlinPsiRequiredTest("KotlinMethods") {
+    @ParameterizedTest
+    @MethodSource("provideMethodsSizes")
+    fun `test accepting kotlin method by code lines`(methodName: String, methodLength: Int) =
+        ReadAction.run<Exception> {
+            val psiRoot = getMethod(methodName)
+            Assert.assertEquals(
+                methodLength <= CodeLinesFilterTest.upBorder,
+                codeLinesFilter.validateTree(psiRoot, handler)
+            )
+        }
 }

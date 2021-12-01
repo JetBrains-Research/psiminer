@@ -1,13 +1,13 @@
 package filter
 
-import BasePsiRequiredTest
+import JavaPsiRequiredTest
 import com.intellij.openapi.application.ReadAction
 import org.junit.Assert
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 
-internal class ConstructorFilterTest : BasePsiRequiredTest() {
+internal class ConstructorFilterTest : JavaPsiRequiredTest("JavaMethods") {
 
     private val constructorFilter = ConstructorFilter()
 
@@ -18,7 +18,7 @@ internal class ConstructorFilterTest : BasePsiRequiredTest() {
     @ParameterizedTest
     @MethodSource("provideJavaConstructors")
     fun validateTree(methodName: String, isConstructor: Boolean) = ReadAction.run<Exception> {
-        val psiRoot = getJavaMethod(methodName)
-        Assert.assertEquals(!isConstructor, constructorFilter.validateTree(psiRoot, javaHandler))
+        val psiRoot = getMethod(methodName)
+        Assert.assertEquals(!isConstructor, constructorFilter.validateTree(psiRoot, handler))
     }
 }

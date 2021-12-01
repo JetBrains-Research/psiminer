@@ -1,17 +1,17 @@
 package psi.transformations.typeresolve
 
-import BasePsiRequiredTest
+import JavaPsiRequiredTest
 import com.intellij.openapi.application.ReadAction
 import com.intellij.psi.PsiIdentifier
 import com.intellij.psi.PsiKeyword
 import com.intellij.psi.util.PsiTreeUtil
 import org.junit.jupiter.api.Test
 
-internal class JavaResolveTypeTransformationTest : BasePsiRequiredTest() {
+internal class JavaResolveTypeTransformationTest : JavaPsiRequiredTest("JavaMethods") {
 
     @Test
     fun `test resolve Java identifiers types transformation`() = ReadAction.run<Exception> {
-        val psiRoot = getJavaMethod(javaMethod)
+        val psiRoot = getMethod(methodName)
         val transformation = JavaResolveTypeTransformation()
         transformation.transform(psiRoot)
         val identifiers = PsiTreeUtil.collectElementsOfType(psiRoot, PsiIdentifier::class.java)
@@ -26,7 +26,7 @@ internal class JavaResolveTypeTransformationTest : BasePsiRequiredTest() {
 
     @Test
     fun `test resolve Java keywords types transformation`() = ReadAction.run<Exception> {
-        val psiRoot = getJavaMethod(javaMethod)
+        val psiRoot = getMethod(methodName)
         val transformation = JavaResolveTypeTransformation()
         transformation.transform(psiRoot)
         PsiTreeUtil.collectElementsOfType(psiRoot, PsiKeyword::class.java).forEach {
@@ -35,7 +35,7 @@ internal class JavaResolveTypeTransformationTest : BasePsiRequiredTest() {
     }
 
     companion object {
-        const val javaMethod = "largeMethod"
+        const val methodName = "largeMethod"
         private val tokenToType = hashMapOf(
             "largeMethod" to "void",
             "x" to "int",

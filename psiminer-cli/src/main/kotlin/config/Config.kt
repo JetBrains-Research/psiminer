@@ -3,14 +3,11 @@ package config
 import Language
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import org.jetbrains.research.pluginUtilities.preprocessing.PreprocessorManager
-import org.jetbrains.research.pluginUtilities.preprocessing.getKotlinJavaPreprocessorManager
 
 @Serializable
 data class Config(
     // ====== How to open repositories =====
-    @SerialName("additional preprocessing") val additionalPreprocessing: PreprocessingConfig =
-        PreprocessingConfig(enable = false),
+    @SerialName("preprocessing") val preprocessing: PreprocessingConfig = DummyPreprocessingConfig(),
 
     // ====== Pipeline configuration =====
     val filters: List<FilterConfig>,
@@ -25,12 +22,3 @@ data class Config(
     val numThreads: Int = 1,
     val printTrees: Boolean = false
 )
-
-@Serializable
-data class PreprocessingConfig(
-    val enable: Boolean = true,
-    val androidSdkHome: String? = null
-) {
-    fun createPreprocessorManager(): PreprocessorManager? =
-        if (enable) getKotlinJavaPreprocessorManager(androidSdkHome) else null
-}

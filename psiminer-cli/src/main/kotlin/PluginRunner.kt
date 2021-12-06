@@ -26,6 +26,10 @@ class PluginRunner : ApplicationStarter {
 }
 
 val module = SerializersModule {
+    polymorphic(PreprocessingConfig::class) {
+        subclass(JVMPreprocessingConfig::class)
+        default { DummyPreprocessingConfig.serializer() }
+    }
     polymorphic(StorageConfig::class) {
         subclass(JsonTreeStorageConfig::class)
         subclass(Code2SeqStorageConfig::class)
@@ -80,9 +84,7 @@ class PsiExtractor : CliktCommand() {
         val storage = config.storage.createStorage(output)
         val pipeline = Pipeline(
             language = config.language,
-            repositoryOpener = PipelineRepositoryOpener(
-                preprocessorManager = config.additionalPreprocessing.createPreprocessorManager(),
-            ),
+            repositoryOpener = config.preprocessing.createPreprocessing(),
             psiTreeTransformations = config.treeTransformers.map { it.createTreeTransformation(config.language) },
             filters = config.filters.map { it.createFilter() },
             labelExtractor = config.labelExtractor.createProblem(),

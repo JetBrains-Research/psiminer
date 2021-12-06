@@ -3,19 +3,22 @@
 `PSIMiner` can perform additional preprocessing increasing the chances that projects in the dataset are opened correctly by IDEA.
 However, additional preprocessing **mutates** the original dataset: **adds**, **removes** or **updates** files.
 
-To enable additional preprocessing add a `additional preprocessing` field in the config and set `enable: true`:
+To enable additional preprocessing add a `preprocessing` field in the config and setup name.
+For now, `PSIMiner` supports only additional preprocessing for Java or Kotlin repositories.
+For example:
 
 ```json
 {
-  "additional preprocessing": {
-    "enable": true
+  "preprocessing": {
+    "name": "jvm"
   }
 }
 ```
 
 ## Types of preprocessing
 
-### Deleting `.idea` folders.
+### JVM preprocessing
+1. Deleting `.idea` folders.
 
 It is always turned on when `additional preprocessing` is enabled.
 

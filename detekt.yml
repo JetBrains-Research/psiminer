@@ -25,3 +25,5 @@ style:
     active: false
   UnusedPrivateMember:
     allowedNames: 'provide\w*'
+  ReturnCount:
+    max: 3  # Pipeline.processPsiTree

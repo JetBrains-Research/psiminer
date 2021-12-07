@@ -1,4 +1,5 @@
 import com.intellij.openapi.project.Project
+import com.intellij.psi.PsiElement
 import filter.Filter
 import labelextractor.LabelExtractor
 import me.tongfei.progressbar.ProgressBar
@@ -11,11 +12,11 @@ import psi.printTree
 import psi.transformations.PsiTreeTransformation
 import storage.Storage
 import java.io.File
-import kotlin.concurrent.thread
+import java.util.concurrent.Executors
 
 class Pipeline(
     val language: Language,
-    private val repositoryOpener: PipelineRepositoryOpener,
+    private val repositoryOpener: RepositoryOpener,
     psiTreeTransformations: List<PsiTreeTransformation>,
     private val filters: List<Filter>,
     val labelExtractor: LabelExtractor<Any>,
@@ -77,6 +78,16 @@ class Pipeline(
         }
     }
 
+    private fun processPsiTree(psiRoot: PsiElement, holdout: Dataset? = null, printTrees: Boolean = false): Boolean {
+        if (filters.any { !it.validateTree(psiRoot, languageHandler) }) return false
+        val labeledTree = labelExtractor.extractLabel(psiRoot, languageHandler) ?: return false
+        synchronized(storage) {
+            storage.store(labeledTree, holdout)
+            if (printTrees) labeledTree.root.printTree()
+        }
+        return true
+    }
+
     private fun processProject(
         project: Project,
         holdout: Dataset?,
@@ -87,29 +98,20 @@ class Pipeline(
 
         val progressBar = ProgressBar(project.name, projectFiles.size.toLong())
 
-        val threads = projectFiles.chunked(numThreads).map { files ->
-            thread {
-                files.map { file ->
-                    try {
-                        parser.parseFile(file, project) { psiRoot ->
-                            if (filters.any { !it.validateTree(psiRoot, languageHandler) }) return@parseFile
-                            val labeledTree =
-                                labelExtractor.extractLabel(psiRoot, languageHandler) ?: return@parseFile
-                            synchronized(storage) {
-                                storage.store(labeledTree, holdout)
-                                if (printTrees) labeledTree.root.printTree()
-                            }
-                        }
-                    } catch (exception: ParserException) {
-                        logger.error("Error while parsing ${exception.filepath}")
-                    } finally {
-                        progressBar.step()
-                    }
+        val service = Executors.newFixedThreadPool(numThreads)
+        val futures = projectFiles.map { file ->
+            service.submit {
+                try {
+                    parser.parseFile(file, project) { processPsiTree(it, holdout, printTrees) }
+                } catch (exception: ParserException) {
+                    logger.error("Error while parsing ${exception.filepath}")
+                } finally {
+                    progressBar.step()
                 }
             }
         }
-
-        threads.forEach { it.join() }
+        service.shutdown()
+        futures.forEach { it.get() }
         progressBar.close()
     }
 }

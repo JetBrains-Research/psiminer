@@ -1,22 +1,19 @@
+import com.intellij.openapi.application.ReadAction
 import com.intellij.psi.PsiElement
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import org.jetbrains.kotlin.psi.KtFunction
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.TestInstance
 import psi.language.JavaHandler
 import psi.language.KotlinHandler
+import psi.language.LanguageHandler
 import java.io.File
-import kotlin.jvm.Throws
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-open class BasePsiRequiredTest : BasePlatformTestCase() {
+abstract class BasePsiRequiredTest(private val psiSourceFile: File) : BasePlatformTestCase() {
 
-    protected val javaHandler = JavaHandler()
-    protected val kotlinHandler = KotlinHandler()
-
-    private val javaMethods = mutableMapOf<String?, PsiElement>()
-    private val kotlinMethods = mutableMapOf<String?, PsiElement>()
+    abstract val handler: LanguageHandler
+    private val methods = mutableMapOf<String, PsiElement>()
 
     private class ResourceException(resourceRoot: String) : RuntimeException("Can't find resources in $resourceRoot")
 
@@ -28,10 +25,17 @@ open class BasePsiRequiredTest : BasePlatformTestCase() {
     @BeforeAll
     override fun setUp() {
         super.setUp()
-        val javaMethodsFile = File(testDataPath).resolve(javaMethodsFileName)
-        javaMethods.putAll(getAllMethods(javaMethodsFile, javaHandler, myFixture))
-        val kotlinMethodsFile = File(testDataPath).resolve(kotlinMethodsFileName)
-        kotlinMethods.putAll(getAllMethods(kotlinMethodsFile, kotlinHandler, myFixture))
+        val methodsFile = File(testDataPath).resolve(psiSourceFile)
+        myFixture.configureByFile(methodsFile.path).let {
+            ReadAction.run<Exception> {
+                handler
+                    .splitByGranularity(it, GranularityLevel.Method)
+                    .forEach {
+                        val methodName = handler.methodProvider.getNameNode(it).text
+                        methods[methodName] = it
+                    }
+                }
+            }
     }
 
     @AfterAll
@@ -42,17 +46,27 @@ open class BasePsiRequiredTest : BasePlatformTestCase() {
     private class UnknownMethodException(methodName: String, fileName: String) :
         RuntimeException("Can't find method $methodName in $fileName")
 
-    protected fun getJavaMethod(methodName: String): PsiElement =
-        javaMethods[methodName] ?: throw UnknownMethodException(methodName, javaMethodsFileName)
-
-    protected fun getKotlinMethod(methodName: String): PsiElement =
-        kotlinMethods[methodName] as KtFunction
+    fun getMethod(methodName: String): PsiElement =
+        methods[methodName] ?: throw UnknownMethodException(methodName, psiSourceFile.name)
 
     companion object {
-        // We can not get the root of the class resources automatically
+        // We cannot get the root of the class resources automatically.
         private const val resourcesRoot: String = "data"
+    }
+}
 
-        internal const val javaMethodsFileName = "JavaMethods.java"
-        internal const val kotlinMethodsFileName = "KotlinMethods.kt"
+open class JavaPsiRequiredTest(source: String) : BasePsiRequiredTest(dataFolder.resolve("$source.$ext")) {
+    override val handler: LanguageHandler = JavaHandler()
+    companion object {
+        val dataFolder = File("java")
+        const val ext = "java"
+    }
+}
+
+open class KotlinPsiRequiredTest(source: String) : BasePsiRequiredTest(dataFolder.resolve("$source.$ext")) {
+    override val handler: LanguageHandler = KotlinHandler()
+    companion object {
+        val dataFolder = File("kotlin")
+        const val ext = "kt"
     }
 }

@@ -5,7 +5,7 @@ import astminer.common.splitToSubtokens
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 
-const val EMPTY_TOKEN = "EMPTY"
+const val EMPTY_TOKEN = "<E>"
 
 val PsiElement.token: String?
     get() = when {

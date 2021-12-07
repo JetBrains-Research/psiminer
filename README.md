@@ -65,7 +65,7 @@ If you turn on additional preprocessing:
 * ✅ more projects will be opened successfully by IDEA
 * ⚠️ files in your original dataset will be **changed**
 
-[More about additional preprocessing](docs/additional_preprocessing.md)
+[More about additional preprocessing](docs/preprocessing.md)
 
 ## Language support
 

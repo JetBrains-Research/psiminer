@@ -4,7 +4,7 @@ import com.intellij.psi.PsiElement
 
 abstract class MethodProvider {
     abstract fun getNameNode(root: PsiElement): PsiElement
-    abstract fun getBody(root: PsiElement): String?
+    abstract fun getBodyNode(root: PsiElement): PsiElement?
     abstract fun isConstructor(root: PsiElement): Boolean
 
     open fun hasModifier(root: PsiElement, modifier: String): Boolean = false

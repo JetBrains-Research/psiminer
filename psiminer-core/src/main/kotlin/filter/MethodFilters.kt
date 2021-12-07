@@ -31,8 +31,8 @@ class AnnotationFilter(private val ignoreAnnotations: List<String>) : Filter {
 
 class EmptyMethodFilter : Filter {
     override fun validateTree(root: PsiElement, languageHandler: LanguageHandler): Boolean {
-        val body = languageHandler.methodProvider.getBody(root) ?: return false
-        val cleanCode = getCleanCode(body)
+        val body = languageHandler.methodProvider.getBodyNode(root) ?: return false
+        val cleanCode = getCleanCode(body.text)
         return cleanCode.isNotEmpty()
     }
 }

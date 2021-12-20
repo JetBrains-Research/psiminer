@@ -12,7 +12,7 @@ data class Config(
 
     // ====== Pipeline configuration =====
     val filters: List<FilterConfig>,
-    @SerialName("label") val labelExtractor: LabelExtractorConfig<@Polymorphic Any>,
+    @SerialName("label") val labelExtractor: LabelExtractorConfig,
     val storage: StorageConfig,
 
     // ===== Parser configuration =====

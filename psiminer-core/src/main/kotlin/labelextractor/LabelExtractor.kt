@@ -4,14 +4,17 @@ import GranularityLevel
 import com.intellij.psi.PsiElement
 import psi.language.LanguageHandler
 
-data class LabeledTree(val root: PsiElement, val label: Any?)
+open class LabeledTree(val root: PsiElement, private val fullLabel: Label) {
+    val label: String
+    get() = fullLabel.getString()
+}
 
 /**
  * Base class for label extracting logic, previous known as `Problem` interface
  * @property granularityLevel: define level of granularity
  * @see GranularityLevel
  */
-abstract class LabelExtractor<T> {
+abstract class LabelExtractor {
     abstract val granularityLevel: GranularityLevel
 
     /**
@@ -19,7 +22,7 @@ abstract class LabelExtractor<T> {
      * @param root: Root of PSI Tree where label should be extracted
      * @return string label of tree or null if label can not be extracted
      */
-    internal abstract fun handleTree(root: PsiElement, languageHandler: LanguageHandler): T?
+    internal abstract fun handleTree(root: PsiElement, languageHandler: LanguageHandler): Label
 
     /**
      * Interface method to extract label from tree.
@@ -28,6 +31,6 @@ abstract class LabelExtractor<T> {
      * @return tree with label or null if label can not be extracted
      * @see LabeledTree
      */
-    fun extractLabel(root: PsiElement, languageHandler: LanguageHandler): LabeledTree? =
-        handleTree(root, languageHandler)?.let { LabeledTree(root, it) }
+    fun extractLabel(root: PsiElement, languageHandler: LanguageHandler): LabeledTree =
+        handleTree(root, languageHandler).let { LabeledTree(root, it) }
 }

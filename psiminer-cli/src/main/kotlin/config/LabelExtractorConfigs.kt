@@ -6,12 +6,12 @@ import labelextractor.MethodNameLabelExtractor
 import labelextractor.LabelExtractor
 
 @Serializable
-abstract class LabelExtractorConfig<T> {
-    abstract fun createProblem(): LabelExtractor<T>
+abstract class LabelExtractorConfig {
+    abstract fun createProblem(): LabelExtractor
 }
 
 @Serializable
 @SerialName("method name")
-class MethodNameLabelExtractorConfig : LabelExtractorConfig<String>() {
-    override fun createProblem(): LabelExtractor<String> = MethodNameLabelExtractor()
+class MethodNameLabelExtractorConfig : LabelExtractorConfig() {
+    override fun createProblem(): LabelExtractor = MethodNameLabelExtractor()
 }

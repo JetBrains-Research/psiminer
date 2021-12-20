@@ -22,7 +22,7 @@ abstract class LabelExtractor {
      * @param root: Root of PSI Tree where label should be extracted
      * @return string label of tree or null if label can not be extracted
      */
-    internal abstract fun handleTree(root: PsiElement, languageHandler: LanguageHandler): Label
+    internal abstract fun handleTree(root: PsiElement, languageHandler: LanguageHandler): Label?
 
     /**
      * Interface method to extract label from tree.
@@ -31,6 +31,6 @@ abstract class LabelExtractor {
      * @return tree with label or null if label can not be extracted
      * @see LabeledTree
      */
-    fun extractLabel(root: PsiElement, languageHandler: LanguageHandler): LabeledTree =
-        handleTree(root, languageHandler).let { LabeledTree(root, it) }
+    fun extractLabel(root: PsiElement, languageHandler: LanguageHandler): LabeledTree? =
+        handleTree(root, languageHandler)?.let { LabeledTree(root, it) }
 }

@@ -6,7 +6,7 @@ import psi.language.LanguageHandler
 
 open class LabeledTree(val root: PsiElement, private val fullLabel: Label) {
     val label: String
-    get() = fullLabel.getString()
+    get() = fullLabel.getStringRepresentation()
 }
 
 /**

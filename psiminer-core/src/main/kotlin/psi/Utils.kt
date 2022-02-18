@@ -1,12 +1,12 @@
 package psi
 
+import astminer.common.model.NodeRange
+import astminer.common.model.Position
 import com.intellij.openapi.editor.Document
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiRecursiveElementVisitor
 import com.intellij.psi.util.PsiTreeUtil
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 import psi.nodeProperties.isHidden
 import psi.nodeProperties.nodeType
 import psi.nodeProperties.token
@@ -58,24 +58,15 @@ fun PsiElement.printTree(delimiter: String = "..", indentStep: Int = 2) {
     }
 }
 
-@Serializable
-data class NodeRange(
-    val start: Position,
-    val end: Position
+fun Document.getPosition(offset: Int) = Position(
+    getLineNumber(offset) + 1,
+    offset - getLineStartOffset(getLineNumber(offset)) + 1
 )
-
-@Serializable
-data class Position(@SerialName("l") val line: Int, @SerialName("c") val column: Int) {
-    constructor(document: Document, offset: Int) : this(
-        document.getLineNumber(offset) + 1,
-        offset - document.getLineStartOffset(document.getLineNumber(offset)) + 1
-    )
-}
 
 fun PsiElement.nodeRange(document: Document): NodeRange {
     val textRange = textRange
-    val startPosition = Position(document, textRange.startOffset)
-    val endPosition = Position(document, textRange.endOffset)
+    val startPosition = document.getPosition(textRange.startOffset)
+    val endPosition = document.getPosition(textRange.endOffset)
     return NodeRange(startPosition, endPosition)
 }
 

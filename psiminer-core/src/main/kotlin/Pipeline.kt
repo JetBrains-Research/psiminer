@@ -17,6 +17,7 @@ import storage.Storage
 import storage.paths.toAstminerLabeledResult
 import java.io.File
 import java.util.concurrent.Executors
+import kotlin.io.path.Path
 
 class Pipeline(
     val language: Language,
@@ -48,7 +49,10 @@ class Pipeline(
         numThreads: Int = 1,
         printTrees: Boolean = false
     ) {
-        if (collectMetadata) { metaDataStorage = MetaDataStorage(storage.outputDirectory.path) }
+        if (collectMetadata) {
+            val metadataPath = Path(storage.outputDirectory.path, "metadata").toString()
+            metaDataStorage = MetaDataStorage(metadataPath)
+        }
         require(numThreads > 0) { "Amount threads must be positive." }
         println("Parser configuration:\n$parser")
         val isDataset = checkFolderIsDataset(inputDirectory)

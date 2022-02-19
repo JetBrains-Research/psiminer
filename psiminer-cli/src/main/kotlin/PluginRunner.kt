@@ -88,7 +88,8 @@ class PsiExtractor : CliktCommand() {
             psiTreeTransformations = config.treeTransformers.map { it.createTreeTransformation(config.language) },
             filters = config.filters.map { it.createFilter() },
             labelExtractor = config.labelExtractor.createProblem(),
-            storage = storage
+            storage = storage,
+            collectMetadata = config.collectMetadata
         )
 
         try {

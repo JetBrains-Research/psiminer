@@ -1,7 +1,10 @@
+import astminer.common.model.DatasetHoldout
+import astminer.storage.MetaDataStorage
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import filter.Filter
 import labelextractor.LabelExtractor
+import labelextractor.LabeledTree
 import me.tongfei.progressbar.ProgressBar
 import org.slf4j.LoggerFactory
 import psi.Parser
@@ -11,6 +14,7 @@ import psi.language.KotlinHandler
 import psi.printTree
 import psi.transformations.PsiTreeTransformation
 import storage.Storage
+import storage.paths.toAstminerLabeledResult
 import java.io.File
 import java.util.concurrent.Executors
 
@@ -20,8 +24,10 @@ class Pipeline(
     psiTreeTransformations: List<PsiTreeTransformation>,
     private val filters: List<Filter>,
     val labelExtractor: LabelExtractor,
-    val storage: Storage
+    val storage: Storage,
+    val collectMetadata: Boolean = false
 ) {
+    private var metaDataStorage: MetaDataStorage? = null
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
@@ -42,6 +48,7 @@ class Pipeline(
         numThreads: Int = 1,
         printTrees: Boolean = false
     ) {
+        if (collectMetadata) { metaDataStorage = MetaDataStorage(storage.outputDirectory.path) }
         require(numThreads > 0) { "Amount threads must be positive." }
         println("Parser configuration:\n$parser")
         val isDataset = checkFolderIsDataset(inputDirectory)
@@ -63,6 +70,8 @@ class Pipeline(
             println("No dataset found. Process all sources from passed path")
             processRepository(inputDirectory, null, numThreads, printTrees)
         }
+        metaDataStorage?.close()
+        metaDataStorage = null
     }
 
     private fun processRepository(
@@ -83,6 +92,7 @@ class Pipeline(
         val labeledTree = labelExtractor.extractLabel(psiRoot, languageHandler) ?: return false
         synchronized(storage) {
             storage.store(labeledTree, holdout)
+            metaDataStorage?.store(labeledTree, holdout)
             if (printTrees) labeledTree.root.printTree()
         }
         return true
@@ -113,5 +123,15 @@ class Pipeline(
         service.shutdown()
         futures.forEach { it.get() }
         progressBar.close()
+    }
+
+    private fun MetaDataStorage.store(labeledTree: LabeledTree, holdout: Dataset?) {
+        val astminerHoldout = when (holdout) {
+            Dataset.Train -> DatasetHoldout.Train
+            Dataset.Val -> DatasetHoldout.Validation
+            Dataset.Test -> DatasetHoldout.Test
+            null -> DatasetHoldout.None
+        }
+        store(labeledTree.toAstminerLabeledResult(), astminerHoldout)
     }
 }

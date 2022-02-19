@@ -1,5 +1,6 @@
 package storage.paths
 
+import PATH_KEY
 import astminer.common.model.LabeledResult
 import astminer.common.model.Node
 import com.intellij.psi.PsiElement
@@ -23,8 +24,9 @@ class AstminerNodeWrapper(val psiNode: PsiElement, override val parent: Node? = 
     }
 }
 
-fun LabeledTree.toAstminerLabeledResult(filePath: String) = LabeledResult(
+fun LabeledTree.toAstminerLabeledResult() = LabeledResult(
     root = AstminerNodeWrapper(root),
     label = label,
-    filePath = filePath
+    filePath = root.getUserData(PATH_KEY)
+        ?: throw IllegalStateException("Can't convert to labeled result: path is null")
 )

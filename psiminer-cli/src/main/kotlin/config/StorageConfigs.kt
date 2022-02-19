@@ -18,7 +18,7 @@ class JsonTreeStorageConfig(
     private val withPaths: Boolean = false,
     private val withRanges: Boolean = false
 ) : StorageConfig() {
-    override fun createStorage(outputDirectory: File): Storage = JsonTreeStorage(outputDirectory, withPaths, withRanges)
+    override fun createStorage(outputDirectory: File): Storage = JsonTreeStorage(outputDirectory)
 }
 
 @Serializable

@@ -14,7 +14,7 @@ abstract class StorageConfig {
 
 @Serializable
 @SerialName("json tree")
-class JsonTreeStorageConfig: StorageConfig() {
+class JsonTreeStorageConfig : StorageConfig() {
     override fun createStorage(outputDirectory: File): Storage = JsonTreeStorage(outputDirectory)
 }
 

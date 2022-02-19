@@ -1,8 +1,7 @@
-package storage.paths
-
-import PATH_KEY
+import astminer.common.model.DatasetHoldout
 import astminer.common.model.LabeledResult
 import astminer.common.model.Node
+import astminer.storage.MetaDataStorage
 import com.intellij.psi.PsiElement
 import labelextractor.LabeledTree
 import psi.nodeProperties.isHidden
@@ -30,3 +29,13 @@ fun LabeledTree.toAstminerLabeledResult() = LabeledResult(
     filePath = root.getUserData(PATH_KEY)
         ?: throw IllegalStateException("Can't convert to labeled result: path is null")
 )
+
+fun MetaDataStorage.store(labeledTree: LabeledTree, holdout: Dataset?) {
+    val astminerHoldout = when (holdout) {
+        Dataset.Train -> DatasetHoldout.Train
+        Dataset.Val -> DatasetHoldout.Validation
+        Dataset.Test -> DatasetHoldout.Test
+        null -> DatasetHoldout.None
+    }
+    store(labeledTree.toAstminerLabeledResult(), astminerHoldout)
+}

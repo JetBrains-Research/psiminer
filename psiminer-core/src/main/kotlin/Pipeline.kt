@@ -1,10 +1,8 @@
-import astminer.common.model.DatasetHoldout
 import astminer.storage.MetaDataStorage
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import filter.Filter
 import labelextractor.LabelExtractor
-import labelextractor.LabeledTree
 import me.tongfei.progressbar.ProgressBar
 import org.slf4j.LoggerFactory
 import psi.Parser
@@ -14,7 +12,6 @@ import psi.language.KotlinHandler
 import psi.printTree
 import psi.transformations.PsiTreeTransformation
 import storage.Storage
-import storage.paths.toAstminerLabeledResult
 import java.io.File
 import java.util.concurrent.Executors
 import kotlin.io.path.Path
@@ -127,15 +124,5 @@ class Pipeline(
         service.shutdown()
         futures.forEach { it.get() }
         progressBar.close()
-    }
-
-    private fun MetaDataStorage.store(labeledTree: LabeledTree, holdout: Dataset?) {
-        val astminerHoldout = when (holdout) {
-            Dataset.Train -> DatasetHoldout.Train
-            Dataset.Val -> DatasetHoldout.Validation
-            Dataset.Test -> DatasetHoldout.Test
-            null -> DatasetHoldout.None
-        }
-        store(labeledTree.toAstminerLabeledResult(), astminerHoldout)
     }
 }

@@ -1,9 +1,7 @@
 package psi
 
-import astminer.common.model.NodeRange
 import astminer.common.model.Position
 import com.intellij.openapi.editor.Document
-import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiRecursiveElementVisitor
 import com.intellij.psi.util.PsiTreeUtil
@@ -62,15 +60,3 @@ fun Document.getPosition(offset: Int) = Position(
     getLineNumber(offset) + 1,
     offset - getLineStartOffset(getLineNumber(offset)) + 1
 )
-
-fun PsiElement.nodeRange(document: Document): NodeRange {
-    val textRange = textRange
-    val startPosition = document.getPosition(textRange.startOffset)
-    val endPosition = document.getPosition(textRange.endOffset)
-    return NodeRange(startPosition, endPosition)
-}
-
-fun PsiElement.nodeRange(): NodeRange? {
-    val document = PsiDocumentManager.getInstance(project).getDocument(containingFile) ?: return null
-    return this.nodeRange(document)
-}

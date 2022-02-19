@@ -1,4 +1,5 @@
 import astminer.storage.MetaDataStorage
+import astminercompatibility.store
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import filter.Filter

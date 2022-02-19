@@ -1,27 +1,17 @@
+package astminercompatibility
+
+import AstminerNodeWrapper
+import Dataset
+import PATH_KEY
 import astminer.common.model.DatasetHoldout
 import astminer.common.model.LabeledResult
-import astminer.common.model.Node
+import astminer.common.model.NodeRange
 import astminer.storage.MetaDataStorage
+import com.intellij.openapi.editor.Document
+import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import labelextractor.LabeledTree
-import psi.nodeProperties.isHidden
-import psi.nodeProperties.nodeType
-import psi.nodeProperties.token
-import psi.nodeRange
-
-class AstminerNodeWrapper(val psiNode: PsiElement, override val parent: Node? = null) : Node(psiNode.token) {
-    override val children: MutableList<AstminerNodeWrapper> by lazy {
-        psiNode.children.filter { !it.isHidden }.map { AstminerNodeWrapper(it, this) }.toMutableList()
-    }
-
-    override val range = psiNode.nodeRange()
-
-    override val typeLabel: String = psiNode.nodeType
-
-    override fun removeChildrenOfType(typeLabel: String) {
-        children.removeIf { it.typeLabel == typeLabel }
-    }
-}
+import psi.getPosition
 
 fun LabeledTree.toAstminerLabeledResult() = LabeledResult(
     root = AstminerNodeWrapper(root),
@@ -38,4 +28,16 @@ fun MetaDataStorage.store(labeledTree: LabeledTree, holdout: Dataset?) {
         null -> DatasetHoldout.None
     }
     store(labeledTree.toAstminerLabeledResult(), astminerHoldout)
+}
+
+fun PsiElement.nodeRange(document: Document): NodeRange {
+    val textRange = textRange
+    val startPosition = document.getPosition(textRange.startOffset)
+    val endPosition = document.getPosition(textRange.endOffset)
+    return NodeRange(startPosition, endPosition)
+}
+
+fun PsiElement.nodeRange(): NodeRange? {
+    val document = PsiDocumentManager.getInstance(project).getDocument(containingFile) ?: return null
+    return this.nodeRange(document)
 }

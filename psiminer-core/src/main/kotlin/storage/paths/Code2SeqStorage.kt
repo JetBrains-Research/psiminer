@@ -1,5 +1,6 @@
 package storage.paths
 
+import AstminerNodeWrapper
 import Dataset
 import astminer.common.model.ASTPath
 import astminer.common.storage.RankedIncrementalIdStorage

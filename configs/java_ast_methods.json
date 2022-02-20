@@ -16,8 +16,7 @@
   ],
   "label": {"name": "method name"},
   "storage": {
-    "name": "json tree",
-    "withPaths": true
+    "name": "json tree"
   },
 
   "language": "Java",
@@ -38,5 +37,6 @@
   ],
 
   "numThreads": 10,
-  "printTrees": false
+  "printTrees": false,
+  "collectMetadata": true
 }

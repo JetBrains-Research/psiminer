@@ -1,3 +1,5 @@
+import astminer.storage.MetaDataStorage
+import astminercompatibility.store
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import filter.Filter
@@ -13,6 +15,7 @@ import psi.transformations.PsiTreeTransformation
 import storage.Storage
 import java.io.File
 import java.util.concurrent.Executors
+import kotlin.io.path.Path
 
 class Pipeline(
     val language: Language,
@@ -20,8 +23,10 @@ class Pipeline(
     psiTreeTransformations: List<PsiTreeTransformation>,
     private val filters: List<Filter>,
     val labelExtractor: LabelExtractor,
-    val storage: Storage
+    val storage: Storage,
+    val collectMetadata: Boolean = false
 ) {
+    private var metaDataStorage: MetaDataStorage? = null
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
@@ -42,6 +47,10 @@ class Pipeline(
         numThreads: Int = 1,
         printTrees: Boolean = false
     ) {
+        if (collectMetadata) {
+            val metadataPath = Path(storage.outputDirectory.path, "metadata").toString()
+            metaDataStorage = MetaDataStorage(metadataPath)
+        }
         require(numThreads > 0) { "Amount threads must be positive." }
         println("Parser configuration:\n$parser")
         val isDataset = checkFolderIsDataset(inputDirectory)
@@ -63,6 +72,8 @@ class Pipeline(
             println("No dataset found. Process all sources from passed path")
             processRepository(inputDirectory, null, numThreads, printTrees)
         }
+        metaDataStorage?.close()
+        metaDataStorage = null
     }
 
     private fun processRepository(
@@ -83,6 +94,7 @@ class Pipeline(
         val labeledTree = labelExtractor.extractLabel(psiRoot, languageHandler) ?: return false
         synchronized(storage) {
             storage.store(labeledTree, holdout)
+            metaDataStorage?.store(labeledTree, holdout)
             if (printTrees) labeledTree.root.printTree()
         }
         return true

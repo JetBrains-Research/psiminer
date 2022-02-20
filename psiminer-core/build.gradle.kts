@@ -2,7 +2,7 @@ group = rootProject.group
 version = rootProject.version
 
 dependencies {
-    implementation("io.github.vovak:astminer:0.7.0") {
+    implementation("io.github.vovak:astminer:0.9.0") {
         exclude("org.slf4j", "slf4j-simple")
     }
 

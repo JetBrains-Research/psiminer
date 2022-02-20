@@ -16,17 +16,9 @@ Json format of AST inspired by the [150k Python](https://www.sri.inf.ethz.ch/py1
 
 ```json
 {
-  "name": "json tree",
-  "withPaths": true,
-  "withRanges": true
+  "name": "json tree"
 }
 ```
-
-Possible configuration options for Json storage:
-1. `withPaths` allows for each tree to save the path to the file where it appears. 
-Can be omitted. Default: `false`.
-2. `withRanges` allows for each node to save start and end positions in the corresponding source code. 
-Can be omitted. Default: `false`.
 
 ## Path-based representations
 
@@ -64,3 +56,16 @@ To add new storage following next steps:
 2. Add storage [config](../psiminer-cli/src/main/kotlin/config/StorageConfigs.kt) for it.
 3. Register storage config in tool [runner](../psiminer-cli/src/main/kotlin/PluginRunner.kt).
 4. [Optional] Add tests for this storage.
+
+## Metadata collection
+
+To enable metadata collection add additional parameter:
+
+```json
+{
+  "collectMetadata": true
+}
+```
+
+This will collect additional data (filepath and range of element presented by tree) in 
+the `metadata` folder in form of json lines.

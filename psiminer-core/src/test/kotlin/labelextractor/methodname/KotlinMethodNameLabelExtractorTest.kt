@@ -20,7 +20,7 @@ internal class KotlinMethodNameLabelExtractorTest : KotlinPsiRequiredTest("Kotli
     @ValueSource(strings = [simpleMethod, methodWithRecursion])
     fun `test kotlin method name extraction`(methodName: String) = ReadAction.run<Exception> {
         val psiRoot = getMethod(methodName)
-        val methodNameExtracted = methodNameLabelExtractor.handleTree(psiRoot, handler)
+        val methodNameExtracted = methodNameLabelExtractor.handleTree(psiRoot, handler).getStringRepresentation()
         val methodNameNormalized = splitToSubtokens(methodName).joinToString("|")
         Assert.assertEquals(methodNameNormalized, methodNameExtracted)
     }

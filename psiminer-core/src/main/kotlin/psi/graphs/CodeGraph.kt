@@ -4,7 +4,7 @@ import com.intellij.psi.PsiElement
 import psi.graphs.edgeProviders.BaseEdgeProvider
 import psi.preOrder
 
-abstract class CodeGraph(val root: PsiElement) {
+class CodeGraph(val root: PsiElement) {
     private val edges: MutableMap<PsiElement, MutableList<Edge>> = mutableMapOf()
 
     private fun getAdjacentEdges(from: PsiElement): MutableList<Edge> = edges.getOrPut(from) { mutableListOf() }
@@ -34,11 +34,12 @@ abstract class CodeGraph(val root: PsiElement) {
         }
     }
 
-    fun <T : BaseEdgeProvider> acceptEdgeProvider(edgeProvider: T) {
+    fun <T : BaseEdgeProvider> acceptEdgeProvider(edgeProvider: T): CodeGraph {
         val newEdges = edgeProvider.provideEdges(this)
         newEdges.forEach { edge ->
             getAdjacentEdges(edge.from).add(edge)
             getAdjacentEdges(edge.to).add(edge.reversed())
         }
+        return this
     }
 }

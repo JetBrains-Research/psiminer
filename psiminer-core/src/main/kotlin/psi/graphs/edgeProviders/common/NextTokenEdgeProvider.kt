@@ -14,7 +14,7 @@ class NextTokenEdgeProvider : EdgeProvider(dependsOn = setOf(EdgeType.Ast), prov
         graph.traverseGraph(setOf(EdgeType.Ast), false) { vertex ->
             if (vertex.isLeaf()) {
                 previousLeaf?.let { prevLeaf ->
-                    newEdges.add(Edge(vertex, prevLeaf, EdgeType.NextToken))
+                    newEdges.add(Edge(prevLeaf, vertex, EdgeType.NextToken))
                 }
                 previousLeaf = vertex
             }

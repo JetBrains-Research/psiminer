@@ -5,7 +5,7 @@ import psi.graphs.CodeGraph
 import psi.graphs.EdgeType
 import psi.graphs.edgeProviders.EdgeProvider
 
-abstract class GraphMiner(private val edgeTypesToMine: Set<EdgeType>) {
+abstract class GraphMiner(edgeTypesToMine: Set<EdgeType>) {
 
     abstract val edgeProviders: Map<EdgeType, EdgeProvider>
 

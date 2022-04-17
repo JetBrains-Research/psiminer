@@ -5,6 +5,11 @@ import io.mockk.every
 import io.mockk.mockk
 
 object TinyTree {
+    /*
+         root
+       /      \
+     leaf1  leaf2
+     */
     val root = mockk<PsiElement>()
     val leaf1 = mockk<PsiElement>()
     val leaf2 = mockk<PsiElement>()

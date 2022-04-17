@@ -9,7 +9,7 @@ import psi.graphs.edgeProviders.EdgeProvider
 internal class CodeGraphTest {
 
     @Test
-    fun `test adjacent edges in SmallTree`() {
+    fun `test adjacent edges in TinyTree`() {
         val codeGraph = CodeGraph(TinyTree.root)
         codeGraph.acceptEdgeProvider(stubEdgeProvider)
 
@@ -19,7 +19,7 @@ internal class CodeGraphTest {
     }
 
     @Test
-    fun `test consecutive edge type providers in SmallTree`() {
+    fun `test consecutive edge type providers in TinyTree`() {
         val codeGraph = CodeGraph(TinyTree.root)
         codeGraph.acceptEdgeProvider(stubEdgeProvider)
         codeGraph.acceptEdgeProvider(anotherStubAstEdgeProvider)
@@ -30,7 +30,7 @@ internal class CodeGraphTest {
     }
 
     @Test
-    fun `test adjacent edges of type in SmallTree`() {
+    fun `test adjacent edges of type in TinyTree`() {
         val codeGraph = CodeGraph(TinyTree.root)
         codeGraph.acceptEdgeProvider(stubEdgeProvider)
         codeGraph.acceptEdgeProvider(anotherStubAstEdgeProvider)
@@ -62,7 +62,7 @@ internal class CodeGraphTest {
     }
 
     @Test
-    fun `test no reverse edges of type in SmallTree`() {
+    fun `test no reverse edges of type in TinyTree`() {
         val codeGraph = CodeGraph(TinyTree.root)
         codeGraph.acceptEdgeProvider(stubEdgeProvider)
         codeGraph.acceptEdgeProvider(anotherStubAstEdgeProvider)

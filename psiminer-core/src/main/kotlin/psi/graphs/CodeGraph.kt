@@ -4,7 +4,6 @@ import com.intellij.psi.PsiElement
 import psi.graphs.edgeProviders.BaseEdgeProvider
 import psi.preOrder
 
-
 abstract class CodeGraph(val root: PsiElement) {
     private val edges: MutableMap<PsiElement, MutableList<Edge>> = mutableMapOf()
 

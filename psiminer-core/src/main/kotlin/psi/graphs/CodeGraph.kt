@@ -7,9 +7,9 @@ import psi.preOrder
 class CodeGraph(val root: PsiElement) {
     private val edges: MutableMap<PsiElement, MutableList<Edge>> = mutableMapOf()
 
-    private fun getAdjacentEdges(from: PsiElement): MutableList<Edge> = edges.getOrPut(from) { mutableListOf() }
+    fun getAdjacentEdges(from: PsiElement): MutableList<Edge> = edges.getOrPut(from) { mutableListOf() }
 
-    private fun getAdjacentEdgesOfTypes(from: PsiElement, types: Set<EdgeType>, returnReversed: Boolean): List<Edge> =
+    fun getAdjacentEdgesOfTypes(from: PsiElement, types: Set<EdgeType>, returnReversed: Boolean): List<Edge> =
         getAdjacentEdges(from).filter { edge ->
             (!edge.reversed || returnReversed) && types.contains(edge.type)
         }.toList()

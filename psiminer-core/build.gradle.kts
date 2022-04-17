@@ -8,5 +8,6 @@ dependencies {
 
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.5.0")
     implementation("me.tongfei:progressbar:0.9.2")
+    testImplementation("io.mockk:mockk:1.12.3")
 }
 

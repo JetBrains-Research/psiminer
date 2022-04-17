@@ -3,16 +3,16 @@ package psi.graphs.graphMiners
 import com.intellij.psi.PsiElement
 import psi.graphs.CodeGraph
 import psi.graphs.EdgeType
-import psi.graphs.edgeProviders.BaseEdgeProvider
+import psi.graphs.edgeProviders.EdgeProvider
 
-abstract class BaseGraphMiner(private val edgeTypesToMine: Set<EdgeType>) {
+abstract class GraphMiner(private val edgeTypesToMine: Set<EdgeType>) {
 
-    abstract val edgeProviders: Map<EdgeType, BaseEdgeProvider>
+    abstract val edgeProviders: Map<EdgeType, EdgeProvider>
 
-    private val providersOrder: List<BaseEdgeProvider> = edgeTypesToMine.map { edgeType ->
+    private val providersOrder: List<EdgeProvider> = edgeTypesToMine.map { edgeType ->
         edgeProviders[edgeType] ?: throw UnsupportedEdgeTypeException(edgeType)
     }.let { edgeProviders ->
-        val providersList = mutableListOf<BaseEdgeProvider>()
+        val providersList = mutableListOf<EdgeProvider>()
         val extractedTypes = mutableSetOf<EdgeType>()
         repeat(edgeProviders.size) {
             providersList.forEach { edgeProvider ->

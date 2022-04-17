@@ -1,7 +1,7 @@
 package psi.graphs
 
 import com.intellij.psi.PsiElement
-import psi.graphs.edgeProviders.BaseEdgeProvider
+import psi.graphs.edgeProviders.EdgeProvider
 import psi.preOrder
 
 class CodeGraph(val root: PsiElement) {
@@ -34,7 +34,7 @@ class CodeGraph(val root: PsiElement) {
         }
     }
 
-    fun <T : BaseEdgeProvider> acceptEdgeProvider(edgeProvider: T): CodeGraph {
+    fun <T : EdgeProvider> acceptEdgeProvider(edgeProvider: T): CodeGraph {
         val newEdges = edgeProvider.provideEdges(this)
         newEdges.forEach { edge ->
             getAdjacentEdges(edge.from).add(edge)

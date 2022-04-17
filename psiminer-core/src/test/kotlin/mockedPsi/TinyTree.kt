@@ -4,7 +4,7 @@ import com.intellij.psi.PsiElement
 import io.mockk.every
 import io.mockk.mockk
 
-object SmallTree {
+object TinyTree {
     val root = mockk<PsiElement>()
     val leaf1 = mockk<PsiElement>()
     val leaf2 = mockk<PsiElement>()

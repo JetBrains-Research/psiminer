@@ -56,6 +56,8 @@ fun PsiElement.printTree(delimiter: String = "..", indentStep: Int = 2) {
     }
 }
 
+fun PsiElement.isLeaf() = this.children.isEmpty()
+
 fun Document.getPosition(offset: Int) = Position(
     getLineNumber(offset) + 1,
     offset - getLineStartOffset(getLineNumber(offset)) + 1

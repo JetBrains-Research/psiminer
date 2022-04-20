@@ -1,0 +1,39 @@
+{
+  "filters": [
+    {"name": "constructor"},
+    {"name": "empty method"},
+    {
+      "name": "by modifiers",
+      "excludeModifiers": ["abstract"]
+    },
+    {
+      "name": "by annotations",
+      "excludeAnnotations": ["Override"]
+    }
+  ],
+  "label": {"name": "method name"},
+  "storage": {
+    "name": "json graph"
+  },
+
+  "language": "Java",
+  "tree transformations": [
+    {"name": "resolve type"},
+    {"name": "exclude whitespace"},
+    {"name": "exclude empty grammar lists"},
+    {"name": "exclude language symbols"},
+    {
+      "name": "hide literals",
+      "hideNumbers": true,
+      "hideStrings": true
+    },
+    {
+      "name": "remove comments",
+      "removeDoc": true
+    }
+  ],
+
+  "numThreads": 10,
+  "printTrees": false,
+  "collectMetadata": true
+}

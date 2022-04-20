@@ -2,8 +2,10 @@ package config
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import psi.graphs.graphMiners.CommonGraphMiner
 import storage.tree.JsonTreeStorage
 import storage.Storage
+import storage.graphs.JsonGraphStorage
 import storage.paths.Code2SeqStorage
 import java.io.File
 
@@ -29,5 +31,13 @@ class Code2SeqStorageConfig(
 ) : StorageConfig() {
     override fun createStorage(outputDirectory: File): Storage = Code2SeqStorage(
         outputDirectory, pathWidth, pathLength, maxPathsInTrain, maxPathsInTest, nodesToNumbers
+    )
+}
+
+@Serializable
+@SerialName("json graph")
+class JsonGraphStorageConfig : StorageConfig() {
+    override fun createStorage(outputDirectory: File): Storage = JsonGraphStorage(
+        outputDirectory, CommonGraphMiner()
     )
 }

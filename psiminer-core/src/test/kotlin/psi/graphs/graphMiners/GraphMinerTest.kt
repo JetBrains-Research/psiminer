@@ -49,18 +49,18 @@ internal class GraphMinerTest {
             override fun provideEdges(graph: CodeGraph): List<Edge> = emptyList()
         }
 
-        private class StubGraphMiner1 : GraphMiner(setOf(mockEdgeType, anotherMockEdgeType)) {
-            override val edgeProviders: Map<EdgeType, EdgeProvider> = mapOf(
+        private class StubGraphMiner1 : GraphMiner(
+            setOf(mockEdgeType, anotherMockEdgeType), mapOf(
                 mockEdgeType to edgeProvider,
                 anotherMockEdgeType to anotherEdgeProvider
             )
-        }
+        )
 
-        private class StubGraphMiner2 : GraphMiner(setOf(anotherMockEdgeType, mockEdgeType)) {
-            override val edgeProviders: Map<EdgeType, EdgeProvider> = mapOf(
+        private class StubGraphMiner2 : GraphMiner(
+            setOf(anotherMockEdgeType, mockEdgeType), mapOf(
                 mockEdgeType to edgeProvider,
                 anotherMockEdgeType to anotherEdgeProvider
             )
-        }
+        )
     }
 }

@@ -11,12 +11,11 @@ import java.io.File
 class JsonGraphStorage(outputDirectory: File, private val graphMiner: GraphMiner) : Storage(outputDirectory) {
     override val fileExtension = "json"
 
-    private val graphRepresentationBuilder = JsonGraphRepresentation()
     private val jsonSerializer = Json { encodeDefaults = false }
 
     override fun convert(labeledTree: LabeledTree, holdout: Dataset?): String {
         val codeGraph = graphMiner.mine(labeledTree.root)
-        val graphRepresentation = graphRepresentationBuilder.convertCodeGraph(codeGraph)
-        return jsonSerializer.encodeToString(graphRepresentation)
+        val representation = JsonLabeledGraphRepresentation.convertLabeledCodeGraph(codeGraph, labeledTree.label)
+        return jsonSerializer.encodeToString(representation)
     }
 }

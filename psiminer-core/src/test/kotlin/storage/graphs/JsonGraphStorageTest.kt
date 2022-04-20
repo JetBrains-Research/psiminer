@@ -19,6 +19,6 @@ internal class JsonGraphStorageTest : JavaPsiRequiredTest("JavaMethods") {
         val psiRoot = getMethod(methodName)
         val graphMiner = CommonGraphMiner()
         val jsonGraphStorage = JsonGraphStorage(File("."), graphMiner)
-        println(jsonGraphStorage.convert(LabeledTree(psiRoot, StringLabel("")), null))
+        println(jsonGraphStorage.convert(LabeledTree(psiRoot, StringLabel("myLabel")), null))
     }
 }

@@ -6,7 +6,7 @@ import psi.graphs.CodeGraph
 import psi.nodeProperties.nodeType
 import psi.nodeProperties.token
 
-class JsonGraphRepresentation {
+object JsonGraphRepresentation {
 
     @Serializable
     data class GraphRepresentation(
@@ -43,7 +43,5 @@ class JsonGraphRepresentation {
         return GraphRepresentation(edgesRepresentation, nodesRepresentation)
     }
 
-    companion object {
-        class IncorrectlyParsedGraph : Exception("CodeGraph parsed incorrectly")
-    }
+    class IncorrectlyParsedGraph : Exception("CodeGraph parsed incorrectly")
 }

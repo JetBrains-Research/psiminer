@@ -34,6 +34,10 @@ class CodeGraph(val root: PsiElement) {
         }
     }
 
+    fun getAllNodes(): Set<PsiElement> = edges.keys
+
+    fun getAllEdges(): List<Edge> = edges.values.flatten()
+
     fun <T : EdgeProvider> acceptEdgeProvider(edgeProvider: T): CodeGraph {
         val newEdges = edgeProvider.provideEdges(this)
         newEdges.forEach { edge ->

@@ -13,9 +13,25 @@ class JsonGraphStorage(outputDirectory: File, private val graphMiner: GraphMiner
 
     private val jsonSerializer = Json { encodeDefaults = false }
 
+    private var nodeCount = 0
+    private var edgeCount = 0
+    private var totalLength = 0
+
     override fun convert(labeledTree: LabeledTree, holdout: Dataset?): String {
         val codeGraph = graphMiner.mine(labeledTree.root)
+        nodeCount += codeGraph.getAllNodes().size
+        edgeCount += codeGraph.getAllEdges().size
+
         val representation = JsonLabeledGraphRepresentation.convertLabeledCodeGraph(codeGraph, labeledTree.label)
-        return jsonSerializer.encodeToString(representation)
+        val output = jsonSerializer.encodeToString(representation)
+        totalLength += output.length
+        return output
+    }
+
+    override fun close() {
+        super.close()
+        println("$nodeCount nodes")
+        println("$edgeCount edges")
+        println("$totalLength symbols")
     }
 }

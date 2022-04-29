@@ -36,8 +36,10 @@ class Code2SeqStorageConfig(
 
 @Serializable
 @SerialName("json graph")
-class JsonGraphStorageConfig : StorageConfig() {
+class JsonGraphStorageConfig(
+    private val nodesToNumbers: Boolean = false // If true then each node type is replaced with number
+) : StorageConfig() {
     override fun createStorage(outputDirectory: File): Storage = JsonGraphStorage(
-        outputDirectory, CommonGraphMiner()
+        outputDirectory, CommonGraphMiner(), nodesToNumbers
     )
 }

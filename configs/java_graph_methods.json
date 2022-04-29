@@ -13,7 +13,8 @@
   ],
   "label": {"name": "method name"},
   "storage": {
-    "name": "json graph"
+    "name": "json graph",
+    "nodesToNumbers": true
   },
 
   "language": "Java",

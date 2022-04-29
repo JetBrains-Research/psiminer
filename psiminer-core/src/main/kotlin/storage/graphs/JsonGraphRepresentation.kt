@@ -1,5 +1,6 @@
 package storage.graphs
 
+import com.intellij.psi.PsiElement
 import kotlinx.serialization.Serializable
 import org.jetbrains.kotlin.utils.mapToIndex
 import psi.graphs.CodeGraph
@@ -24,10 +25,10 @@ object JsonGraphRepresentation {
     @Serializable
     data class NodesRepresentation(
         val tokens: List<String>,
-        val nodeTypes: List<String>
+        val nodeTypes: List<Long>
     )
 
-    fun convertCodeGraph(codeGraph: CodeGraph): GraphRepresentation {
+    fun convertCodeGraph(codeGraph: CodeGraph, nodeTypeMapper: (PsiElement) -> Long): GraphRepresentation {
         val graphNodes = codeGraph.getAllNodes()
         val nodeToId = graphNodes.mapToIndex()
         val edges = codeGraph.getAllEdges().filter { !it.reversed }
@@ -39,8 +40,8 @@ object JsonGraphRepresentation {
             )
         }
         val nodesRepresentation = NodesRepresentation(
-            tokens = graphNodes.map { it.token ?: " " },
-            nodeTypes = graphNodes.map { it.nodeType }
+            tokens = graphNodes.map { it.token ?: "_" },
+            nodeTypes = graphNodes.map { nodeTypeMapper(it) }
         )
         return GraphRepresentation(
             edgesRepresentation,

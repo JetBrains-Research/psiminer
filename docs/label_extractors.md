@@ -16,6 +16,18 @@ This label extractor will also hide the function name in the AST and all recursi
 }
 ```
 
+### function comments
+**granularity**: functions
+
+Use comments of each function as a label, skipping functions without comments.
+This label extractor finds all comments, related to function, including docs.
+
+```json
+{
+  "name": "method comment"
+}
+```
+
 ## New label extractors
 
 To add new label extractor following next steps:

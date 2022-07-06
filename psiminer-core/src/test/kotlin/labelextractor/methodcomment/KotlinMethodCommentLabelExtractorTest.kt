@@ -29,7 +29,6 @@ internal class KotlinMethodCommentLabelExtractorTest : KotlinPsiRequiredTest("Ko
         return Stream.of(
             Arguments.of("sizeOf", "returns|the|size|of|this|big|array|in|bytes"),
             Arguments.of("smallMethod", null),
-            Arguments.of("largeMethod", "this|is|k|doc|test|comment|another|comment")
         )
     }
 }

@@ -15,7 +15,7 @@ internal class KotlinMethodCommentLabelExtractorTest : KotlinPsiRequiredTest("Ko
 
     @ParameterizedTest
     @MethodSource("provideParameters")
-    fun `test method name extraction`(methodName: String, commentLabel: String) = ReadAction.run<Exception> {
+    fun `test method comment extraction`(methodName: String, commentLabel: String?) = ReadAction.run<Exception> {
         val psiRoot = getMethod(methodName)
         val methodCommentLabel = methodCommentLabelExtractor.handleTree(psiRoot, handler)
         if (methodCommentLabel == null) {
@@ -29,7 +29,7 @@ internal class KotlinMethodCommentLabelExtractorTest : KotlinPsiRequiredTest("Ko
         return Stream.of(
             Arguments.of("sizeOf", "returns|the|size|of|this|big|array|in|bytes"),
             Arguments.of("smallMethod", null),
-            Arguments.of("largeMethod", "this|is|kdoc|test|comment|another|comment")
+            Arguments.of("largeMethod", "this|is|k|doc|test|comment|another|comment")
         )
     }
 }

@@ -15,7 +15,7 @@ internal class JavaMethodCommentLabelExtractorTest : JavaPsiRequiredTest("JavaMe
 
     @ParameterizedTest
     @MethodSource("provideParameters")
-    fun `test method name extraction`(methodName: String, commentLabel: String) = ReadAction.run<Exception> {
+    fun `test method comment extraction`(methodName: String, commentLabel: String?) = ReadAction.run<Exception> {
         val psiRoot = getMethod(methodName)
         val methodCommentLabel = methodCommentLabelExtractor.handleTree(psiRoot, handler)
         if (methodCommentLabel == null) {

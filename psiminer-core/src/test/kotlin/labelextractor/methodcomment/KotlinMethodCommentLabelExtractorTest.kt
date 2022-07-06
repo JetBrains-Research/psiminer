@@ -1,6 +1,6 @@
 package labelextractor.methodcomment
 
-import JavaPsiRequiredTest
+import KotlinPsiRequiredTest
 import com.intellij.openapi.application.ReadAction
 import labelextractor.MethodCommentLabelExtractor
 import org.junit.Assert
@@ -9,7 +9,7 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 
-internal class JavaMethodCommentLabelExtractorTest : JavaPsiRequiredTest("JavaMethods") {
+internal class KotlinMethodCommentLabelExtractorTest : KotlinPsiRequiredTest("KotlinMethods") {
 
     private val methodCommentLabelExtractor = MethodCommentLabelExtractor()
 

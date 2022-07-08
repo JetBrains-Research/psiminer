@@ -19,6 +19,6 @@ class MethodNameLabelExtractorConfig : LabelExtractorConfig() {
 
 @Serializable
 @SerialName("method comment")
-class MethodCommentLabelExtractorConfig : LabelExtractorConfig() {
-    override fun createProblem(): LabelExtractor = MethodCommentLabelExtractor()
+class MethodCommentLabelExtractorConfig(private val onlyDoc: Boolean = true) : LabelExtractorConfig() {
+    override fun createProblem(): LabelExtractor = MethodCommentLabelExtractor(onlyDoc)
 }

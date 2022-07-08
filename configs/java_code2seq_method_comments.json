@@ -8,7 +8,8 @@
     }
   ],
   "label": {
-    "name": "method comment"
+    "name": "method comment",
+    "onlyDoc": true
   },
   "storage": {
     "name": "code2seq",

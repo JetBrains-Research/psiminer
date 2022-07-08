@@ -1,8 +1,10 @@
 package psi.method
 
+import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.PsiTreeUtil
+import org.jetbrains.kotlin.kdoc.psi.api.KDocElement
 import org.jetbrains.kotlin.psi.KtConstructor
 import org.jetbrains.kotlin.psi.KtModifierList
 import org.jetbrains.kotlin.psi.KtNamedFunction
@@ -18,6 +20,14 @@ class KotlinMethodProvider : MethodProvider() {
         val methodRoot = root as? KtNamedFunction
             ?: throw IllegalArgumentException("Try to extract body not from the method")
         return methodRoot.bodyBlockExpression
+    }
+
+    override fun getDocComment(root: PsiElement): PsiElement? {
+        return PsiTreeUtil.collectElementsOfType(root, PsiComment::class.java).firstOrNull { it is KDocElement }
+    }
+
+    override fun getNonDocComments(root: PsiElement): Collection<PsiElement> {
+        return PsiTreeUtil.collectElementsOfType(root, PsiComment::class.java).filterNot { it is KDocElement }
     }
 
     override fun isConstructor(root: PsiElement): Boolean = root::class.isSubclassOf(KtConstructor::class)

@@ -1,8 +1,11 @@
 package psi.method
 
+import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.PsiTreeUtil
+import org.jetbrains.kotlin.kdoc.psi.api.KDocElement
+import org.jetbrains.kotlin.kdoc.psi.impl.KDocImpl
 import org.jetbrains.kotlin.psi.KtConstructor
 import org.jetbrains.kotlin.psi.KtModifierList
 import org.jetbrains.kotlin.psi.KtNamedFunction
@@ -18,6 +21,27 @@ class KotlinMethodProvider : MethodProvider() {
         val methodRoot = root as? KtNamedFunction
             ?: throw IllegalArgumentException("Try to extract body not from the method")
         return methodRoot.bodyBlockExpression
+    }
+
+    override fun getDocComment(root: PsiElement): PsiElement? {
+        return PsiTreeUtil.collectElementsOfType(root, PsiComment::class.java).firstOrNull { it is KDocElement }
+    }
+
+    override fun getNonDocComments(root: PsiElement): Collection<PsiElement> {
+        return PsiTreeUtil.collectElementsOfType(root, PsiComment::class.java).filterNot { it is KDocElement }
+    }
+
+    override fun getDocCommentString(root: PsiElement): String {
+        val docComment = getDocComment(root)
+        return if (docComment == null) {
+            ""
+        } else {
+            stringsToCommentString((docComment as KDocImpl).getDefaultSection().getContent().split(SPLIT_REGEX))
+        }
+    }
+
+    override fun getNonDocCommentsString(root: PsiElement): String {
+        return stringsToCommentString(getNonDocComments(root).flatMap { it.text.split(SPLIT_REGEX) })
     }
 
     override fun isConstructor(root: PsiElement): Boolean = root::class.isSubclassOf(KtConstructor::class)

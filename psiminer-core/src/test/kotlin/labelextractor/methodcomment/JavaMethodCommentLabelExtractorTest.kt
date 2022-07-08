@@ -29,7 +29,7 @@ internal class JavaMethodCommentLabelExtractorTest : JavaPsiRequiredTest("JavaMe
         return Stream.of(
             Arguments.of("sizeOf", "returns|the|size|of|this|big|array|in|bytes"),
             Arguments.of("smallMethod", null),
-            Arguments.of("largeMethod", "this|is|javadoc")
+            Arguments.of("largeMethod", "this|is|java|doc")
         )
     }
 }

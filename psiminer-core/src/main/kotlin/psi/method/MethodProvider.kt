@@ -1,13 +1,9 @@
 package psi.method
 
+import astminer.common.splitToSubtokens
 import com.intellij.psi.PsiElement
-import org.jetbrains.kotlin.util.capitalizeDecapitalize.toLowerCaseAsciiOnly
 
 abstract class MethodProvider {
-
-    companion object {
-        val SPLIT_REGEX = Regex("[^A-Za-z\\d]")
-    }
 
     abstract fun getNameNode(root: PsiElement): PsiElement
     abstract fun getBodyNode(root: PsiElement): PsiElement?
@@ -21,6 +17,6 @@ abstract class MethodProvider {
     open fun hasAnnotation(root: PsiElement, annotation: String): Boolean = false
 
     open fun stringsToCommentString(c: Collection<String>): String {
-        return c.filterNot { it.none { s -> s.isLetterOrDigit() } }.joinToString("|") { it.toLowerCaseAsciiOnly() }
+        return c.filterNot { it.none { s -> s.isLetterOrDigit() } }.flatMap { splitToSubtokens(it) }.joinToString("|")
     }
 }

@@ -8,6 +8,10 @@ import com.intellij.psi.util.PsiTreeUtil
 
 class JavaMethodProvider : MethodProvider() {
 
+    companion object {
+        val SPLIT_REGEX = Regex("[^A-Za-z\\d]")
+    }
+
     override fun getNameNode(root: PsiElement): PsiElement =
         (root as? PsiMethod)?.nameIdentifier
             ?: throw IllegalArgumentException("Try to extract name not from the method")

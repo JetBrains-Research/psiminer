@@ -13,6 +13,10 @@ import kotlin.reflect.full.isSubclassOf
 
 class KotlinMethodProvider : MethodProvider() {
 
+    companion object {
+        val SPLIT_REGEX = Regex("[^A-Za-z\\d]")
+    }
+
     override fun getNameNode(root: PsiElement): PsiElement =
         (root as? KtNamedFunction)?.nameIdentifier
             ?: throw IllegalArgumentException("Try to extract body not from the method")

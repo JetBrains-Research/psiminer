@@ -26,6 +26,20 @@ class JavaMethodProvider : MethodProvider() {
         return PsiTreeUtil.collectElementsOfType(root, PsiComment::class.java).filterNot { it is PsiDocComment }
     }
 
+    override fun getDocCommentString(root: PsiElement): String {
+        val docComment = getDocComment(root)
+        return if (docComment == null) {
+            ""
+        } else {
+            stringsToCommentString((docComment as PsiDocComment).descriptionElements.map { it.text }
+                .flatMap { it.split(SPLIT_REGEX) })
+        }
+    }
+
+    override fun getNonDocCommentsString(root: PsiElement): String {
+        return stringsToCommentString(getNonDocComments(root).flatMap { it.text.split(SPLIT_REGEX) })
+    }
+
     override fun isConstructor(root: PsiElement): Boolean =
         (root as? PsiMethod)?.isConstructor ?: false
 

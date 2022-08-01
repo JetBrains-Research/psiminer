@@ -1,0 +1,42 @@
+{
+  "filters": [
+    {
+      "name": "constructor"
+    },
+    {
+      "name": "empty method"
+    }
+  ],
+  "label": {
+    "name": "method comment",
+    "onlyDoc": true
+  },
+  "storage": {
+    "name": "code2seq",
+    "pathWidth": 4,
+    "pathLength": 9,
+    "nodesToNumbers": true
+  },
+  "language": "Java",
+  "tree transformations": [
+    {
+      "name": "exclude whitespace"
+    },
+    {
+      "name": "exclude empty grammar lists"
+    },
+    {
+      "name": "exclude language symbols"
+    },
+    {
+      "name": "hide literals",
+      "hideNumbers": true,
+      "hideStrings": true
+    },
+    {
+      "name": "remove comments",
+      "removeDoc": true
+    }
+  ],
+  "printTrees": false
+}

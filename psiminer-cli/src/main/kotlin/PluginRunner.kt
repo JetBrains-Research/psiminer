@@ -45,6 +45,7 @@ val module = SerializersModule {
     }
     polymorphic(LabelExtractorConfig::class) {
         subclass(MethodNameLabelExtractorConfig::class)
+        subclass(MethodCommentLabelExtractorConfig::class)
     }
     polymorphic(PsiTreeTransformationConfig::class) {
         subclass(HideLiteralsTransformationConfig::class)

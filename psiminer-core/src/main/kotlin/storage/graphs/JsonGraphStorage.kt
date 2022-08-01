@@ -14,7 +14,6 @@ import java.io.File
 class JsonGraphStorage(
     outputDirectory: File,
     private val graphMiner: GraphMiner,
-    private val nodesToNumbers: Boolean = false
 ) : Storage(outputDirectory) {
     override val fileExtension = "json"
 

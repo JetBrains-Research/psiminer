@@ -4,7 +4,6 @@ import com.intellij.psi.PsiElement
 import kotlinx.serialization.Serializable
 import org.jetbrains.kotlin.utils.mapToIndex
 import psi.graphs.CodeGraph
-import psi.nodeProperties.nodeType
 import psi.nodeProperties.token
 
 object JsonGraphRepresentation {

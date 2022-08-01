@@ -9,7 +9,6 @@ import psi.graphs.CodeGraph
 import psi.graphs.Edge
 import psi.graphs.EdgeType
 import psi.graphs.edgeProviders.EdgeProvider
-import psi.nodeProperties.nodeType
 
 class ControlFlowEdgeProvider : EdgeProvider(
     dependsOn = setOf(EdgeType.Ast),

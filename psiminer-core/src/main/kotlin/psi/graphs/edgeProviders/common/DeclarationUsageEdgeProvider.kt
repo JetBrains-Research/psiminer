@@ -1,8 +1,6 @@
 package psi.graphs.edgeProviders.common
 
-import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiIdentifier
-import com.intellij.psi.PsiReference
 import com.intellij.psi.PsiReferenceExpression
 import com.intellij.psi.PsiVariable
 import psi.graphs.CodeGraph

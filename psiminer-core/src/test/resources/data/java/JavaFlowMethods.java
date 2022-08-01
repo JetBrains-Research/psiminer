@@ -29,4 +29,15 @@ class Main {
         int e = 5;
     }
 
+    public void multipleDeclarations() {
+        {
+            int a = 1;
+        }
+        for (int a = 2; a <= 20; a++) {
+            a *= 2;
+        }
+        int a = 3;
+        a--;
+    }
+
 }

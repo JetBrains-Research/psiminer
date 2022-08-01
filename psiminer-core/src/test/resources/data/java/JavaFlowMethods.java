@@ -29,6 +29,26 @@ class Main {
         int e = 5;
     }
 
+    public void breakAndContinue() {
+        int j = 0;
+        int k = 1;
+        for (int i = 0; j < 10; k++) {
+            {
+                int b = 2;
+                break;
+            }
+            {
+                int c = 3;
+                continue;
+            }
+            {
+                int d = 4;
+                return;
+            }
+        }
+        int e = 5;
+    }
+
     public void multipleDeclarations() {
         {
             int a = 1;
@@ -39,5 +59,4 @@ class Main {
         int a = 3;
         a--;
     }
-
 }

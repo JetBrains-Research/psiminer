@@ -14,7 +14,8 @@ internal class ControlFlowEdgeProviderTest : JavaPsiRequiredTest("JavaFlowMethod
         strings = [
             "straightWriteMethod",
             "ifMethod",
-            "straightReadWriteMethod"
+            "straightReadWriteMethod",
+            "breakAndContinue",
         ]
     )
     fun `test control flow extraction from Java methods`(methodName: String) {
@@ -56,14 +57,24 @@ internal class ControlFlowEdgeProviderTest : JavaPsiRequiredTest("JavaFlowMethod
                 Pair("a", "if (a > 1) {...7"),
                 Pair("if (a > 1) {...7", "int b = 2;"),
                 Pair("if (a > 1) {...7", "a"), // ... -> if (a < 0)
-                Pair("if (a > 1) {...7", "int e = 5;"), // GOTO at the end of scope
-                Pair("int b = 2;", "if (a > 1) {...7"), // GOTO at the end of scope
+                Pair("int b = 2;", "int e = 5;"),
                 Pair("a", "if (a < 0) {...5"),
                 Pair("if (a < 0) {...5", "int c = 3;"),
                 Pair("if (a < 0) {...5", "int d = 4;"),
-                Pair("if (a < 0) {...5", "int e = 5;"), // GOTO at the end of scope
-                Pair("int c = 3;", "if (a < 0) {...5"), // GOTO at the end of scope
+                Pair("int c = 3;", "int e = 5;"),
                 Pair("int d = 4;", "int e = 5;"),
+            ),
+            "breakAndContinue" to setOf(
+                Pair("int j = 0;", "int k = 1;"),
+                Pair("int k = 1;", "int i = 0;"),
+                Pair("int i = 0;", "j"), // ... -> j < 10
+                Pair("j", "for (int i = 0; j < 10; k++) {...14"), // j < 10 -> ...
+                Pair("for (int i = 0; j < 10; k++) {...14", "int b = 2;"),
+                Pair("for (int i = 0; j < 10; k++) {...14", "int e = 5;"),
+                Pair("int b = 2;", "int e = 5;"),
+                Pair("int c = 3;", "k"), // ... -> k++
+                Pair("k", "k++"), // read k and write back with k++
+                Pair("k++", "j"), // ... -> j < 10
             )
         )
 

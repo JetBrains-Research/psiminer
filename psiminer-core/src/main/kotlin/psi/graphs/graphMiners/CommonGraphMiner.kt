@@ -9,8 +9,8 @@ import psi.graphs.edgeProviders.common.NextTokenEdgeProvider
 class CommonGraphMiner(
     edgeTypesToMine: Set<EdgeType> = setOf(
         EdgeType.Ast,
-//        EdgeType.NextToken,
-//        EdgeType.DeclarationUsage,
+        EdgeType.NextToken,
+        EdgeType.DeclarationUsage,
         EdgeType.ControlFlow
     )
 ) : GraphMiner(

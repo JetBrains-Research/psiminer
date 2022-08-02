@@ -23,10 +23,10 @@ internal class DeclarationUsageEdgeProviderTest : JavaPsiRequiredTest("JavaFlowM
         val graphMiner = CommonGraphMiner()
         ReadAction.run<Exception> {
             val codeGraph = graphMiner.mine(psiRoot)
-            val controlFlowEdges = codeGraph.getAllEdges().filter {
+            val declarationUsageEdges = codeGraph.getAllEdges().filter {
                 it.type == EdgeType.DeclarationUsage && !it.reversed
             }
-            val textRepresentation = controlFlowEdges.groupBy {
+            val textRepresentation = declarationUsageEdges.groupBy {
                 it.from.text
             }.map { (varDecl, edges) ->
                 varDecl to edges.size

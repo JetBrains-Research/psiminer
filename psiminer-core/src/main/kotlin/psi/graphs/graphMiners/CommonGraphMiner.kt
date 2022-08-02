@@ -1,17 +1,15 @@
 package psi.graphs.graphMiners
 
 import psi.graphs.EdgeType
-import psi.graphs.edgeProviders.common.AstEdgeProvider
-import psi.graphs.edgeProviders.common.ControlFlowEdgeProvider
-import psi.graphs.edgeProviders.common.DeclarationUsageEdgeProvider
-import psi.graphs.edgeProviders.common.NextTokenEdgeProvider
+import psi.graphs.edgeProviders.common.*
 
 class CommonGraphMiner(
     edgeTypesToMine: Set<EdgeType> = setOf(
         EdgeType.Ast,
         EdgeType.NextToken,
         EdgeType.DeclarationUsage,
-        EdgeType.ControlFlow
+        EdgeType.ControlFlow,
+        EdgeType.NextUsage,
     )
 ) : GraphMiner(
     edgeTypesToMine,
@@ -19,6 +17,7 @@ class CommonGraphMiner(
         EdgeType.Ast to AstEdgeProvider(),
         EdgeType.NextToken to NextTokenEdgeProvider(),
         EdgeType.DeclarationUsage to DeclarationUsageEdgeProvider(),
-        EdgeType.ControlFlow to ControlFlowEdgeProvider()
+        EdgeType.ControlFlow to ControlFlowEdgeProvider(),
+        EdgeType.NextUsage to NextUsageEdgeProvider(),
     )
 )

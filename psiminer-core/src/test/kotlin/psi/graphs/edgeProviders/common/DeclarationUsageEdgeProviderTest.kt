@@ -32,7 +32,7 @@ internal class DeclarationUsageEdgeProviderTest : JavaPsiRequiredTest("JavaFlowM
                 varDecl to edges.size
             }.toMap()
 
-            assertEquals(textRepresentation, correctDeclCounts[methodName])
+            assertEquals(correctDeclCounts[methodName], textRepresentation)
         }
     }
 

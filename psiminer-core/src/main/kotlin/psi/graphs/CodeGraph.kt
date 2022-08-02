@@ -6,6 +6,7 @@ import psi.preOrder
 
 class CodeGraph(val root: PsiElement) {
 
+    private val vertices: List<PsiElement> = root.preOrder()
     private val edges: EdgeCollection = mutableMapOf()
 
     fun getEdgesOfType(type: EdgeType) = edges.getOrPut(type) { mutableMapOf() }
@@ -25,29 +26,7 @@ class CodeGraph(val root: PsiElement) {
         getAdjacentEdgesOfType(from, type).filter { !it.reversed }
     }
 
-    fun traverseGraph(edgeTypes: Set<EdgeType>, useReversed: Boolean, visitVertex: (PsiElement) -> Unit) {
-        val visited = mutableSetOf<PsiElement>()
-
-        fun dfs(v: PsiElement) {
-            visited.add(v)
-            visitVertex(v)
-            edgeTypes.forEach { edgeType ->
-                getAdjacentEdgesOfType(v, edgeType, useReversed).forEach { edge ->
-                    if (!visited.contains(edge.to)) {
-                        dfs(edge.to)
-                    }
-                }
-            }
-        }
-
-        root.preOrder().forEach { v ->
-            if (!visited.contains(v)) {
-                dfs(v)
-            }
-        }
-    }
-
-    fun getAllNodes(): Set<PsiElement> = edges.flatMap { it.value.keys }.toSet()
+    fun getAllNodes(): List<PsiElement> = vertices
 
     fun getAllEdges(): List<Edge> = edges.flatMap { (_, adjList) ->
         adjList.values.flatten()

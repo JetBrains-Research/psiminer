@@ -12,9 +12,9 @@ internal class ControlFlowEdgeProviderTest : JavaPsiRequiredTest("JavaFlowMethod
     @ParameterizedTest
     @ValueSource(
         strings = [
-            "straightWriteMethod",
-            "ifMethod",
-            "straightReadWriteMethod",
+//            "straightWriteMethod",
+//            "ifMethod",
+//            "straightReadWriteMethod",
             "breakAndContinue",
         ]
     )
@@ -29,7 +29,7 @@ internal class ControlFlowEdgeProviderTest : JavaPsiRequiredTest("JavaFlowMethod
             val textRepresentation = controlFlowEdges.map {
                 Pair(shortenText(it.from.text), shortenText(it.to.text))
             }.toSet()
-            assertEquals(textRepresentation, correctEdges[methodName])
+            assertEquals(correctEdges[methodName], textRepresentation)
         }
     }
 

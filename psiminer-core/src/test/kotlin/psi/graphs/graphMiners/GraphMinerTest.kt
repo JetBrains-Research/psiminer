@@ -1,6 +1,7 @@
 package psi.graphs.graphMiners
 
 import io.mockk.mockk
+import mockedPsi.SmallTree
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import psi.graphs.CodeGraph
@@ -14,7 +15,7 @@ internal class GraphMinerTest {
     fun `test change provider ordering`() {
         // This test requires graph miner to swap the given providers
         val graphMiner = StubGraphMiner1()
-        graphMiner.mine(mockk())
+        graphMiner.mine(SmallTree.root)
         assertEquals(
             listOf(anotherEdgeProvider, edgeProvider),
             graphMiner.providersOrder
@@ -25,7 +26,7 @@ internal class GraphMinerTest {
     fun `test keep provider ordering`() {
         // This test requires graph miner to keep the order of given providers
         val graphMiner = StubGraphMiner2()
-        graphMiner.mine(mockk())
+        graphMiner.mine(SmallTree.root)
         assertEquals(
             listOf(anotherEdgeProvider, edgeProvider),
             graphMiner.providersOrder

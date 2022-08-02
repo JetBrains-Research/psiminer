@@ -23,25 +23,37 @@ class ControlFlowEdgeProvider : EdgeProvider(
             AllVariablesControlFlowPolicy.getInstance()
         )
 
+    private fun provideEdgesForInstruction(
+        index: Int,
+        instruction: Instruction,
+        instructions: List<Instruction>,
+        controlFlow: ControlFlow,
+        newEdges: MutableList<Edge>
+    ) {
+        val from = controlFlow.getElement(index)
+        for (no in 0 until instruction.nNext()) {
+            val toIndex = retrieveNextInstruction(instruction, instructions, index, no)
+            if (toIndex != null) {
+                val to = controlFlow.getElement(toIndex)
+                newEdges.add(Edge(from, to, EdgeType.ControlFlow))
+            }
+        }
+    }
+
+    private fun provideEdgesForMethod(vertex: PsiMethod, newEdges: MutableList<Edge>) {
+        val controlFlow = vertex.body?.controlFlow ?: return
+        val instructions = controlFlow.instructions
+        instructions.withIndex().filter { (_, instruction) ->
+            instruction !is GoToInstruction
+        }.forEach { (index, instruction) ->
+            provideEdgesForInstruction(index, instruction, instructions, controlFlow, newEdges)
+        }
+    }
+
     override fun provideEdges(graph: CodeGraph): List<Edge> {
         val newEdges = mutableListOf<Edge>()
-        graph.traverseGraph(setOf(EdgeType.Ast), false) { vertex ->
-            if (vertex is PsiMethod) {
-                val controlFlow = vertex.body?.controlFlow ?: return@traverseGraph
-                val instructions = controlFlow.instructions
-                instructions.withIndex().forEach { (index, instruction) ->
-                    if (instruction !is GoToInstruction) {
-                        val from = controlFlow.getElement(index)
-                        for (no in 0 until instruction.nNext()) {
-                            val toIndex = retrieveNextInstruction(instruction, instructions, index, no)
-                            if (toIndex != null) {
-                                val to = controlFlow.getElement(toIndex)
-                                newEdges.add(Edge(from, to, EdgeType.ControlFlow))
-                            }
-                        }
-                    }
-                }
-            }
+        graph.getAllNodes().filterIsInstance<PsiMethod>().forEach { vertex ->
+            provideEdgesForMethod(vertex, newEdges)
         }
         return newEdges
     }

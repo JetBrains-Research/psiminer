@@ -14,17 +14,15 @@ class DeclarationUsageEdgeProvider : EdgeProvider(
 ) {
     override fun provideEdges(graph: CodeGraph): List<Edge> {
         val newEdges = mutableListOf<Edge>()
-        graph.traverseGraph(setOf(EdgeType.Ast), false) { vertex ->
-            if (vertex is PsiIdentifier) {
-                val parent = vertex.parent
-                val declaration = if (parent is PsiReferenceExpression) {
-                    parent.resolve()
-                } else {
-                    parent
-                }
-                if (declaration is PsiVariable) {
-                    newEdges.add(Edge(declaration, vertex, EdgeType.DeclarationUsage))
-                }
+        graph.getAllNodes().filterIsInstance<PsiIdentifier>().forEach { vertex ->
+            val parent = vertex.parent
+            val declaration = if (parent is PsiReferenceExpression) {
+                parent.resolve()
+            } else {
+                parent
+            }
+            if (declaration is PsiVariable) {
+                newEdges.add(Edge(declaration, vertex, EdgeType.DeclarationUsage))
             }
         }
         return newEdges

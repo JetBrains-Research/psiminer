@@ -5,14 +5,25 @@ import psi.graphs.edgeProviders.EdgeProvider
 import psi.preOrder
 
 class CodeGraph(val root: PsiElement) {
-    private val edges: MutableMap<PsiElement, MutableList<Edge>> = mutableMapOf()
 
-    fun getAdjacentEdges(from: PsiElement): MutableList<Edge> = edges.getOrPut(from) { mutableListOf() }
+    private val edges: EdgeCollection = mutableMapOf()
 
-    fun getAdjacentEdgesOfTypes(from: PsiElement, types: Set<EdgeType>, returnReversed: Boolean): List<Edge> =
-        getAdjacentEdges(from).filter { edge ->
-            (!edge.reversed || returnReversed) && types.contains(edge.type)
-        }.toList()
+    fun getEdgesOfType(type: EdgeType) = edges.getOrPut(type) { mutableMapOf() }
+
+    fun getAdjacentEdgesOfType(
+        from: PsiElement,
+        type: EdgeType
+    ): MutableList<Edge> = getEdgesOfType(type).getOrPut(from) { mutableListOf() }
+
+    fun getAdjacentEdgesOfType(
+        from: PsiElement,
+        type: EdgeType,
+        useReversed: Boolean,
+    ): List<Edge> = if (useReversed) {
+        getAdjacentEdgesOfType(from, type)
+    } else {
+        getAdjacentEdgesOfType(from, type).filter { !it.reversed }
+    }
 
     fun traverseGraph(edgeTypes: Set<EdgeType>, useReversed: Boolean, visitVertex: (PsiElement) -> Unit) {
         val visited = mutableSetOf<PsiElement>()
@@ -20,9 +31,11 @@ class CodeGraph(val root: PsiElement) {
         fun dfs(v: PsiElement) {
             visited.add(v)
             visitVertex(v)
-            getAdjacentEdgesOfTypes(v, edgeTypes, useReversed).forEach { (_, to, _) ->
-                if (!visited.contains(to)) {
-                    dfs(to)
+            edgeTypes.forEach { edgeType ->
+                getAdjacentEdgesOfType(v, edgeType, useReversed).forEach { edge ->
+                    if (!visited.contains(edge.to)) {
+                        dfs(edge.to)
+                    }
                 }
             }
         }
@@ -34,15 +47,17 @@ class CodeGraph(val root: PsiElement) {
         }
     }
 
-    fun getAllNodes(): Set<PsiElement> = edges.keys
+    fun getAllNodes(): Set<PsiElement> = edges.flatMap { it.value.keys }.toSet()
 
-    fun getAllEdges(): List<Edge> = edges.values.flatten()
+    fun getAllEdges(): List<Edge> = edges.flatMap { (_, adjList) ->
+        adjList.values.flatten()
+    }
 
     fun <T : EdgeProvider> acceptEdgeProvider(edgeProvider: T): CodeGraph {
         val newEdges = edgeProvider.provideEdges(this)
         newEdges.forEach { edge ->
-            getAdjacentEdges(edge.from).add(edge)
-            getAdjacentEdges(edge.to).add(edge.reversed())
+            getAdjacentEdgesOfType(edge.from, edge.type).add(edge)
+            getAdjacentEdgesOfType(edge.to, edge.type).add(edge.reversed())
         }
         return this
     }

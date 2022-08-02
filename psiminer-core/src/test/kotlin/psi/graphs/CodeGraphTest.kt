@@ -13,9 +13,9 @@ internal class CodeGraphTest {
         val codeGraph = CodeGraph(TinyTree.root)
         codeGraph.acceptEdgeProvider(stubEdgeProvider)
 
-        assertEquals(correctRootEdgesType1, codeGraph.getAdjacentEdges(TinyTree.root))
-        assertEquals(correctLeaf1EdgesType1, codeGraph.getAdjacentEdges(TinyTree.leaf1))
-        assertEquals(correctLeaf2EdgesType1, codeGraph.getAdjacentEdges(TinyTree.leaf2))
+        assertEquals(correctRootEdgesType1, codeGraph.getAdjacentEdgesOfType(TinyTree.root, mockEdgeType))
+        assertEquals(correctLeaf1EdgesType1, codeGraph.getAdjacentEdgesOfType(TinyTree.leaf1, mockEdgeType))
+        assertEquals(correctLeaf2EdgesType1, codeGraph.getAdjacentEdgesOfType(TinyTree.leaf2, mockEdgeType))
     }
 
     @Test
@@ -24,9 +24,21 @@ internal class CodeGraphTest {
         codeGraph.acceptEdgeProvider(stubEdgeProvider)
         codeGraph.acceptEdgeProvider(anotherStubAstEdgeProvider)
 
-        assertEquals(correctRootEdgesType1 + correctRootEdgesType2, codeGraph.getAdjacentEdges(TinyTree.root))
-        assertEquals(correctLeaf1EdgesType1 + correctLeaf1EdgesType2, codeGraph.getAdjacentEdges(TinyTree.leaf1))
-        assertEquals(correctLeaf2EdgesType1 + correctLeaf2EdgesType2, codeGraph.getAdjacentEdges(TinyTree.leaf2))
+        assertEquals(
+            correctRootEdgesType1 + correctRootEdgesType2,
+            codeGraph.getAdjacentEdgesOfType(TinyTree.root, mockEdgeType) +
+                    codeGraph.getAdjacentEdgesOfType(TinyTree.root, anotherMockEdgeType)
+        )
+        assertEquals(
+            correctLeaf1EdgesType1 + correctLeaf1EdgesType2,
+            codeGraph.getAdjacentEdgesOfType(TinyTree.leaf1, mockEdgeType) +
+                    codeGraph.getAdjacentEdgesOfType(TinyTree.leaf1, anotherMockEdgeType)
+        )
+        assertEquals(
+            correctLeaf2EdgesType1 + correctLeaf2EdgesType2,
+            codeGraph.getAdjacentEdgesOfType(TinyTree.leaf2, mockEdgeType) +
+                    codeGraph.getAdjacentEdgesOfType(TinyTree.leaf2, anotherMockEdgeType)
+        )
     }
 
     @Test
@@ -37,27 +49,27 @@ internal class CodeGraphTest {
 
         assertEquals(
             correctRootEdgesType1,
-            codeGraph.getAdjacentEdgesOfTypes(TinyTree.root, setOf(mockEdgeType), true)
+            codeGraph.getAdjacentEdgesOfType(TinyTree.root, mockEdgeType, true)
         )
         assertEquals(
             correctLeaf1EdgesType1,
-            codeGraph.getAdjacentEdgesOfTypes(TinyTree.leaf1, setOf(mockEdgeType), true)
+            codeGraph.getAdjacentEdgesOfType(TinyTree.leaf1, mockEdgeType, true)
         )
         assertEquals(
             correctLeaf2EdgesType1,
-            codeGraph.getAdjacentEdgesOfTypes(TinyTree.leaf2, setOf(mockEdgeType), true)
+            codeGraph.getAdjacentEdgesOfType(TinyTree.leaf2, mockEdgeType, true)
         )
         assertEquals(
             correctRootEdgesType2,
-            codeGraph.getAdjacentEdgesOfTypes(TinyTree.root, setOf(anotherMockEdgeType), true)
+            codeGraph.getAdjacentEdgesOfType(TinyTree.root, anotherMockEdgeType, true)
         )
         assertEquals(
             correctLeaf1EdgesType2,
-            codeGraph.getAdjacentEdgesOfTypes(TinyTree.leaf1, setOf(anotherMockEdgeType), true)
+            codeGraph.getAdjacentEdgesOfType(TinyTree.leaf1, anotherMockEdgeType, true)
         )
         assertEquals(
             correctLeaf2EdgesType2,
-            codeGraph.getAdjacentEdgesOfTypes(TinyTree.leaf2, setOf(anotherMockEdgeType), true)
+            codeGraph.getAdjacentEdgesOfType(TinyTree.leaf2, anotherMockEdgeType, true)
         )
     }
 
@@ -69,27 +81,27 @@ internal class CodeGraphTest {
 
         assertEquals(
             correctRootEdgesType1,
-            codeGraph.getAdjacentEdgesOfTypes(TinyTree.root, setOf(mockEdgeType), false)
+            codeGraph.getAdjacentEdgesOfType(TinyTree.root, mockEdgeType, false)
         )
         assertEquals(
             emptyList<Edge>(),
-            codeGraph.getAdjacentEdgesOfTypes(TinyTree.leaf1, setOf(mockEdgeType), false)
+            codeGraph.getAdjacentEdgesOfType(TinyTree.leaf1, mockEdgeType, false)
         )
         assertEquals(
             emptyList<Edge>(),
-            codeGraph.getAdjacentEdgesOfTypes(TinyTree.leaf2, setOf(mockEdgeType), false)
+            codeGraph.getAdjacentEdgesOfType(TinyTree.leaf2, mockEdgeType, false)
         )
         assertEquals(
             correctRootEdgesType2,
-            codeGraph.getAdjacentEdgesOfTypes(TinyTree.root, setOf(anotherMockEdgeType), false)
+            codeGraph.getAdjacentEdgesOfType(TinyTree.root, anotherMockEdgeType, false)
         )
         assertEquals(
             emptyList<Edge>(),
-            codeGraph.getAdjacentEdgesOfTypes(TinyTree.leaf1, setOf(anotherMockEdgeType), false)
+            codeGraph.getAdjacentEdgesOfType(TinyTree.leaf1, anotherMockEdgeType, false)
         )
         assertEquals(
             emptyList<Edge>(),
-            codeGraph.getAdjacentEdgesOfTypes(TinyTree.leaf2, setOf(anotherMockEdgeType), false)
+            codeGraph.getAdjacentEdgesOfType(TinyTree.leaf2, anotherMockEdgeType, false)
         )
     }
 

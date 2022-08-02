@@ -9,7 +9,7 @@ import psi.isLeaf
 class NextTokenEdgeProvider : EdgeProvider(dependsOn = setOf(EdgeType.Ast), providedType = EdgeType.NextToken) {
     override fun provideEdges(graph: CodeGraph): List<Edge> {
         val newEdges = mutableListOf<Edge>()
-        graph.getAllNodes().filter { it.isLeaf() }.zipWithNext().forEach { (from, to) ->
+        graph.vertices.filter { it.isLeaf() }.zipWithNext().forEach { (from, to) ->
             newEdges.add(Edge(from, to, EdgeType.NextToken))
         }
         return newEdges

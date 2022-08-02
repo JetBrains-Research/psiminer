@@ -14,7 +14,7 @@ class DeclarationUsageEdgeProvider : EdgeProvider(
 ) {
     override fun provideEdges(graph: CodeGraph): List<Edge> {
         val newEdges = mutableListOf<Edge>()
-        graph.getAllNodes().filterIsInstance<PsiIdentifier>().forEach { vertex ->
+        graph.vertices.filterIsInstance<PsiIdentifier>().forEach { vertex ->
             val parent = vertex.parent
             val declaration = if (parent is PsiReferenceExpression) {
                 parent.resolve()

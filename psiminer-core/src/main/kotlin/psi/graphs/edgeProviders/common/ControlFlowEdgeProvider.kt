@@ -52,7 +52,7 @@ class ControlFlowEdgeProvider : EdgeProvider(
 
     override fun provideEdges(graph: CodeGraph): List<Edge> {
         val newEdges = mutableListOf<Edge>()
-        graph.getAllNodes().filterIsInstance<PsiMethod>().forEach { vertex ->
+        graph.vertices.filterIsInstance<PsiMethod>().forEach { vertex ->
             provideEdgesForMethod(vertex, newEdges)
         }
         return newEdges

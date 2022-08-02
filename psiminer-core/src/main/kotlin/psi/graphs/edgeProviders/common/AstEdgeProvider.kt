@@ -8,7 +8,7 @@ import psi.preOrder
 
 class AstEdgeProvider : EdgeProvider(dependsOn = emptySet(), providedType = EdgeType.Ast) {
     override fun provideEdges(graph: CodeGraph): List<Edge> =
-        graph.root.preOrder().flatMap { from ->
+        graph.vertices.flatMap { from ->
             from.children.map { to ->
                 Edge(from, to, providedType)
             }

@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test
 import psi.graphs.CodeGraph
 import psi.graphs.Edge
 import psi.graphs.EdgeType
+import psi.preOrder
 
 internal class AstEdgeProviderTest {
 
@@ -16,6 +17,7 @@ internal class AstEdgeProviderTest {
     fun `test extraction from tiny tree`() {
         val mockCodeGraph = mockk<CodeGraph>()
         every { mockCodeGraph.root } returns TinyTree.root
+        every { mockCodeGraph.vertices } returns TinyTree.root.preOrder()
 
         val edgeProvider = AstEdgeProvider()
         val extractedEdges = edgeProvider.provideEdges(mockCodeGraph)
@@ -31,6 +33,7 @@ internal class AstEdgeProviderTest {
     fun `test extraction from small tree`() {
         val mockCodeGraph = mockk<CodeGraph>()
         every { mockCodeGraph.root } returns SmallTree.root
+        every { mockCodeGraph.vertices } returns SmallTree.root.preOrder()
 
         val edgeProvider = AstEdgeProvider()
         val extractedEdges = edgeProvider.provideEdges(mockCodeGraph)

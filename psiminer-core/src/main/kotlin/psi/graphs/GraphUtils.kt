@@ -15,5 +15,14 @@ data class Edge(val from: PsiElement, val to: PsiElement, val type: EdgeType, va
     fun reversed(): Edge = Edge(to, from, type, !reversed)
 }
 
-typealias AdjacencyList = MutableMap<PsiElement, MutableList<Edge>>
+typealias Edges = MutableList<Edge>
+typealias AdjacencyList = MutableMap<PsiElement, Edges>
 typealias EdgeCollection = MutableMap<EdgeType, AdjacencyList>
+
+fun Edges.forward() = this.filter { !it.reversed }
+
+fun Edges.backward() = this.filter { it.reversed }
+
+fun AdjacencyList.from(vertex: PsiElement): Edges = this.getOrPut(vertex) { mutableListOf() }
+
+fun EdgeCollection.withType(edgeType: EdgeType): AdjacencyList = this.getOrPut(edgeType) { mutableMapOf() }

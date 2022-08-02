@@ -29,7 +29,7 @@ class JsonGraphStorage(
 
     override fun convert(labeledTree: LabeledTree, holdout: Dataset?): String {
         val codeGraph = graphMiner.mine(labeledTree.root)
-        nodeCount += codeGraph.getAllNodes().size
+        nodeCount += codeGraph.vertices.size
         edgeCount += codeGraph.getAllEdges().size
 
         val representation = JsonLabeledGraphRepresentation.convertLabeledCodeGraph(

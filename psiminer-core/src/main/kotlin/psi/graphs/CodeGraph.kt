@@ -7,24 +7,22 @@ import psi.preOrder
 class CodeGraph(val root: PsiElement) {
 
     val vertices: List<PsiElement> = root.preOrder()
-    private val edges: EdgeCollection = mutableMapOf()
+    val edges: EdgeCollection = mutableMapOf()
+    private val variableDeclarationCache: MutableMap<PsiElement, PsiElement?> = mutableMapOf()
 
-    fun getEdgesOfType(type: EdgeType) = edges.getOrPut(type) { mutableMapOf() }
-
-    fun getAdjacentEdgesOfType(
-        from: PsiElement,
-        type: EdgeType
-    ): MutableList<Edge> = getEdgesOfType(type).getOrPut(from) { mutableListOf() }
-
-    fun getAdjacentEdgesOfType(
-        from: PsiElement,
-        type: EdgeType,
-        useReversed: Boolean,
-    ): List<Edge> = if (useReversed) {
-        getAdjacentEdgesOfType(from, type)
-    } else {
-        getAdjacentEdgesOfType(from, type).filter { !it.reversed }
+    private fun identifyVariableDeclaration(vertex: PsiElement): PsiElement? {
+        val declarationEdge = edges.withType(EdgeType.DeclarationUsage).from(vertex).firstOrNull()
+        return declarationEdge?.let { edge ->
+            if (!edge.reversed) {
+                edge.from
+            } else {
+                edge.to
+            }
+        }
     }
+
+    fun toVariableDeclaration(vertex: PsiElement): PsiElement? =
+        variableDeclarationCache.getOrPut(vertex) { identifyVariableDeclaration(vertex) }
 
     fun getAllEdges(): List<Edge> = edges.flatMap { (_, adjList) ->
         adjList.values.flatten()
@@ -33,8 +31,8 @@ class CodeGraph(val root: PsiElement) {
     fun <T : EdgeProvider> acceptEdgeProvider(edgeProvider: T): CodeGraph {
         val newEdges = edgeProvider.provideEdges(this)
         newEdges.forEach { edge ->
-            getAdjacentEdgesOfType(edge.from, edge.type).add(edge)
-            getAdjacentEdgesOfType(edge.to, edge.type).add(edge.reversed())
+            edges.withType(edge.type).from(edge.from).add(edge)
+            edges.withType(edge.type).from(edge.to).add(edge.reversed())
         }
         return this
     }

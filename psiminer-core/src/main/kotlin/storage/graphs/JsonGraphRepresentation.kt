@@ -28,7 +28,7 @@ object JsonGraphRepresentation {
     )
 
     fun convertCodeGraph(codeGraph: CodeGraph, nodeTypeMapper: (PsiElement) -> Long): GraphRepresentation {
-        val graphNodes = codeGraph.getAllNodes()
+        val graphNodes = codeGraph.vertices
         val nodeToId = graphNodes.mapToIndex()
         val edges = codeGraph.getAllEdges().filter { !it.reversed }
         val edgesRepresentation = edges.groupBy { it.type }.map { (edgeType, edges) ->

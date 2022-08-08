@@ -80,6 +80,28 @@ class Main {
         a = 8;
     }
 
+    public void nestedIfsTwoVariables() {
+        int b = 0;
+        int a = 1;
+        if (b > 1) {
+            a = 2;
+            if (b > 2) {
+                a = 3;
+            } else {
+                a = 4;
+            }
+        } else {
+            a = 5;
+            if (b > 3) {
+                a = 6;
+            } else {
+                a = 7;
+            }
+        }
+        a = 8;
+        b = 9;
+    }
+
     public void nestedFors() {
         int a = 1;
         for (; a < 1;) {

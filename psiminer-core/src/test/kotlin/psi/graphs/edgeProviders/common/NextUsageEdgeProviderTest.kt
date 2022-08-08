@@ -19,6 +19,7 @@ internal class NextUsageEdgeProviderTest : JavaPsiRequiredTest("JavaFlowMethods"
             "nestedIfs",
             "nestedFors",
             "multipleDeclarations",
+            "nestedIfsTwoVariables",
         ]
     )
     fun `test next usage extraction from Java methods`(methodName: String) {
@@ -70,6 +71,23 @@ internal class NextUsageEdgeProviderTest : JavaPsiRequiredTest("JavaFlowMethods"
                 Pair("a++", "a <= 20"),
                 Pair("int a = 3;", "a--"),
             ),
+            "nestedIfsTwoVariables" to setOf(
+                Pair("int b = 0;", "b > 1"),
+                Pair("b > 1", "b > 2"),
+                Pair("b > 1", "b > 3"),
+                Pair("b > 2", "b = 9"),
+                Pair("b > 3", "b = 9"),
+                Pair("int a = 1;", "a = 2"),
+                Pair("int a = 1;", "a = 5"),
+                Pair("a = 2", "a = 3"),
+                Pair("a = 2", "a = 4"),
+                Pair("a = 5", "a = 6"),
+                Pair("a = 5", "a = 7"),
+                Pair("a = 3", "a = 8"),
+                Pair("a = 4", "a = 8"),
+                Pair("a = 6", "a = 8"),
+                Pair("a = 7", "a = 8"),
+            )
         )
 
         private fun getText(v: PsiElement) = if (v.nodeType == "IDENTIFIER") {

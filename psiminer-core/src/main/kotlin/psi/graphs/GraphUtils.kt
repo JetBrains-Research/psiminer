@@ -8,7 +8,7 @@ enum class EdgeType {
     DeclarationUsage,
     ControlFlow,
     NextUsage,
-    NextLexicalUse
+    ComputedFrom,
 }
 
 data class Edge(val from: PsiElement, val to: PsiElement, val type: EdgeType, val reversed: Boolean = false) {

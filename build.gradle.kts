@@ -28,10 +28,10 @@ allprojects {
 
     dependencies {
         implementation("org.jetbrains.kotlin:kotlin-stdlib:1.5.31")
-        implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
+        implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
 
-        testImplementation(platform("org.junit:junit-bom:5.7.2"))
-        testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+        testImplementation(platform("org.junit:junit-bom:5.9.0"))
+        testImplementation("org.junit.jupiter:junit-jupiter:5.9.0")
 
         detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.18.1")
 

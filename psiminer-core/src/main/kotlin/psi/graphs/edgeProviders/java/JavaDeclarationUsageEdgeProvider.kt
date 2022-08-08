@@ -1,4 +1,4 @@
-package psi.graphs.edgeProviders.common
+package psi.graphs.edgeProviders.java
 
 import com.intellij.psi.PsiIdentifier
 import com.intellij.psi.PsiReferenceExpression
@@ -8,7 +8,7 @@ import psi.graphs.Edge
 import psi.graphs.EdgeType
 import psi.graphs.edgeProviders.EdgeProvider
 
-class DeclarationUsageEdgeProvider : EdgeProvider(
+class JavaDeclarationUsageEdgeProvider : EdgeProvider(
     dependsOn = setOf(EdgeType.Ast),
     providedType = EdgeType.DeclarationUsage
 ) {

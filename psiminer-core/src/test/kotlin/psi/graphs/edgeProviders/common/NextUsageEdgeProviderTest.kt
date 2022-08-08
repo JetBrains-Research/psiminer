@@ -7,7 +7,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 import psi.graphs.EdgeType
 import psi.graphs.forward
-import psi.graphs.graphMiners.CommonGraphMiner
+import psi.graphs.graphMiners.JavaGraphMiner
 import psi.graphs.withType
 import psi.nodeProperties.nodeType
 
@@ -23,7 +23,7 @@ internal class NextUsageEdgeProviderTest : JavaPsiRequiredTest("JavaFlowMethods"
     )
     fun `test next usage extraction from Java methods`(methodName: String) {
         val psiRoot = getMethod(methodName)
-        val graphMiner = CommonGraphMiner()
+        val graphMiner = JavaGraphMiner()
         ReadAction.run<Exception> {
             val codeGraph = graphMiner.mine(psiRoot)
             val nextUsageEdges = codeGraph.edges.withType(EdgeType.NextUsage).flatMap { (_, edges) -> edges.forward() }

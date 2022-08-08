@@ -1,4 +1,4 @@
-package psi.graphs.edgeProviders.common
+package psi.graphs.edgeProviders.java
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiMethod
@@ -12,7 +12,7 @@ import psi.graphs.Edge
 import psi.graphs.EdgeType
 import psi.graphs.edgeProviders.EdgeProvider
 
-class ControlFlowEdgeProvider : EdgeProvider(
+class JavaControlFlowEdgeProvider : EdgeProvider(
     dependsOn = setOf(EdgeType.Ast),
     providedType = EdgeType.ControlFlow
 ) {

@@ -1,13 +1,13 @@
-package psi.graphs.edgeProviders.common
+package psi.graphs.edgeProviders.java
 
 import JavaPsiRequiredTest
 import com.intellij.openapi.application.ReadAction
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 import psi.graphs.EdgeType
-import psi.graphs.graphMiners.CommonGraphMiner
+import psi.graphs.graphMiners.JavaGraphMiner
 
-internal class DeclarationUsageEdgeProviderTest : JavaPsiRequiredTest("JavaFlowMethods") {
+internal class JavaDeclarationUsageEdgeProviderTest : JavaPsiRequiredTest("JavaFlowMethods") {
 
     @ParameterizedTest
     @ValueSource(
@@ -20,7 +20,7 @@ internal class DeclarationUsageEdgeProviderTest : JavaPsiRequiredTest("JavaFlowM
     )
     fun `test data flow extraction from Java methods`(methodName: String) {
         val psiRoot = getMethod(methodName)
-        val graphMiner = CommonGraphMiner()
+        val graphMiner = JavaGraphMiner()
         ReadAction.run<Exception> {
             val codeGraph = graphMiner.mine(psiRoot)
             val declarationUsageEdges = codeGraph.getAllEdges().filter {

@@ -2,8 +2,10 @@ package psi.graphs.graphMiners
 
 import psi.graphs.EdgeType
 import psi.graphs.edgeProviders.common.*
+import psi.graphs.edgeProviders.java.JavaControlFlowEdgeProvider
+import psi.graphs.edgeProviders.java.JavaDeclarationUsageEdgeProvider
 
-class CommonGraphMiner(
+class JavaGraphMiner(
     edgeTypesToMine: Set<EdgeType> = setOf(
         EdgeType.Ast,
         EdgeType.NextToken,
@@ -16,8 +18,8 @@ class CommonGraphMiner(
     mapOf(
         EdgeType.Ast to AstEdgeProvider(),
         EdgeType.NextToken to NextTokenEdgeProvider(),
-        EdgeType.DeclarationUsage to DeclarationUsageEdgeProvider(),
-        EdgeType.ControlFlow to ControlFlowEdgeProvider(),
+        EdgeType.DeclarationUsage to JavaDeclarationUsageEdgeProvider(),
+        EdgeType.ControlFlow to JavaControlFlowEdgeProvider(),
         EdgeType.NextUsage to NextUsageEdgeProvider(),
     )
 )

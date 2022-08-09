@@ -34,7 +34,6 @@ class JavaAssignmentProvider : AssignmentProvider {
             else -> throw IncorrectPsiTypeException("Value of class ${assignmentRoot.className()} passed as assignment")
         }
 
-
     override fun getLeftVariables(assignmentRoot: PsiElement): List<PsiElement> {
         val root = getLeftPart(assignmentRoot)
         return root?.preOrder()?.filterIsInstance<PsiIdentifier>() ?: emptyList()

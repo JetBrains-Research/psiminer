@@ -4,6 +4,7 @@ import psi.graphs.EdgeType
 import psi.graphs.edgeProviders.common.*
 import psi.graphs.edgeProviders.java.JavaControlFlowEdgeProvider
 import psi.graphs.edgeProviders.java.JavaDeclarationUsageEdgeProvider
+import psi.language.JavaHandler
 
 class JavaGraphMiner(
     edgeTypesToMine: Set<EdgeType> = setOf(
@@ -12,6 +13,7 @@ class JavaGraphMiner(
         EdgeType.DeclarationUsage,
         EdgeType.ControlFlow,
         EdgeType.NextUsage,
+        EdgeType.ComputedFrom
     )
 ) : GraphMiner(
     edgeTypesToMine,
@@ -21,5 +23,6 @@ class JavaGraphMiner(
         EdgeType.DeclarationUsage to JavaDeclarationUsageEdgeProvider(),
         EdgeType.ControlFlow to JavaControlFlowEdgeProvider(),
         EdgeType.NextUsage to NextUsageEdgeProvider(),
+        EdgeType.ComputedFrom to ComputedFromEdgeProvider(JavaHandler())
     )
 )

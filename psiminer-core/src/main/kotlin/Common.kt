@@ -58,3 +58,7 @@ fun extractProjectFiles(project: Project, language: Language): List<VirtualFile>
         .mapNotNull { virtualFileManager.findFileByNioPath(it.toPath()) }
         .toList()
 }
+
+class IncorrectPsiTypeException(message: String? = null, cause: Throwable? = null) : Exception(message, cause) {
+    constructor(cause: Throwable) : this(null, cause)
+}

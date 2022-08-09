@@ -13,7 +13,8 @@ class JavaGraphMiner(
         EdgeType.DeclarationUsage,
         EdgeType.ControlFlow,
         EdgeType.NextUsage,
-        EdgeType.ComputedFrom
+        EdgeType.ComputedFrom,
+        EdgeType.NextLexicalUsage
     )
 ) : GraphMiner(
     edgeTypesToMine,
@@ -23,6 +24,7 @@ class JavaGraphMiner(
         EdgeType.DeclarationUsage to JavaDeclarationUsageEdgeProvider(),
         EdgeType.ControlFlow to JavaControlFlowEdgeProvider(),
         EdgeType.NextUsage to NextUsageEdgeProvider(),
-        EdgeType.ComputedFrom to ComputedFromEdgeProvider(JavaHandler())
+        EdgeType.ComputedFrom to ComputedFromEdgeProvider(JavaHandler()),
+        EdgeType.NextLexicalUsage to NextLexicalUsageEdgeProvider()
     )
 )

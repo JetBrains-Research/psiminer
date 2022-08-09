@@ -11,14 +11,8 @@ class CodeGraph(val root: PsiElement) {
     private val variableDeclarationCache: MutableMap<PsiElement, PsiElement?> = mutableMapOf()
 
     private fun identifyVariableDeclaration(vertex: PsiElement): PsiElement? {
-        val declarationEdge = edges.withType(EdgeType.DeclarationUsage).from(vertex).firstOrNull()
-        return declarationEdge?.let { edge ->
-            if (!edge.reversed) {
-                edge.from
-            } else {
-                edge.to
-            }
-        }
+        val declarationEdge = edges.withType(EdgeType.DeclarationUsage).from(vertex).backward().firstOrNull()
+        return declarationEdge?.to
     }
 
     fun toVariableDeclaration(vertex: PsiElement): PsiElement? =

@@ -10,6 +10,7 @@ enum class EdgeType {
     NextUsage,
     ComputedFrom,
     NextLexicalUsage,
+    ReturnsTo,
 }
 
 data class Edge(val from: PsiElement, val to: PsiElement, val type: EdgeType, val reversed: Boolean = false) {

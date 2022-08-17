@@ -62,3 +62,7 @@ fun extractProjectFiles(project: Project, language: Language): List<VirtualFile>
 class IncorrectPsiTypeException(message: String? = null, cause: Throwable? = null) : Exception(message, cause) {
     constructor(cause: Throwable) : this(null, cause)
 }
+
+class IncorrectMiningStateException(message: String? = null, cause: Throwable? = null) : Exception(message, cause) {
+    constructor(cause: Throwable) : this(null, cause)
+}

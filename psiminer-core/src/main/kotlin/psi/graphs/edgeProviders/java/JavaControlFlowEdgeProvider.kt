@@ -1,5 +1,6 @@
 package psi.graphs.edgeProviders.java
 
+import IncorrectMiningStateException
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.controlFlow.AllVariablesControlFlowPolicy
@@ -23,7 +24,30 @@ class JavaControlFlowEdgeProvider : EdgeProvider(
             AllVariablesControlFlowPolicy.getInstance()
         )
 
-    private fun provideEdgesForInstruction(
+    private fun provideEdgesForGoToInstruction(
+        index: Int,
+        instruction: GoToInstruction,
+        controlFlow: ControlFlow,
+        newEdges: MutableList<Edge>
+    ) {
+        val nNext = instruction.nNext()
+        val curElement = controlFlow.getElement(index)
+        val nextElement = when (nNext) {
+            0 -> {
+                var element = curElement
+                while (element !is PsiMethod) {
+                    element = element.parent
+                }
+                element
+            }
+
+            1 -> controlFlow.getElement(instruction.getNext(index, 0))
+            else -> throw IncorrectMiningStateException("Unexpected number of next for GoTo instruction: $nNext")
+        }
+        newEdges.add(Edge(curElement, nextElement, EdgeType.ReturnsTo))
+    }
+
+    private fun provideEdgesForIntermediateInstruction(
         index: Int,
         instruction: Instruction,
         instructions: List<Instruction>,
@@ -43,10 +67,12 @@ class JavaControlFlowEdgeProvider : EdgeProvider(
     private fun provideEdgesForMethod(vertex: PsiMethod, newEdges: MutableList<Edge>) {
         val controlFlow = vertex.body?.controlFlow ?: return
         val instructions = controlFlow.instructions
-        instructions.withIndex().filter { (_, instruction) ->
-            instruction !is GoToInstruction
-        }.forEach { (index, instruction) ->
-            provideEdgesForInstruction(index, instruction, instructions, controlFlow, newEdges)
+        instructions.withIndex().forEach { (index, instruction) ->
+            if (instruction is GoToInstruction) {
+                provideEdgesForGoToInstruction(index, instruction, controlFlow, newEdges)
+            } else {
+                provideEdgesForIntermediateInstruction(index, instruction, instructions, controlFlow, newEdges)
+            }
         }
     }
 

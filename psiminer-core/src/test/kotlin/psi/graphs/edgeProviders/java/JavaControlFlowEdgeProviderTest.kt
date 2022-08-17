@@ -12,9 +12,9 @@ internal class JavaControlFlowEdgeProviderTest : JavaPsiRequiredTest("JavaFlowMe
     @ParameterizedTest
     @ValueSource(
         strings = [
-//            "straightWriteMethod",
-//            "ifMethod",
-//            "straightReadWriteMethod",
+            "straightWriteMethod",
+            "ifMethod",
+            "straightReadWriteMethod",
             "breakAndContinue",
         ]
     )

@@ -30,23 +30,25 @@ class JavaControlFlowEdgeProvider : EdgeProvider(
         controlFlow: ControlFlow,
         newEdges: MutableList<Edge>
     ) {
-        val nNext = instruction.nNext()
-        if (nNext != 1) {
-            throw IncorrectMiningStateException("Unexpected number of next for GoTo instruction: $nNext")
-        }
-        val toIndex = instruction.getNext(index, 0)
-
-        val curElement = controlFlow.getElement(index)
-        val nextElement = if (toIndex < controlFlow.instructions.size) {
-            controlFlow.getElement(toIndex)
-        } else {
-            var element = curElement
-            while (element !is PsiMethod) {
-                element = element.parent
+        if (instruction.isReturn) {
+            val nNext = instruction.nNext()
+            if (nNext != 1) {
+                throw IncorrectMiningStateException("Unexpected number of next for GoTo instruction: $nNext")
             }
-            element
+            val toIndex = instruction.getNext(index, 0)
+
+            val curElement = controlFlow.getElement(index)
+            val nextElement = if (toIndex < controlFlow.instructions.size) {
+                controlFlow.getElement(toIndex)
+            } else {
+                var element = curElement
+                while (element !is PsiMethod) {
+                    element = element.parent
+                }
+                element
+            }
+            newEdges.add(Edge(curElement, nextElement, EdgeType.ReturnsTo))
         }
-        newEdges.add(Edge(curElement, nextElement, EdgeType.ReturnsTo))
     }
 
     private fun provideEdgesForIntermediateInstruction(

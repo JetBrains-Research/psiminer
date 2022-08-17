@@ -2,6 +2,7 @@ package psi.graphs.edgeProviders.java
 
 import JavaPsiRequiredTest
 import com.intellij.openapi.application.ReadAction
+import com.intellij.psi.PsiMethod
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 import psi.graphs.EdgeType
@@ -30,6 +31,27 @@ internal class JavaControlFlowEdgeProviderTest : JavaPsiRequiredTest("JavaFlowMe
                 Pair(shortenText(it.from.text), shortenText(it.to.text))
             }.toSet()
             assertEquals(correctEdges[methodName], textRepresentation)
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(
+        strings = [
+            "straightWriteMethod",
+            "breakAndContinue",
+            "multipleReturns",
+        ]
+    )
+    fun `test returns to extraction from Java methods`(methodName: String) {
+        val psiRoot = getMethod(methodName)
+        val graphMiner = JavaGraphMiner()
+        ReadAction.run<Exception> {
+            val codeGraph = graphMiner.mine(psiRoot)
+            val returnsToEdges = codeGraph.getAllEdges().filter {
+                it.type == EdgeType.ReturnsTo && !it.reversed
+            }
+            val returnToMethodCount = returnsToEdges.count { it.to is PsiMethod }
+            assertEquals(correctReturnToMethodCount[methodName], returnToMethodCount)
         }
     }
 
@@ -76,6 +98,12 @@ internal class JavaControlFlowEdgeProviderTest : JavaPsiRequiredTest("JavaFlowMe
                 Pair("k", "k++"), // read k and write back with k++
                 Pair("k++", "j"), // ... -> j < 10
             )
+        )
+
+        val correctReturnToMethodCount: Map<String, Int> = mapOf(
+            "breakAndContinue" to 1,
+            "straightWriteMethod" to 0,
+            "multipleReturns" to 3,
         )
 
         private fun shortenText(text: String): String {

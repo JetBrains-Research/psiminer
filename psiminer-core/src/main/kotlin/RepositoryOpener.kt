@@ -13,7 +13,7 @@ open class RepositoryOpener {
 
     open fun openRepository(repositoryRoot: File, onOpen: (Project) -> Unit) {
         ProjectUtil.getOpenProjects().forEach { ProjectManagerEx.getInstance().closeAndDispose(it) }
-        val project = ProjectUtil.openOrImport(repositoryRoot.toPath(), OpenProjectTask.newProject())
+        val project = ProjectUtil.openOrImport(repositoryRoot.toPath(), OpenProjectTask.build().asNewProject())
         if (project == null) {
             logger.warn("Unable to open project in ${repositoryRoot.path}")
             return

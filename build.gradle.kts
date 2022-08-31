@@ -6,11 +6,11 @@ fun getProperty(key: String) =
 
 plugins {
     id("java")
-    id("org.jetbrains.intellij") version "1.1.4"
-    id("io.gitlab.arturbosch.detekt") version "1.17.0"
+    id("org.jetbrains.intellij") version "1.8.1"
+    id("io.gitlab.arturbosch.detekt") version "1.17.1"
 
-    kotlin("jvm") version "1.5.31"
-    kotlin("plugin.serialization") version "1.5.0"
+    kotlin("jvm") version "1.7.10"
+    kotlin("plugin.serialization") version "1.7.10"
 }
 
 allprojects {
@@ -27,8 +27,9 @@ allprojects {
     }
 
     dependencies {
-        implementation("org.jetbrains.kotlin:kotlin-stdlib:1.5.31")
-        implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
+        implementation("org.jetbrains.kotlin:kotlin-stdlib:1.7.10")
+        implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0")
+        implementation("it.unimi.dsi:fastutil:8.5.8")
 
         testImplementation(platform("org.junit:junit-bom:5.9.0"))
         testImplementation("org.junit.jupiter:junit-jupiter:5.9.0")

@@ -6,7 +6,7 @@ fun getProperty(key: String) =
 
 plugins {
     id("java")
-    id("org.jetbrains.intellij") version "1.8.1"
+    id("org.jetbrains.intellij") version "1.9.0"
     id("io.gitlab.arturbosch.detekt") version "1.17.1"
 
     kotlin("jvm") version "1.7.10"

@@ -7,6 +7,7 @@ import psi.preOrder
 class CodeGraph(val root: PsiElement) {
 
     val vertices: List<PsiElement> = root.preOrder()
+    private val verticesSet = vertices.toSet()
     val edges: EdgeCollection = mutableMapOf()
     private val variableDeclarationCache: MutableMap<PsiElement, PsiElement?> = mutableMapOf()
 
@@ -25,8 +26,10 @@ class CodeGraph(val root: PsiElement) {
     fun <T : EdgeProvider> acceptEdgeProvider(edgeProvider: T): CodeGraph {
         val newEdges = edgeProvider.provideEdges(this)
         newEdges.forEach { edge ->
-            edges.withType(edge.type).from(edge.from).add(edge)
-            edges.withType(edge.type).from(edge.to).add(edge.reversed())
+            if (verticesSet.contains(edge.from) && verticesSet.contains(edge.to)) {
+                edges.withType(edge.type).from(edge.from).add(edge)
+                edges.withType(edge.type).from(edge.to).add(edge.reversed())
+            }
         }
         return this
     }

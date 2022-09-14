@@ -3,14 +3,23 @@ package psi.graphs
 import com.intellij.psi.PsiElement
 
 enum class EdgeType {
+    // AST edges
     Ast,
+
+    // Auxiliary edges
     NextToken,
-    DeclarationUsage,
+
+    // CFG edges
     ControlFlow,
+    ControlElement,
+    ReturnsTo,
+    ThrowsTo,
+
+    // DFG edges
+    DeclarationUsage,
     NextUsage,
     ComputedFrom,
     NextLexicalUsage,
-    ReturnsTo,
 }
 
 data class Edge(val from: PsiElement, val to: PsiElement, val type: EdgeType, val reversed: Boolean = false) {

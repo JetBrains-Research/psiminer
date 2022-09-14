@@ -24,7 +24,7 @@ class CodeGraph(val root: PsiElement) {
     }
 
     fun <T : EdgeProvider> acceptEdgeProvider(edgeProvider: T): CodeGraph {
-        val newEdges = edgeProvider.provideEdges(this)
+        val newEdges = edgeProvider.provideEdges(this).distinct()
         newEdges.forEach { edge ->
             if (verticesSet.contains(edge.from) && verticesSet.contains(edge.to)) {
                 edges.withType(edge.type).from(edge.from).add(edge)

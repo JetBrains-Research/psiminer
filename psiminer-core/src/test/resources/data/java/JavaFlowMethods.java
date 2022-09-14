@@ -130,4 +130,99 @@ class Main {
         }
         return 2;
     }
+
+    /**
+     * Method based on dispose() from RefactorInsight
+     */
+    public static void forEach(List<Disposable> logs) {
+        for (Disposable log : logs) {
+            Disposer.dispose(log);
+        }
+    }
+
+    private RefactoringType type;
+    public RefactoringInfo setType(RefactoringType type) {
+        this.type = type;
+        return this;
+    }
+
+    /**
+     * Disposes the Vcs Log panel.
+     */
+    public static void disposeWithVcsLogManager(@NotNull Project project, @NotNull Disposable disposable) {
+        Disposable connectionDisposable = Disposer.newDisposable();
+        project.getMessageBus().connect(connectionDisposable)
+                .subscribe(VcsProjectLog.VCS_PROJECT_LOG_CHANGED, new VcsProjectLog.ProjectLogListener() {
+                    @Override
+                    public void logCreated(@NotNull VcsLogManager manager) {
+                    }
+
+                    @Override
+                    public void logDisposed(@NotNull VcsLogManager manager) {
+                        Disposer.dispose(connectionDisposable);
+                        Disposer.dispose(disposable);
+                    }
+                });
+    }
+
+
+    public void assertion(int a) {
+        int b = 1;
+        assert a == b;
+        int c = 2;
+    }
+    public void correct(List<String> befores, String after, List<Pair<String, Boolean>> pathPair,
+                        boolean skipAnnotationsLeft,
+                        boolean skipAnnotationsMid, boolean skipAnnotationsRight) {
+        assert pathPair.size() == lineMarkings.size();
+        for (int i = 0; i < befores.size(); i++) {
+            lineMarkings.get(i).correctLines(befores.get(i), null, after, skipAnnotationsLeft,
+                    skipAnnotationsMid, skipAnnotationsRight);
+            lineMarkings.get(i).getMoreSidedRange().leftPath = pathPair.get(i).first;
+            if (pathPair.get(i).second) {
+                lineMarkings.get(i).getMoreSidedRange().startLineRight = -1;
+                lineMarkings.get(i).getMoreSidedRange().endLineRight = -1;
+            }
+        }
+        prepareRanges(lineMarkings);
+    }
+
+    /**
+     * Mine complete git repo for refactorings.
+     *
+     * @param repository GitRepository
+     */
+    public void mineAll(GitRepository repository) {
+        int limit = Integer.MAX_VALUE;
+        try {
+            limit = Utils.getCommitCount(repository);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            mineRepo(repository, limit);
+        }
+    }
+
+    public void tryCatch(GitRepository repository) {
+        int a = 1;
+        try {
+            int b = 2;
+            int c = 3;
+        } catch (Exception exception) {
+            int d = 4;
+        } finally {
+            int e = 5;
+        }
+        int f = 6;
+    }
+    private MergeConflictType getMergeConflictType(VisualisationType type) {
+        switch (type) {
+            case LEFT:
+                return new MergeConflictType(MergeConflictType.Type.MODIFIED, true, false);
+            case RIGHT:
+                return new MergeConflictType(MergeConflictType.Type.INSERTED, false, true);
+            default:
+                return new MergeConflictType(MergeConflictType.Type.MODIFIED, true, true);
+        }
+    }
 }

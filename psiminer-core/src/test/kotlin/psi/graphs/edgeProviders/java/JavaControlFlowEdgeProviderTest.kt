@@ -1,7 +1,6 @@
 package psi.graphs.edgeProviders.java
 
 import JavaPsiRequiredTest
-import astminer.featureextraction.className
 import com.intellij.openapi.application.ReadAction
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiMethod
@@ -23,6 +22,7 @@ internal class JavaControlFlowEdgeProviderTest : JavaPsiRequiredTest("JavaFlowMe
             "breakAndContinue",
             "forEach",
             "assertion",
+//            "openRepository",
         ]
     )
     fun `test control flow extraction from Java methods`(methodName: String) {

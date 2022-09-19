@@ -2,16 +2,9 @@ package psi.graphs.edgeProviders.java
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiMethod
-import com.intellij.psi.controlFlow.AllVariablesControlFlowPolicy
-import com.intellij.psi.controlFlow.BranchingInstruction
-import com.intellij.psi.controlFlow.ControlFlow
-import com.intellij.psi.controlFlow.ControlFlowFactory
-import com.intellij.psi.controlFlow.GoToInstruction
-import com.intellij.psi.controlFlow.Instruction
-import com.intellij.psi.controlFlow.ReadVariableInstruction
-import com.intellij.psi.controlFlow.ThrowToInstruction
-import com.intellij.psi.controlFlow.WriteVariableInstruction
+import com.intellij.psi.controlFlow.*
 import org.jetbrains.kotlin.psi.psiUtil.parents
+import org.slf4j.LoggerFactory
 import psi.graphs.CodeGraph
 import psi.graphs.Edge
 import psi.graphs.EdgeType
@@ -22,6 +15,8 @@ class JavaControlFlowEdgeProvider : EdgeProvider(
     dependsOn = setOf(EdgeType.Ast),
     providedType = EdgeType.ControlFlow
 ) {
+
+    private val logger = LoggerFactory.getLogger(javaClass)
 
     private val PsiElement.controlFlow: ControlFlow
         get() = ControlFlowFactory.getInstance(project).getControlFlow(
@@ -90,41 +85,57 @@ class JavaControlFlowEdgeProvider : EdgeProvider(
         return nextInstructions
     }
 
+    private fun provideEdgesForInstruction(
+        index: Int,
+        instructions: List<Instruction>,
+        elements: List<PsiElement>,
+        nextInstructions: Array<out Set<Int>>,
+        newEdges: MutableList<Edge>,
+    ) {
+        val instruction = instructions[index]
+        val element = elements[index]
+        if (instruction !is BranchingInstruction) {
+            nextInstructions[index].forEach { toIndex ->
+                val toElement = elements[toIndex]
+                if (toElement != element) {
+                    newEdges.add(Edge(element, toElement, EdgeType.ControlFlow))
+                }
+            }
+        }
+        for (no in 0 until instruction.nNext()) {
+            val toIndex = instruction.getNext(index, no)
+            val hasNextInstruction = toIndex < instructions.size
+            val edgeType = computeEdgeType(instruction, hasNextInstruction)
+            if (hasNextInstruction) {
+                val toInstruction = instructions[toIndex]
+                val toElement = elements[toIndex]
+                if (
+                    element != toElement &&
+                    (instruction is BranchingInstruction || toInstruction is BranchingInstruction)
+                ) {
+                    newEdges.add(Edge(element, toElement, edgeType))
+                }
+            } else {
+                val methodRoot = element.methodRoot()
+                if (methodRoot != null) {
+                    newEdges.add(Edge(element, methodRoot, edgeType))
+                }
+            }
+        }
+    }
+
     private fun provideEdgesForMethod(vertex: PsiMethod, newEdges: MutableList<Edge>) {
-        val controlFlow = vertex.body?.controlFlow ?: return
+        val controlFlow = try {
+            vertex.body?.controlFlow ?: return
+        } catch (e: AnalysisCanceledException) {
+            logger.warn("Ignored method due to exception in control flow construction: ${e.message}")
+            return
+        }
         val instructions = controlFlow.instructions
         val elements = (0 until instructions.size).map { index -> getPsiElementFromControlFlow(controlFlow, index) }
         val nextInstructions = computeNextNonBranchingInstructions(instructions)
-        instructions.withIndex().forEach { (index, instruction) ->
-            val element = elements[index]
-            if (instruction !is BranchingInstruction) {
-                nextInstructions[index].forEach { toIndex ->
-                    val toElement = elements[toIndex]
-                    if (toElement != element) {
-                        newEdges.add(Edge(element, toElement, EdgeType.ControlFlow))
-                    }
-                }
-            }
-            for (no in 0 until instruction.nNext()) {
-                val toIndex = instruction.getNext(index, no)
-                val hasNextInstruction = toIndex < instructions.size
-                val edgeType = computeEdgeType(instruction, hasNextInstruction)
-                if (hasNextInstruction) {
-                    val toInstruction = instructions[toIndex]
-                    val toElement = elements[toIndex]
-                    if (
-                        element != toElement &&
-                        (instruction is BranchingInstruction || toInstruction is BranchingInstruction)
-                    ) {
-                        newEdges.add(Edge(element, toElement, edgeType))
-                    }
-                } else {
-                    val methodRoot = element.methodRoot()
-                    if (methodRoot != null) {
-                        newEdges.add(Edge(element, methodRoot, edgeType))
-                    }
-                }
-            }
+        (0 until instructions.size).forEach { index ->
+            provideEdgesForInstruction(index, instructions, elements, nextInstructions, newEdges)
         }
     }
 

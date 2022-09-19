@@ -225,4 +225,13 @@ class Main {
                 return new MergeConflictType(MergeConflictType.Type.MODIFIED, true, true);
         }
     }
+
+    private static Repository openRepository(final String path) {
+        try {
+            return new GitServiceImpl().openRepository(path);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

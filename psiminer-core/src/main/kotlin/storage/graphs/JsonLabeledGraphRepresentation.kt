@@ -1,6 +1,5 @@
 package storage.graphs
 
-import com.intellij.psi.PsiElement
 import kotlinx.serialization.Serializable
 import psi.graphs.CodeGraph
 
@@ -12,9 +11,12 @@ object JsonLabeledGraphRepresentation {
         val graph: JsonGraphRepresentation.GraphRepresentation
     )
 
-    fun convertLabeledCodeGraph(codeGraph: CodeGraph, label: String, nodeTypeMapper: (PsiElement) -> Long) =
+    fun convertLabeledCodeGraph(
+        codeGraph: CodeGraph,
+        label: String,
+    ) =
         LabeledGraphRepresentation(
             label,
-            JsonGraphRepresentation.convertCodeGraph(codeGraph, nodeTypeMapper)
+            JsonGraphRepresentation.convertCodeGraph(codeGraph)
         )
 }

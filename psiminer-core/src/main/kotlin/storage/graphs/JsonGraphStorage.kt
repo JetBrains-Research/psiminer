@@ -1,13 +1,10 @@
 package storage.graphs
 
 import Dataset
-import astminer.common.storage.RankedIncrementalIdStorage
-import com.intellij.psi.PsiElement
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import labelextractor.LabeledTree
 import psi.graphs.graphMiners.GraphMiner
-import psi.nodeProperties.nodeType
 import storage.Storage
 import java.io.File
 
@@ -23,10 +20,6 @@ class JsonGraphStorage(
     private var edgeCount = 0
     private var totalLength = 0
 
-    private val nodeTypesIdStorage = RankedIncrementalIdStorage<String>()
-
-    private fun nodeTypeToString(node: PsiElement): Long = nodeTypesIdStorage.record(node.nodeType)
-
     override fun convert(labeledTree: LabeledTree, holdout: Dataset?): String {
         val codeGraph = graphMiner.mine(labeledTree.root)
         nodeCount += codeGraph.vertices.size
@@ -35,7 +28,6 @@ class JsonGraphStorage(
         val representation = JsonLabeledGraphRepresentation.convertLabeledCodeGraph(
             codeGraph,
             labeledTree.label,
-            nodeTypeMapper = { node -> nodeTypeToString(node) }
         )
         val output = jsonSerializer.encodeToString(representation)
         totalLength += output.length

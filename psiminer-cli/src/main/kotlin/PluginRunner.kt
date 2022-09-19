@@ -101,6 +101,7 @@ class PsiExtractor : CliktCommand() {
             storage.close()
         } catch (e: Exception) {
             logger.error("Failed with ${e::class.simpleName}: ${e.message}")
+            logger.error(e.stackTraceToString())
             storage.close()
         } finally {
             exitProcess(0)

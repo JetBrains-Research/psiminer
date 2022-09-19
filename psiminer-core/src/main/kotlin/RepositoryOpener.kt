@@ -1,5 +1,6 @@
 import com.intellij.ide.impl.OpenProjectTask
 import com.intellij.ide.impl.ProjectUtil
+import com.intellij.openapi.actionSystem.ex.ActionManagerEx
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ex.ProjectManagerEx
 import org.jetbrains.research.pluginUtilities.openRepository.getKotlinJavaRepositoryOpener
@@ -12,8 +13,11 @@ open class RepositoryOpener {
     protected val logger: Logger = LoggerFactory.getLogger(javaClass)
 
     open fun openRepository(repositoryRoot: File, onOpen: (Project) -> Unit) {
+        println("Opening project at ${repositoryRoot.absolutePath}")
         ProjectUtil.getOpenProjects().forEach { ProjectManagerEx.getInstance().closeAndDispose(it) }
-        val project = ProjectUtil.openOrImport(repositoryRoot.toPath(), OpenProjectTask.build().asNewProject())
+        ActionManagerEx.getInstanceEx() // workaround for https://youtrack.jetbrains.com/issue/IDEA-294726
+        val task = OpenProjectTask.build()
+        val project = ProjectUtil.openOrImport(repositoryRoot.toPath(), task)
         if (project == null) {
             logger.warn("Unable to open project in ${repositoryRoot.path}")
             return

@@ -1,0 +1,32 @@
+{
+  "label": {
+    "name": "method name"
+  },
+  "storage": {
+    "name": "raw code"
+  },
+  "language": "Java",
+  "tree transformations": [
+    {
+      "name": "exclude whitespace"
+    },
+    {
+      "name": "exclude empty grammar lists"
+    },
+    {
+      "name": "exclude language symbols"
+    },
+    {
+      "name": "hide literals",
+      "hideNumbers": true,
+      "hideStrings": true
+    },
+    {
+      "name": "remove comments",
+      "removeDoc": true
+    }
+  ],
+  "numThreads": 12,
+  "printTrees": false,
+  "collectMetadata": true
+}

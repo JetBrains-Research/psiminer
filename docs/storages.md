@@ -12,7 +12,7 @@ If the data is not structured, all trees will be saved in the `output` folder in
 Save just method code with applied tree transformations to `.jsonl` file
 ```json
 {
-  "name": "raw code"
+  "name": "plain text"
 }
 ```
 ## Tree formats

@@ -2,19 +2,29 @@ package storage.raw
 
 import Dataset
 import com.intellij.psi.PsiElement
+import com.intellij.psi.impl.source.tree.LeafPsiElement
 import labelextractor.LabeledTree
+import psi.nodeProperties.isHidden
+import psi.nodeProperties.technicalToken
 import storage.Storage
 import java.io.File
 
 class RawStorage(outputDirectory: File) : Storage(outputDirectory) {
-    override val fileExtension: String = "raw"
+    override val fileExtension: String = "txt"
 
-//    private fun removeComments(root : PsiElement) : String {
-//
-//    }
+    private fun processElement(element: PsiElement): String {
+        if (element.technicalToken != null) return element.technicalToken!!
+        if (element is LeafPsiElement) return element.text
+        return processMethodBody(element)
+    }
+
+    private fun processMethodBody(root: PsiElement): String {
+        return root.children.filter { !it.isHidden }.joinToString("") {
+            processElement(it)
+        }
+    }
 
     override fun convert(labeledTree: LabeledTree, holdout: Dataset?): String {
-        println(labeledTree.label)
-        return "${labeledTree.label} aaa"
+        return "${labeledTree.label} '${processMethodBody(labeledTree.root).replace("\n", "\\n")}'"
     }
 }

@@ -6,21 +6,27 @@
     "name": "raw code"
   },
   "language": "Java",
+  "filters": [
+    {
+      "name": "constructor"
+    },
+    {
+      "name": "empty method"
+    },
+    {
+      "name": "by modifiers",
+      "excludeModifiers": [
+        "abstract"
+      ]
+    },
+    {
+      "name": "by annotations",
+      "excludeAnnotations": [
+        "Override"
+      ]
+    }
+  ],
   "tree transformations": [
-    {
-      "name": "exclude whitespace"
-    },
-    {
-      "name": "exclude empty grammar lists"
-    },
-    {
-      "name": "exclude language symbols"
-    },
-    {
-      "name": "hide literals",
-      "hideNumbers": true,
-      "hideStrings": true
-    },
     {
       "name": "remove comments",
       "removeDoc": true

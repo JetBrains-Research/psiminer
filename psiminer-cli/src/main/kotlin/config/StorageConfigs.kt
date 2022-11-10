@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 import storage.tree.JsonTreeStorage
 import storage.Storage
 import storage.paths.Code2SeqStorage
+import storage.text.PlainTextStorage
 import java.io.File
 
 @Serializable
@@ -16,6 +17,12 @@ abstract class StorageConfig {
 @SerialName("json tree")
 class JsonTreeStorageConfig : StorageConfig() {
     override fun createStorage(outputDirectory: File): Storage = JsonTreeStorage(outputDirectory)
+}
+
+@Serializable
+@SerialName("plain text")
+class PlainTextStorageConfig : StorageConfig() {
+    override fun createStorage(outputDirectory: File): Storage = PlainTextStorage(outputDirectory)
 }
 
 @Serializable

@@ -1,16 +1,26 @@
-package storage.raw
+package storage.text
 
 import Dataset
 import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.tree.LeafPsiElement
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import labelextractor.LabeledTree
 import psi.nodeProperties.isHidden
 import psi.nodeProperties.technicalToken
 import storage.Storage
 import java.io.File
 
-class RawStorage(outputDirectory: File) : Storage(outputDirectory) {
-    override val fileExtension: String = "txt"
+class PlainTextStorage(outputDirectory: File) : Storage(outputDirectory) {
+    override val fileExtension: String = "jsonl"
+    private val jsonSerializer = Json { encodeDefaults = false }
+
+    @Serializable
+    private data class PlainTextRepresentation(
+        val label: String,
+        val code: String
+    )
 
     private fun processElement(element: PsiElement): String {
         if (element.technicalToken != null) return element.technicalToken!!
@@ -25,6 +35,7 @@ class RawStorage(outputDirectory: File) : Storage(outputDirectory) {
     }
 
     override fun convert(labeledTree: LabeledTree, holdout: Dataset?): String {
-        return "${labeledTree.label} '${processMethodBody(labeledTree.root).replace("\n", "\\n")}'"
+        val sample = PlainTextRepresentation(labeledTree.label, processMethodBody(labeledTree.root))
+        return jsonSerializer.encodeToString(sample)
     }
 }

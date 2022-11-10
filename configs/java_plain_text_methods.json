@@ -3,7 +3,7 @@
     "name": "method name"
   },
   "storage": {
-    "name": "raw code"
+    "name": "plain text"
   },
   "language": "Java",
   "filters": [
@@ -32,7 +32,6 @@
       "removeDoc": true
     }
   ],
-  "numThreads": 12,
   "printTrees": false,
   "collectMetadata": true
 }

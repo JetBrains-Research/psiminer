@@ -23,9 +23,11 @@ class PlainTextStorage(outputDirectory: File) : Storage(outputDirectory) {
     )
 
     private fun processElement(element: PsiElement): String {
-        if (element.technicalToken != null) return element.technicalToken!!
-        if (element is LeafPsiElement) return element.text
-        return processMethodBody(element)
+        return element.technicalToken ?: if (element is LeafPsiElement) {
+            element.text
+        } else {
+            processMethodBody(element)
+        }
     }
 
     private fun processMethodBody(root: PsiElement): String {

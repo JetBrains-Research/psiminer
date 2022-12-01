@@ -8,12 +8,14 @@ import com.intellij.psi.util.elementType
 import org.jetbrains.kotlin.nj2k.postProcessing.resolve
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.referenceExpression
+import psi.assignment.KotlinAssignmentProvider
 import psi.method.KotlinMethodProvider
 import psi.transformations.KotlinTreeTransformation
 
 class KotlinHandler : LanguageHandler() {
     override val language = Language.Kotlin
     override val methodProvider = KotlinMethodProvider()
+    override val assignmentProvider = KotlinAssignmentProvider()
 
     override val transformationType = KotlinTreeTransformation::class.java
     override val classPsiType = KtClass::class.java

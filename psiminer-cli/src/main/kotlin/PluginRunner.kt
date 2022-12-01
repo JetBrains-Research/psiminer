@@ -33,6 +33,7 @@ val module = SerializersModule {
     polymorphic(StorageConfig::class) {
         subclass(JsonTreeStorageConfig::class)
         subclass(Code2SeqStorageConfig::class)
+        subclass(JsonGraphStorageConfig::class)
         subclass(PlainTextStorageConfig::class)
     }
     polymorphic(FilterConfig::class) {
@@ -101,6 +102,7 @@ class PsiExtractor : CliktCommand() {
             storage.close()
         } catch (e: Exception) {
             logger.error("Failed with ${e::class.simpleName}: ${e.message}")
+            logger.error(e.stackTraceToString())
             storage.close()
         } finally {
             exitProcess(0)

@@ -14,7 +14,7 @@ abstract class Storage(val outputDirectory: File) {
     }
 
     abstract val fileExtension: String
-    protected abstract fun convert(labeledTree: LabeledTree, holdout: Dataset?): String
+    abstract fun convert(labeledTree: LabeledTree, holdout: Dataset?): String
 
     fun store(labeledTree: LabeledTree, holdout: Dataset?) {
         val stringRepresentation = convert(labeledTree, holdout)

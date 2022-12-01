@@ -33,17 +33,22 @@ class Parser(
 
     fun <T> parseFile(virtualFile: VirtualFile, project: Project, callback: (PsiElement) -> T): List<T> =
         ReadAction.compute<List<T>, Exception> {
-            val psiManager = PsiManager.getInstance(project)
-            val psiFile = psiManager.findFile(virtualFile) ?: throw ParserException(virtualFile.path)
-            psiTreeTransformations.forEach { it.transform(psiFile) }
-            val granularityPsiElements = languageHandler.splitByGranularity(psiFile, granularity)
-            granularityPsiElements.map {
-                val path = File(project.basePath ?: "")
-                    .toPath()
-                    .parent
-                    .relativize(File(it.containingFile.virtualFile.path).toPath())
-                it.putUserData(PATH_KEY, path.toString())
-                callback(it)
+            try {
+                val psiManager = PsiManager.getInstance(project)
+                val psiFile = psiManager.findFile(virtualFile) ?: throw ParserException(virtualFile.path)
+                psiTreeTransformations.forEach { it.transform(psiFile) }
+                val granularityPsiElements = languageHandler.splitByGranularity(psiFile, granularity)
+                granularityPsiElements.map {
+                    val path = File(project.basePath ?: "")
+                        .toPath()
+                        .parent
+                        .relativize(File(it.containingFile.virtualFile.path).toPath())
+                    it.putUserData(PATH_KEY, path.toString())
+                    callback(it)
+                }
+            } catch (e: AssertionError) {
+                println("Skipping file due to error in file parsing: ${e.message}")
+                emptyList()
             }
         }
 }

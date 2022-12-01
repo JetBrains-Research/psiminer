@@ -3,8 +3,10 @@ package psi
 import astminer.common.model.Position
 import com.intellij.openapi.editor.Document
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiMethod
 import com.intellij.psi.PsiRecursiveElementVisitor
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.psi.util.parentOfType
 import psi.nodeProperties.isHidden
 import psi.nodeProperties.nodeType
 import psi.nodeProperties.token
@@ -55,6 +57,10 @@ fun PsiElement.printTree(delimiter: String = "..", indentStep: Int = 2) {
         println(representation.toString())
     }
 }
+
+fun PsiElement.isLeaf() = this.children.isEmpty()
+
+fun PsiElement.methodRoot() = this.parentOfType<PsiMethod>()
 
 fun Document.getPosition(offset: Int) = Position(
     getLineNumber(offset) + 1,

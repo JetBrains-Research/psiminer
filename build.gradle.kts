@@ -6,11 +6,11 @@ fun getProperty(key: String) =
 
 plugins {
     id("java")
-    id("org.jetbrains.intellij") version "1.1.4"
-    id("io.gitlab.arturbosch.detekt") version "1.17.0"
+    id("org.jetbrains.intellij") version "1.9.0"
+    id("io.gitlab.arturbosch.detekt") version "1.17.1"
 
-    kotlin("jvm") version "1.5.31"
-    kotlin("plugin.serialization") version "1.5.0"
+    kotlin("jvm") version "1.7.21"
+    kotlin("plugin.serialization") version "1.7.21"
 }
 
 allprojects {
@@ -27,11 +27,13 @@ allprojects {
     }
 
     dependencies {
-        implementation("org.jetbrains.kotlin:kotlin-stdlib:1.5.31")
-        implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
+        implementation("org.jetbrains.kotlin:kotlin-stdlib:1.7.21")
+        implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.4.1")
+        implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
+        implementation("it.unimi.dsi:fastutil:8.5.9")
 
-        testImplementation(platform("org.junit:junit-bom:5.7.2"))
-        testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+        testImplementation(platform("org.junit:junit-bom:5.9.0"))
+        testImplementation("org.junit.jupiter:junit-jupiter:5.9.0")
 
         detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.18.1")
 
@@ -67,10 +69,10 @@ allprojects {
 
     tasks {
         compileKotlin {
-            kotlinOptions.jvmTarget = "11"
+            kotlinOptions.jvmTarget = "17"
         }
         compileTestKotlin {
-            kotlinOptions.jvmTarget = "11"
+            kotlinOptions.jvmTarget = "17"
         }
         test {
             useJUnitPlatform()

@@ -7,6 +7,14 @@ For now, `PSIMiner` support tree-based and path-based storage formats.
 save input data in the appropriate holdout folders (`train`, `val` and `test`).
 If the data is not structured, all trees will be saved in the `output` folder in one file.
 
+## Plain text format
+
+Save just method code with applied tree transformations to `.jsonl` file
+```json
+{
+  "name": "plain text"
+}
+```
 ## Tree formats
 
 ### JSON Lines

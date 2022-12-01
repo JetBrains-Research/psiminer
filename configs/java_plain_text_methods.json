@@ -1,0 +1,37 @@
+{
+  "label": {
+    "name": "method name"
+  },
+  "storage": {
+    "name": "plain text"
+  },
+  "language": "Java",
+  "filters": [
+    {
+      "name": "constructor"
+    },
+    {
+      "name": "empty method"
+    },
+    {
+      "name": "by modifiers",
+      "excludeModifiers": [
+        "abstract"
+      ]
+    },
+    {
+      "name": "by annotations",
+      "excludeAnnotations": [
+        "Override"
+      ]
+    }
+  ],
+  "tree transformations": [
+    {
+      "name": "remove comments",
+      "removeDoc": true
+    }
+  ],
+  "printTrees": false,
+  "collectMetadata": true
+}

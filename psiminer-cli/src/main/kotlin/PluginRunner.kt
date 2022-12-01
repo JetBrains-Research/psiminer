@@ -34,6 +34,7 @@ val module = SerializersModule {
         subclass(JsonTreeStorageConfig::class)
         subclass(Code2SeqStorageConfig::class)
         subclass(JsonGraphStorageConfig::class)
+        subclass(PlainTextStorageConfig::class)
     }
     polymorphic(FilterConfig::class) {
         subclass(CodeLinesFilterConfig::class)

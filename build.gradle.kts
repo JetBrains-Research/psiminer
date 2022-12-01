@@ -9,8 +9,8 @@ plugins {
     id("org.jetbrains.intellij") version "1.9.0"
     id("io.gitlab.arturbosch.detekt") version "1.17.1"
 
-    kotlin("jvm") version "1.7.10"
-    kotlin("plugin.serialization") version "1.7.10"
+    kotlin("jvm") version "1.7.21"
+    kotlin("plugin.serialization") version "1.7.21"
 }
 
 allprojects {
@@ -27,9 +27,10 @@ allprojects {
     }
 
     dependencies {
-        implementation("org.jetbrains.kotlin:kotlin-stdlib:1.7.10")
-        implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0")
-        implementation("it.unimi.dsi:fastutil:8.5.8")
+        implementation("org.jetbrains.kotlin:kotlin-stdlib:1.7.21")
+        implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.4.1")
+        implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
+        implementation("it.unimi.dsi:fastutil:8.5.9")
 
         testImplementation(platform("org.junit:junit-bom:5.9.0"))
         testImplementation("org.junit.jupiter:junit-jupiter:5.9.0")

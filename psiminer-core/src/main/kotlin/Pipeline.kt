@@ -86,6 +86,7 @@ class Pipeline(
             logger.warn("Process project ${project.name}")
             println("Successfully opened ${project.name}")
             processProject(project, holdout, numThreads, printTrees)
+            true // TODO: change to returning whether process succeeded
         }
     }
 

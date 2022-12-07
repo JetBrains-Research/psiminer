@@ -24,7 +24,8 @@ enum class Dataset(val folderName: String) {
 
 enum class Language(val extensions: List<String>) {
     Java(listOf("java")),
-    Kotlin(listOf("kt", "kts"))
+    Kotlin(listOf("kt", "kts")),
+    PHP(listOf("php"))
 }
 
 /*

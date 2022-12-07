@@ -12,7 +12,7 @@ import java.io.File
 open class RepositoryOpener {
     protected val logger: Logger = LoggerFactory.getLogger(javaClass)
 
-    open fun openRepository(repositoryRoot: File, onOpen: (Project) -> Unit) {
+    open fun openRepository(repositoryRoot: File, onOpen: (Project) -> Boolean) {
         println("Opening project at ${repositoryRoot.absolutePath}")
         ProjectUtil.getOpenProjects().forEach { ProjectManagerEx.getInstance().closeAndDispose(it) }
         ActionManagerEx.getInstanceEx() // workaround for https://youtrack.jetbrains.com/issue/IDEA-294726
@@ -22,7 +22,7 @@ open class RepositoryOpener {
             logger.warn("Unable to open project in ${repositoryRoot.path}")
             return
         }
-        project.apply(onOpen)
+        project.let(onOpen)
         ProjectManagerEx.getInstance().closeAndDispose(project)
     }
 }
@@ -31,7 +31,7 @@ class JVMRepositoryOpener(private val preprocessorManager: PreprocessorManager?)
 
     private val repositoryOpener = getKotlinJavaRepositoryOpener()
 
-    override fun openRepository(repositoryRoot: File, onOpen: (Project) -> Unit) {
+    override fun openRepository(repositoryRoot: File, onOpen: (Project) -> Boolean) {
         preprocessorManager?.preprocessRepositoryInplace(repositoryRoot)
         val allProjectsOpenedSuccessfully = repositoryOpener.openRepository(repositoryRoot, onOpen)
         if (!allProjectsOpenedSuccessfully) {

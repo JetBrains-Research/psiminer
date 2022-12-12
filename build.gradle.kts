@@ -57,7 +57,7 @@ allprojects {
         type.set(getProperty("platformType"))
         downloadSources.set(getProperty("platformDownloadSources").toBoolean())
         updateSinceUntilBuild.set(true)
-        plugins.set(getProperty("platformPlugins").split(',').map(String::trim).filter(String::isNotEmpty))
+        plugins.set(getProperty("platformPlugins").split(',').map(String::trim).filter(String::isNotEmpty) + listOf("com.jetbrains.php:222.4345.14"))
     }
 
     detekt {

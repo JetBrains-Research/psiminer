@@ -1,0 +1,27 @@
+{
+  "filters": [
+    {"name": "constructor"},
+    {"name": "empty method"},
+    {
+      "name": "by modifiers",
+      "excludeModifiers": ["abstract"]
+    },
+    {
+      "name": "by annotations",
+      "excludeAnnotations": ["Override"]
+    }
+  ],
+  "label": {"name": "method name"},
+  "storage": {
+    "name": "json graph"
+  },
+
+  "language": "PHP",
+  "tree transformations": [
+    {"name": "exclude whitespace"},
+    {"name": "exclude language symbols"}
+  ],
+  "numThreads": 1,
+  "printTrees": false,
+  "collectMetadata": true
+}

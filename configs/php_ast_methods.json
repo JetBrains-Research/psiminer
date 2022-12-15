@@ -1,0 +1,30 @@
+{
+  "additional preprocessing": {
+    "enable": false
+  },
+  "filters": [
+    {"name": "constructor"},
+    {"name": "empty method"},
+    {
+      "name": "by modifiers",
+      "excludeModifiers": ["abstract"]
+    },
+    {
+      "name": "by annotations",
+      "excludeAnnotations": ["Override"]
+    }
+  ],
+  "label": {"name": "method name"},
+  "storage": {
+    "name": "json tree"
+  },
+
+  "language": "PHP",
+  "tree transformations": [
+    {"name": "exclude whitespace"}
+  ],
+
+  "numThreads": 10,
+  "printTrees": false,
+  "collectMetadata": true
+}

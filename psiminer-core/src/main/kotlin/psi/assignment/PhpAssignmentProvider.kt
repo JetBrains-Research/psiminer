@@ -2,7 +2,7 @@ package psi.assignment
 
 import com.intellij.psi.PsiElement
 
-class PHPAssignmentProvider : AssignmentProvider {
+class PhpAssignmentProvider : AssignmentProvider {
     override fun getAllAssignments(root: PsiElement): List<PsiElement> {
         TODO("Not yet implemented")
     }

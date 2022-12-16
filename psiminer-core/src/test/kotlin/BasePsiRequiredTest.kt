@@ -7,6 +7,7 @@ import org.junit.jupiter.api.TestInstance
 import psi.language.JavaHandler
 import psi.language.KotlinHandler
 import psi.language.LanguageHandler
+import psi.language.PhpHandler
 import java.io.File
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -68,5 +69,13 @@ open class KotlinPsiRequiredTest(source: String) : BasePsiRequiredTest(dataFolde
     companion object {
         val dataFolder = File("kotlin")
         const val ext = "kt"
+    }
+}
+
+open class PhpPsiRequiredTest(source: String) : BasePsiRequiredTest(dataFolder.resolve("$source.$ext")) {
+    override val handler: LanguageHandler = PhpHandler()
+    companion object {
+        val dataFolder = File("php")
+        const val ext = "php"
     }
 }

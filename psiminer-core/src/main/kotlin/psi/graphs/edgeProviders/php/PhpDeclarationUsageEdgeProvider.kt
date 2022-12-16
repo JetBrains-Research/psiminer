@@ -13,9 +13,9 @@ class PhpDeclarationUsageEdgeProvider : EdgeProvider(
     override fun provideEdges(graph: CodeGraph): List<Edge> {
         val newEdges = mutableListOf<Edge>()
         graph.vertices.filterIsInstance<VariableImpl>().forEach { vertex ->
-            val firstAssignmentVertex = graph.vertices.firstOrNull { it is VariableImpl && it.text == vertex.text }
-            if (firstAssignmentVertex != null) {
-                newEdges.add(Edge(firstAssignmentVertex, vertex, EdgeType.DeclarationUsage))
+            val declaration = vertex.reference?.resolve()
+            if (declaration != null) {
+                newEdges.add(Edge(declaration, vertex, EdgeType.DeclarationUsage))
             }
         }
         return newEdges

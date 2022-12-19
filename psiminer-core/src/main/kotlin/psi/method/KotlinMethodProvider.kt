@@ -19,11 +19,11 @@ class KotlinMethodProvider : MethodProvider() {
 
     override fun getNameNode(root: PsiElement): PsiElement =
         (root as? KtNamedFunction)?.nameIdentifier
-            ?: throw IllegalArgumentException("Try to extract body not from the method")
+            ?: throw NotAMethodException("name")
 
     override fun getBodyNode(root: PsiElement): PsiElement? {
         val methodRoot = root as? KtNamedFunction
-            ?: throw IllegalArgumentException("Try to extract body not from the method")
+            ?: throw NotAMethodException("body")
         return methodRoot.bodyBlockExpression
     }
 

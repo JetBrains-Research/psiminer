@@ -14,6 +14,9 @@ import java.io.File
 
 @Serializable
 abstract class StorageConfig {
+    open class UnsupportedStorageType(storageType: String, language: String) :
+        IllegalArgumentException("$storageType storage doesn't support $language")
+
     abstract fun createStorage(outputDirectory: File, language: Language): Storage
 }
 
@@ -50,6 +53,6 @@ class JsonGraphStorageConfig : StorageConfig() {
         when (language) {
             Language.Java -> JsonGraphStorage(outputDirectory, JavaGraphMiner())
             Language.PHP -> JsonGraphStorage(outputDirectory, PhpGraphMiner())
-            else -> throw IllegalArgumentException("rip")
+            else -> throw UnsupportedStorageType("json graph", language.name)
         }
 }

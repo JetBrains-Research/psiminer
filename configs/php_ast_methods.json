@@ -7,7 +7,7 @@
     {"name": "empty method"},
     {
       "name": "by modifiers",
-      "excludeModifiers": ["abstract"]
+      "excludeModifiers": ["private"]
     },
     {
       "name": "by annotations",

@@ -19,4 +19,7 @@ abstract class MethodProvider {
     open fun stringsToCommentString(c: Collection<String>): String {
         return c.filterNot { it.none { s -> s.isLetterOrDigit() } }.flatMap { splitToSubtokens(it) }.joinToString("|")
     }
+
+    open class NotAMethodException(absentToken: String) :
+        IllegalArgumentException("Try to extract $absentToken not from the method")
 }

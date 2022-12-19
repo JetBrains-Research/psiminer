@@ -10,7 +10,6 @@ import psi.graphs.Edge
 import psi.graphs.EdgeType
 import psi.graphs.graphMiners.PhpGraphMiner
 
-
 internal class PhpDeclarationUsageEdgeProviderTest : PhpPsiRequiredTest("PhpFlowMethods") {
 
     @ParameterizedTest

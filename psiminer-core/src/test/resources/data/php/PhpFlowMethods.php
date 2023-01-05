@@ -11,12 +11,12 @@ class PhpFlowMethods
         $c = 2;
     }
 
-    public function straightReadWriteMethod(): int
+    public function straightReadWriteMethod()
     {
         $a = 0;
         $b = $a + 1;
         $c = $a + $b;
-        return $c;
+        $d = $c * $c;
     }
 
     public function ifMethod()

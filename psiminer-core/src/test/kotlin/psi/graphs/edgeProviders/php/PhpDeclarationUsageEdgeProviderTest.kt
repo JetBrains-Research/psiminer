@@ -57,7 +57,8 @@ internal class PhpDeclarationUsageEdgeProviderTest : PhpPsiRequiredTest("PhpFlow
             "straightReadWriteMethod" to mapOf(
                 "\$a = 0" to 3,
                 "\$b = \$a + 1" to 2,
-                "\$c = \$a + \$b" to 2
+                "\$c = \$a + \$b" to 3,
+                "\$d = \$c * \$c" to 1
             ),
             "ifMethod" to mapOf(
                 "\$a = 0" to 2,

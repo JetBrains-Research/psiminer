@@ -13,21 +13,24 @@ class PhpFlowMethods
 
     public function straightReadWriteMethod()
     {
-        $a = 0;
-        $b = $a + 1;
+        $a = 1;
+        $b = $a;
+        $b = 2 * $a;
         $c = $a + $b;
         $d = $c * $c;
     }
 
     public function ifMethod()
     {
-        $a = 0;
-        if ($a > 0) {
-            $b = 1;
-        } else {
+        $a = 1;
+        if ($a > 1) {
             $b = 2;
+        } else if ($a < 0) {
+            $c = 3;
+        } else {
+            $d = 4;
         }
-        $b = $b + 1;
+        $e = 5;
     }
 
     public function multipleDeclarations()

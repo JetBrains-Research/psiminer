@@ -55,14 +55,17 @@ internal class PhpDeclarationUsageEdgeProviderTest : PhpPsiRequiredTest("PhpFlow
                 "\$c = 2" to 1
             ),
             "straightReadWriteMethod" to mapOf(
-                "\$a = 0" to 3,
-                "\$b = \$a + 1" to 2,
+                "\$a = 1" to 4,
+                "\$b = \$a" to 3,
                 "\$c = \$a + \$b" to 3,
                 "\$d = \$c * \$c" to 1
             ),
             "ifMethod" to mapOf(
-                "\$a = 0" to 2,
-                "\$b = 1" to 4
+                "\$a = 1" to 3,
+                "\$b = 2" to 1,
+                "\$c = 3" to 1,
+                "\$d = 4" to 1,
+                "\$e = 5" to 1
             ),
             "multipleDeclarations" to mapOf(
                 "\$i = 0" to 6

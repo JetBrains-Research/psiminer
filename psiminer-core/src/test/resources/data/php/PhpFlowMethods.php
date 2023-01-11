@@ -51,4 +51,35 @@ class PhpFlowMethods
         $a = 3;
         return $b + $a;
     }
+
+    public function forMethod()
+    {
+        for ($i = 0; $i < 2; $i++) {
+            if ($i == 1) {
+                break;
+            }
+        }
+    }
+
+    public function foreachMethod()
+    {
+        $arr = array(1, 2, 3, 4);
+        foreach ($arr as &$value) {
+            $value = $value * 2;
+        }
+    }
+
+    public function multipleReturns(): int
+    {
+        $a = 1;
+        if ($a < 1) {
+            return 0;
+        }
+        if ($a > 1) {
+            if ($a > 2) {
+                return 1;
+            }
+        }
+    return 2;
+    }
 }

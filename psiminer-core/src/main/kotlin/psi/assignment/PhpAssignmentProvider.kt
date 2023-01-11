@@ -10,7 +10,7 @@ class PhpAssignmentProvider : AssignmentProvider {
     override fun getAllAssignments(root: PsiElement): List<PsiElement> =
         root.preOrder().flatMap { vertex ->
             when (vertex) {
-                is AssignmentExpression-> listOf(vertex)
+                is AssignmentExpression -> listOf(vertex)
                 else -> emptyList()
             }
         }

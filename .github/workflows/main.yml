@@ -23,6 +23,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
+      - name: Configure license for IntelliJ IDEA Ultimate
+        run: |
+          mkdir -p ~/.config/JetBrains/IntelliJIdea2022.2
+          cat $ULTIMATE_LICENSE_KEY >> ~/.config/JetBrains/IntelliJIdea2022.2/idea.key
+
   build:
     needs: setup
     runs-on: ubuntu-latest

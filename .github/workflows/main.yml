@@ -83,8 +83,8 @@ jobs:
 
       - name: Configure license for IntelliJ IDEA Ultimate
         run: |
-          mkdir -p psiminer-cli/idea-sandbox/config/
-          cat $ULTIMATE_LICENSE_KEY >> psiminer-cli/idea-sandbox/config/idea.key
+          mkdir -p psiminer-cli/build/idea-sandbox/config/
+          cat $ULTIMATE_LICENSE_KEY >> psiminer-cli/build/idea-sandbox/config/idea.key
 
       - name: Run on Java test data
         run: |

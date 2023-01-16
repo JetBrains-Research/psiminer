@@ -25,8 +25,8 @@ jobs:
 
       - name: Configure license for IntelliJ IDEA Ultimate
         run: |
-          mkdir -p ~/.config/JetBrains/IntelliJIdea2022.2
-          cat $ULTIMATE_LICENSE_KEY >> ~/.config/JetBrains/IntelliJIdea2022.2/idea.key
+          mkdir -p psiminer-cli/idea-sandbox/config/
+          cat $ULTIMATE_LICENSE_KEY >> psiminer-cli/idea-sandbox/config/idea.key
 
   build:
     needs: setup

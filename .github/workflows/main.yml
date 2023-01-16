@@ -23,11 +23,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Configure license for IntelliJ IDEA Ultimate
-        run: |
-          mkdir -p psiminer-cli/idea-sandbox/config/
-          cat $ULTIMATE_LICENSE_KEY >> psiminer-cli/idea-sandbox/config/idea.key
-
   build:
     needs: setup
     runs-on: ubuntu-latest
@@ -85,6 +80,11 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 17
+
+      - name: Configure license for IntelliJ IDEA Ultimate
+        run: |
+          mkdir -p psiminer-cli/idea-sandbox/config/
+          cat $ULTIMATE_LICENSE_KEY >> psiminer-cli/idea-sandbox/config/idea.key
 
       - name: Run on Java test data
         run: |

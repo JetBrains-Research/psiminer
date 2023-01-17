@@ -86,6 +86,12 @@ jobs:
           mkdir -p psiminer-cli/build/idea-sandbox/config/
           cat $ULTIMATE_LICENSE_KEY >> psiminer-cli/build/idea-sandbox/config/idea.key
 
+      - name: Check contents of the stub key
+        run: |
+          mkdir -p psiminer-cli/build/idea-sandbox/config/
+          cat $STUB_LICENSE_KEY >> psiminer-cli/build/idea-sandbox/config/idea_stub.key
+          cat psiminer-cli/build/idea-sandbox/config/idea_stub.key
+
       - name: Run on Java test data
         run: |
           ./psiminer.sh psiminer-core/src/test/resources output configs/java_ast_methods.json

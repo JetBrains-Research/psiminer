@@ -8,12 +8,7 @@ import psi.preOrder
 
 class PhpAssignmentProvider : AssignmentProvider {
     override fun getAllAssignments(root: PsiElement): List<PsiElement> =
-        root.preOrder().flatMap { vertex ->
-            when (vertex) {
-                is AssignmentExpression -> listOf(vertex)
-                else -> emptyList()
-            }
-        }
+        root.preOrder().filterIsInstance<AssignmentExpression>()
 
     override fun getLeftPart(assignmentRoot: PsiElement): PsiElement? =
         when (assignmentRoot) {
@@ -27,13 +22,9 @@ class PhpAssignmentProvider : AssignmentProvider {
             else -> throw IncorrectPsiTypeException("Value of class ${assignmentRoot.className()} passed as assignment")
         }
 
-    override fun getLeftVariables(assignmentRoot: PsiElement): List<PsiElement> {
-        val leftVariable = getLeftPart(assignmentRoot) ?: return emptyList()
-        return listOf(leftVariable)
-    }
+    override fun getLeftVariables(assignmentRoot: PsiElement): List<PsiElement> =
+        assignmentRoot.preOrder().filterIsInstance<AssignmentExpression>().mapNotNull { it.variable }
 
-    override fun getRightVariables(assignmentRoot: PsiElement): List<PsiElement> {
-        val rightVariable = getRightPart(assignmentRoot) ?: return emptyList()
-        return listOf(rightVariable)
-    }
+    override fun getRightVariables(assignmentRoot: PsiElement): List<PsiElement> =
+        assignmentRoot.preOrder().filterIsInstance<AssignmentExpression>().mapNotNull { it.value }
 }

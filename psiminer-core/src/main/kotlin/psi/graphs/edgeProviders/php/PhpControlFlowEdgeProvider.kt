@@ -21,15 +21,8 @@ class PhpControlFlowEdgeProvider : EdgeProvider(
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    private val PsiElement.controlFlow: ControlFlow
-        get() = ControlFlowFactory.getInstance(project).getControlFlow(
-            this,
-            AllVariablesControlFlowPolicy.getInstance()
-        )
-
     private fun getPsiElementFromControlFlow(controlFlow: PhpControlFlow, index: Int): PsiElement? {
         val instruction = controlFlow.instructions[index]
-        println(instruction.toString() + "  " + instruction.anchor + "  " + instruction.predecessors.joinToString(" "))
         return instruction.anchor
     }
 
@@ -54,7 +47,7 @@ class PhpControlFlowEdgeProvider : EdgeProvider(
         successors: Array<out Set<Int>>
     ): Array<out Set<Int>> {
         val n = instructions.size
-        val nextInstructions = Array<MutableSet<Int>>(n) { mutableSetOf() }
+        val nextNonBranchingInstructions = Array<MutableSet<Int>>(n) { mutableSetOf() }
         val used = BooleanArray(n) { false }
 
         fun dfsFromInstruction(index: Int) {
@@ -65,10 +58,10 @@ class PhpControlFlowEdgeProvider : EdgeProvider(
             for (toIndex in successors[index]) {
                 val toElement = elements[toIndex]
                 if (!toElement.correspondsToBranchingInstruction()) {
-                    nextInstructions[index].add(toIndex)
+                    nextNonBranchingInstructions[index].add(toIndex)
                 } else {
                     dfsFromInstruction(toIndex)
-                    nextInstructions[index].addAll(nextInstructions[toIndex])
+                    nextNonBranchingInstructions[index].addAll(nextNonBranchingInstructions[toIndex])
                 }
             }
         }
@@ -76,7 +69,7 @@ class PhpControlFlowEdgeProvider : EdgeProvider(
         for (index in 0 until n) {
             dfsFromInstruction(index)
         }
-        return nextInstructions
+        return nextNonBranchingInstructions
     }
 
     private fun PsiElement?.correspondsToBranchingInstruction(): Boolean =
@@ -87,12 +80,12 @@ class PhpControlFlowEdgeProvider : EdgeProvider(
         instructions: List<PhpInstruction>,
         elements: List<PsiElement?>,
         successors: Array<out Set<Int>>,
-        nextInstructions: Array<out Set<Int>>,
+        nextNonBranchingInstructions: Array<out Set<Int>>,
     ): MutableList<Edge> {
         val newEdges = mutableListOf<Edge>()
         val element = elements[index] ?: return mutableListOf()
         if (!element.correspondsToBranchingInstruction()) {
-            nextInstructions[index].forEach { toIndex ->
+            nextNonBranchingInstructions[index].forEach { toIndex ->
                 val toElement = elements[toIndex]
                 if (toElement != element && toElement != null) {
                     newEdges.add(Edge(element, toElement, EdgeType.ControlFlow))
@@ -100,13 +93,12 @@ class PhpControlFlowEdgeProvider : EdgeProvider(
             }
         }
         for (toIndex in successors[index]) {
-            val edgeType = EdgeType.ControlElement
             val toElement = elements[toIndex] ?: continue
             if (
                 element != toElement &&
                 (element.correspondsToBranchingInstruction() || toElement.correspondsToBranchingInstruction())
             ) {
-                newEdges.add(Edge(element, toElement, edgeType))
+                newEdges.add(Edge(element, toElement, EdgeType.ControlElement))
             }
         }
         if (element is PhpReturn || isTerminalInstruction(index, instructions, successors)) {
@@ -144,9 +136,11 @@ class PhpControlFlowEdgeProvider : EdgeProvider(
         val instructions = controlFlow.instructions.toList()
         val elements = instructions.indices.map { index -> getPsiElementFromControlFlow(controlFlow, index) }
         val successors = calculateSuccessors(instructions)
-        val nextInstructions = computeNextNonBranchingInstructions(instructions, elements, successors)
+        val nextNonBranchingInstructions = computeNextNonBranchingInstructions(instructions, elements, successors)
         instructions.indices.forEach { index ->
-            newEdges.addAll(provideEdgesForInstruction(index, instructions, elements, successors, nextInstructions))
+            newEdges.addAll(
+                provideEdgesForInstruction(index, instructions, elements, successors, nextNonBranchingInstructions)
+            )
         }
     }
 

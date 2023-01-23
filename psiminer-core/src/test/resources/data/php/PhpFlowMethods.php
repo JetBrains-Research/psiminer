@@ -80,6 +80,6 @@ class PhpFlowMethods
                 return 1;
             }
         }
-    return 2;
+        return 2;
     }
 }

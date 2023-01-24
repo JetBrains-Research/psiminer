@@ -65,7 +65,7 @@ val module = SerializersModule {
 val jsonFormat = Json {
     serializersModule = module
     classDiscriminator = "name"
-    ignoreUnknownKeys = false
+    ignoreUnknownKeys = true
 }
 
 class PsiExtractor : CliktCommand() {
@@ -84,7 +84,7 @@ class PsiExtractor : CliktCommand() {
             exitProcess(0)
         }
 
-        val storage = config.storage.createStorage(output)
+        val storage = config.storage.createStorage(output, config.language)
         val pipeline = Pipeline(
             language = config.language,
             repositoryOpener = config.preprocessing.createPreprocessing(),

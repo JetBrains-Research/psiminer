@@ -14,11 +14,11 @@ class JavaMethodProvider : MethodProvider() {
 
     override fun getNameNode(root: PsiElement): PsiElement =
         (root as? PsiMethod)?.nameIdentifier
-            ?: throw IllegalArgumentException("Try to extract name not from the method")
+            ?: throw NotAMethodException("name")
 
     override fun getBodyNode(root: PsiElement): PsiElement? {
         val methodRoot = root as? PsiMethod
-            ?: throw IllegalArgumentException("Try to extract body not from the method")
+            ?: throw NotAMethodException("body")
         return methodRoot.body
     }
 
@@ -49,9 +49,9 @@ class JavaMethodProvider : MethodProvider() {
 
     override fun hasModifier(root: PsiElement, modifier: String): Boolean =
         (root as? PsiMethod)?.hasModifierProperty(modifier)
-            ?: throw IllegalArgumentException("Try to extract modifier not from the method")
+            ?: throw NotAMethodException("modifier")
 
     override fun hasAnnotation(root: PsiElement, annotation: String): Boolean =
         (root as? PsiMethod)?.hasAnnotation(annotation)
-            ?: throw IllegalArgumentException("Try to extract annotation not from the method")
+            ?: throw NotAMethodException("annotation")
 }

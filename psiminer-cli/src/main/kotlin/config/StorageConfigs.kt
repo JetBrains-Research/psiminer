@@ -1,8 +1,10 @@
 package config
 
+import Language
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import psi.graphs.graphMiners.JavaGraphMiner
+import psi.graphs.graphMiners.PhpGraphMiner
 import storage.tree.JsonTreeStorage
 import storage.Storage
 import storage.graphs.JsonGraphStorage
@@ -12,19 +14,22 @@ import java.io.File
 
 @Serializable
 abstract class StorageConfig {
-    abstract fun createStorage(outputDirectory: File): Storage
+    open class UnsupportedStorageType(storageType: String, language: String) :
+        IllegalArgumentException("$storageType storage doesn't support $language")
+
+    abstract fun createStorage(outputDirectory: File, language: Language): Storage
 }
 
 @Serializable
 @SerialName("json tree")
 class JsonTreeStorageConfig : StorageConfig() {
-    override fun createStorage(outputDirectory: File): Storage = JsonTreeStorage(outputDirectory)
+    override fun createStorage(outputDirectory: File, language: Language): Storage = JsonTreeStorage(outputDirectory)
 }
 
 @Serializable
 @SerialName("plain text")
 class PlainTextStorageConfig : StorageConfig() {
-    override fun createStorage(outputDirectory: File): Storage = PlainTextStorage(outputDirectory)
+    override fun createStorage(outputDirectory: File, language: Language): Storage = PlainTextStorage(outputDirectory)
 }
 
 @Serializable
@@ -36,7 +41,7 @@ class Code2SeqStorageConfig(
     private val maxPathsInTest: Int? = null, // If passed then use only this number of paths to represent val/test trees
     private val nodesToNumbers: Boolean = false // If true then each node type is replaced with number
 ) : StorageConfig() {
-    override fun createStorage(outputDirectory: File): Storage = Code2SeqStorage(
+    override fun createStorage(outputDirectory: File, language: Language): Storage = Code2SeqStorage(
         outputDirectory, pathWidth, pathLength, maxPathsInTrain, maxPathsInTest, nodesToNumbers
     )
 }
@@ -44,7 +49,10 @@ class Code2SeqStorageConfig(
 @Serializable
 @SerialName("json graph")
 class JsonGraphStorageConfig : StorageConfig() {
-    override fun createStorage(outputDirectory: File): Storage = JsonGraphStorage(
-        outputDirectory, JavaGraphMiner()
-    )
+    override fun createStorage(outputDirectory: File, language: Language): Storage =
+        when (language) {
+            Language.Java -> JsonGraphStorage(outputDirectory, JavaGraphMiner())
+            Language.PHP -> JsonGraphStorage(outputDirectory, PhpGraphMiner())
+            else -> throw UnsupportedStorageType("json graph", language.name)
+        }
 }

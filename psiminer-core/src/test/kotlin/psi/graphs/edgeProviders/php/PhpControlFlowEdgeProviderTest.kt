@@ -23,15 +23,15 @@ internal class PhpControlFlowEdgeProviderTest : PhpGraphTest("PhpFlowMethods") {
             val codeGraph = graphMiner.mine(psiRoot)
             val controlFlowEdges =
                 codeGraph.edges.withType(EdgeType.ControlFlow).flatMap { (_, edges) -> edges.forward() }
-            assertTrue(
-                countIncomingEdges(controlFlowEdges).containsAll(
-                    correctNumberOfControlFlowEdges.incoming[methodName]
-                )
+            assertContainsElements(
+                countIncomingEdges(controlFlowEdges).entries,
+                correctNumberOfControlFlowEdges.incoming[methodName]?.entries
+                    ?: throw CorrectValueNotProvidedException(methodName, "control flow")
             )
-            assertTrue(
-                countOutgoingEdges(controlFlowEdges).containsAll(
-                    correctNumberOfControlFlowEdges.outgoing[methodName]
-                )
+            assertContainsElements(
+                countOutgoingEdges(controlFlowEdges).entries,
+                correctNumberOfControlFlowEdges.outgoing[methodName]?.entries
+                    ?: throw CorrectValueNotProvidedException(methodName, "control flow")
             )
         }
     }
@@ -51,15 +51,15 @@ internal class PhpControlFlowEdgeProviderTest : PhpGraphTest("PhpFlowMethods") {
             val codeGraph = graphMiner.mine(psiRoot)
             val controlFlowEdges =
                 codeGraph.edges.withType(EdgeType.ControlElement).flatMap { (_, edges) -> edges.forward() }
-            assertTrue(
-                countIncomingEdges(controlFlowEdges).containsAll(
-                    correctNumberOfControlElementEdges.incoming[methodName]
-                )
+            assertContainsElements(
+                countIncomingEdges(controlFlowEdges).entries,
+                correctNumberOfControlElementEdges.incoming[methodName]?.entries
+                    ?: throw CorrectValueNotProvidedException(methodName, "control element")
             )
-            assertTrue(
-                countOutgoingEdges(controlFlowEdges).containsAll(
-                    correctNumberOfControlElementEdges.outgoing[methodName]
-                )
+            assertContainsElements(
+                countOutgoingEdges(controlFlowEdges).entries,
+                correctNumberOfControlElementEdges.outgoing[methodName]?.entries
+                    ?: throw CorrectValueNotProvidedException(methodName, "control element")
             )
         }
     }

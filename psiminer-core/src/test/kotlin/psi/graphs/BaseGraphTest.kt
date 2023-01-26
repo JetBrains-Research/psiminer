@@ -24,13 +24,6 @@ abstract class BaseGraphTest(private val psiSourceFile: File) : BasePsiRequiredT
             .mapKeys { (psiElement, _) -> Vertex(psiElement.toString(), getPositionInFunction(psiElement)) }
             .mapValues { (_, fromVertices) -> fromVertices.size }
 
-    fun <K, V> Map<K, V>.containsAll(other: Map<K, V>?): Boolean {
-        if (other == null) {
-            return false
-        }
-        return this.entries.containsAll(other.entries)
-    }
-
     abstract fun PsiElement.methodRoot(): PsiElement
 
     private fun Document.getLineNumber(psiElement: PsiElement) =
@@ -71,6 +64,9 @@ abstract class BaseGraphTest(private val psiSourceFile: File) : BasePsiRequiredT
 
     class MethodRootNotFoundException(psiElementText: String) :
             RuntimeException("Can't find method root for $psiElementText")
+
+    class CorrectValueNotProvidedException(methodName: String, edgeType: String) :
+            RuntimeException("No correct number of $edgeType edges for method $methodName provided")
 }
 
 open class PhpGraphTest(source: String) : BaseGraphTest(dataFolder.resolve("$source.$ext")) {

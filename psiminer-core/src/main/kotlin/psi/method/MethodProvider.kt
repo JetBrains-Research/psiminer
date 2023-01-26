@@ -20,6 +20,6 @@ abstract class MethodProvider {
         return c.filterNot { it.none { s -> s.isLetterOrDigit() } }.flatMap { splitToSubtokens(it) }.joinToString("|")
     }
 
-    open class NotAMethodException(absentToken: String) :
-        IllegalArgumentException("Try to extract $absentToken not from the method")
+    open class NotAMethodException(absentToken: String, className: String) :
+        IllegalArgumentException("Cannot extract $absentToken : class $className is not a method")
 }

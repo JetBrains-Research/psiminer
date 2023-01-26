@@ -1,5 +1,6 @@
 package psi.method
 
+import astminer.featureextraction.className
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiMethod
@@ -14,11 +15,11 @@ class JavaMethodProvider : MethodProvider() {
 
     override fun getNameNode(root: PsiElement): PsiElement =
         (root as? PsiMethod)?.nameIdentifier
-            ?: throw NotAMethodException("name")
+            ?: throw NotAMethodException("name", root.className())
 
     override fun getBodyNode(root: PsiElement): PsiElement? {
         val methodRoot = root as? PsiMethod
-            ?: throw NotAMethodException("body")
+            ?: throw NotAMethodException("body", root.className())
         return methodRoot.body
     }
 
@@ -49,9 +50,9 @@ class JavaMethodProvider : MethodProvider() {
 
     override fun hasModifier(root: PsiElement, modifier: String): Boolean =
         (root as? PsiMethod)?.hasModifierProperty(modifier)
-            ?: throw NotAMethodException("modifier")
+            ?: throw NotAMethodException("modifier", root.className())
 
     override fun hasAnnotation(root: PsiElement, annotation: String): Boolean =
         (root as? PsiMethod)?.hasAnnotation(annotation)
-            ?: throw NotAMethodException("annotation")
+            ?: throw NotAMethodException("annotation", root.className())
 }

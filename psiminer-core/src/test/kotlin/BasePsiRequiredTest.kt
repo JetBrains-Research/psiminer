@@ -15,7 +15,6 @@ abstract class BasePsiRequiredTest(private val psiSourceFile: File) : BasePlatfo
 
     abstract val handler: LanguageHandler
     private val methods = mutableMapOf<String, PsiElement>()
-
     private class ResourceException(resourceRoot: String) : RuntimeException("Can't find resources in $resourceRoot")
 
     // We should define the root resources folder
@@ -35,8 +34,8 @@ abstract class BasePsiRequiredTest(private val psiSourceFile: File) : BasePlatfo
                         val methodName = handler.methodProvider.getNameNode(it).text
                         methods[methodName] = it
                     }
-                }
             }
+        }
     }
 
     @AfterAll
@@ -58,6 +57,7 @@ abstract class BasePsiRequiredTest(private val psiSourceFile: File) : BasePlatfo
 
 open class JavaPsiRequiredTest(source: String) : BasePsiRequiredTest(dataFolder.resolve("$source.$ext")) {
     override val handler: LanguageHandler = JavaHandler()
+
     companion object {
         val dataFolder = File("java")
         const val ext = "java"
@@ -66,6 +66,7 @@ open class JavaPsiRequiredTest(source: String) : BasePsiRequiredTest(dataFolder.
 
 open class KotlinPsiRequiredTest(source: String) : BasePsiRequiredTest(dataFolder.resolve("$source.$ext")) {
     override val handler: LanguageHandler = KotlinHandler()
+
     companion object {
         val dataFolder = File("kotlin")
         const val ext = "kt"
@@ -74,6 +75,7 @@ open class KotlinPsiRequiredTest(source: String) : BasePsiRequiredTest(dataFolde
 
 open class PhpPsiRequiredTest(source: String) : BasePsiRequiredTest(dataFolder.resolve("$source.$ext")) {
     override val handler: LanguageHandler = PhpHandler()
+
     companion object {
         val dataFolder = File("php")
         const val ext = "php"

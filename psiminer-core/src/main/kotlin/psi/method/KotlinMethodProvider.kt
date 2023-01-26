@@ -1,5 +1,6 @@
 package psi.method
 
+import astminer.featureextraction.className
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
@@ -19,11 +20,11 @@ class KotlinMethodProvider : MethodProvider() {
 
     override fun getNameNode(root: PsiElement): PsiElement =
         (root as? KtNamedFunction)?.nameIdentifier
-            ?: throw NotAMethodException("name")
+            ?: throw NotAMethodException("name", root.className())
 
     override fun getBodyNode(root: PsiElement): PsiElement? {
         val methodRoot = root as? KtNamedFunction
-            ?: throw NotAMethodException("body")
+            ?: throw NotAMethodException("body", root.className())
         return methodRoot.bodyBlockExpression
     }
 

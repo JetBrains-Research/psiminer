@@ -6,13 +6,13 @@ import psi.method.PHPMethodProvider
 import com.jetbrains.php.lang.psi.elements.PhpClass
 import com.jetbrains.php.lang.psi.elements.impl.MethodImpl
 import com.jetbrains.php.lang.psi.elements.impl.MethodReferenceImpl
-import psi.assignment.JavaAssignmentProvider
+import psi.assignment.PhpAssignmentProvider
 import psi.transformations.PhpTreeTransformation
 
 class PhpHandler : LanguageHandler() {
     override val language = Language.PHP
     override val methodProvider = PHPMethodProvider()
-    override val assignmentProvider = JavaAssignmentProvider()
+    override val assignmentProvider = PhpAssignmentProvider()
 
     override val transformationType = PhpTreeTransformation::class.java
     override val classPsiType = PhpClass::class.java

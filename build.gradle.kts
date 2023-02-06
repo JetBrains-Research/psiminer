@@ -24,6 +24,7 @@ allprojects {
     repositories {
         mavenCentral()
         maven(url = "https://packages.jetbrains.team/maven/p/astminer/astminer")
+        maven("https://packages.jetbrains.team/maven/p/big-code/bigcode")
     }
 
     dependencies {
@@ -31,20 +32,16 @@ allprojects {
         implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.4.1")
         implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
         implementation("it.unimi.dsi:fastutil:8.5.9")
+        implementation("org.jetbrains.research:plugin-utilities-core:1.0") {
+            exclude("org.slf4j", "slf4j-simple")
+            exclude("org.slf4j", "slf4j-api")
+            exclude("org.slf4j", "slf4j")
+        }
 
         testImplementation(platform("org.junit:junit-bom:5.9.0"))
         testImplementation("org.junit.jupiter:junit-jupiter:5.9.0")
 
         detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.18.1")
-
-        implementation("${getProperty("utilitiesProjectName")}:plugin-utilities-core") {
-            version {
-                branch = getProperty("utilitiesBranch")
-            }
-            exclude("org.slf4j", "slf4j-simple")
-            exclude("org.slf4j", "slf4j-api")
-            exclude("org.slf4j", "slf4j")
-        }
     }
 
     configurations.all {

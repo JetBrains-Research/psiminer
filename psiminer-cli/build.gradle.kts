@@ -15,7 +15,8 @@ tasks {
         args = listOfNotNull("psiminer", dataset, output, config)
         jvmArgs = listOf(
             "-Djava.awt.headless=true", "-Djdk.module.illegalAccess.silent=true",
-            "--add-exports", "java.base/jdk.internal.vm=ALL-UNNAMED", "-Xmx32G"
+            "--add-exports", "java.base/jdk.internal.vm=ALL-UNNAMED", "-Xmx32G",
+            "-Didea.is.internal=false", "-Dlog4j.configurationFile=psiminer-cli/src/main/resources/log4j.properties"
         )
         maxHeapSize = "32g"
     }

@@ -64,6 +64,34 @@ internal class PhpControlFlowEdgeProviderTest : PhpGraphTest("PhpFlowMethods") {
         }
     }
 
+    @ParameterizedTest
+    @ValueSource(
+        strings = [
+            "straightWriteMethod",
+            "multipleReturns",
+            "forWithReturn"
+        ]
+    )
+    fun `test returns extraction from PHP methods`(methodName: String) {
+        val psiRoot = getMethod(methodName)
+        val graphMiner = PhpGraphMiner()
+        ReadAction.run<Exception> {
+            val codeGraph = graphMiner.mine(psiRoot)
+            val controlFlowEdges =
+                codeGraph.edges.withType(EdgeType.ReturnsTo).flatMap { (_, edges) -> edges.forward() }
+            assertContainsElements(
+                countIncomingEdges(controlFlowEdges).entries,
+                correctNumberOfReturnsToEdges.incoming[methodName]?.entries
+                    ?: throw CorrectValueNotProvidedException(methodName, "returnsTo")
+            )
+            assertContainsElements(
+                countOutgoingEdges(controlFlowEdges).entries,
+                correctNumberOfReturnsToEdges.outgoing[methodName]?.entries
+                    ?: throw CorrectValueNotProvidedException(methodName, "returnsTo")
+            )
+        }
+    }
+
     companion object {
 
         val correctNumberOfControlFlowEdges = CorrectNumberOfIncomingAndOutgoingEdges(
@@ -128,6 +156,34 @@ internal class PhpControlFlowEdgeProviderTest : PhpGraphTest("PhpFlowMethods") {
                     Vertex("For", Pair(2, 8)) to 2, // 1. for() -> $i = 0  2. for() -> $i < 2
                     Vertex("VariableImpl: i", Pair(2, 21)) to 1, // $i -> $i < 2
                     Vertex("Break", Pair(4, 16)) to 1 // break -> for()
+                )
+            )
+        )
+
+        val correctNumberOfReturnsToEdges = CorrectNumberOfIncomingAndOutgoingEdges(
+            incoming = mapOf(
+                "straightWriteMethod" to mapOf(
+                    Vertex("MethodImpl: straightWriteMethod", Pair(0, 20)) to 1
+                ),
+                "multipleReturns" to mapOf(
+                    Vertex("MethodImpl: multipleReturns", Pair(0, 20)) to 3
+                ),
+                "forWithReturn" to mapOf(
+                    Vertex("MethodImpl: forWithReturn", Pair(0, 20)) to 2
+                )
+            ),
+            outgoing = mapOf(
+                "straightWriteMethod" to mapOf(
+                    Vertex("VariableImpl: c", Pair(4, 8)) to 1
+                ),
+                "multipleReturns" to mapOf(
+                    Vertex("PhpExpressionImpl: 0", Pair(4, 19)) to 1,
+                    Vertex("PhpExpressionImpl: 1", Pair(8, 23)) to 1,
+                    Vertex("PhpExpressionImpl: 2", Pair(11, 15)) to 1
+                ),
+                "forWithReturn" to mapOf(
+                    Vertex("Return", Pair(4, 16)) to 1,
+                    Vertex("VariableImpl: e", Pair(7, 8)) to 1,
                 )
             )
         )

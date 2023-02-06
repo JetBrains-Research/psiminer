@@ -3,7 +3,6 @@ package psi.graphs.edgeProviders.php
 import com.intellij.psi.PsiElement
 import com.intellij.psi.controlFlow.*
 import com.jetbrains.php.codeInsight.controlFlow.PhpControlFlow
-import com.jetbrains.php.codeInsight.controlFlow.instructions.PhpExitPointInstruction
 import com.jetbrains.php.codeInsight.controlFlow.instructions.PhpInstruction
 import com.jetbrains.php.lang.psi.elements.ControlStatement
 import com.jetbrains.php.lang.psi.elements.PhpReturn
@@ -77,7 +76,6 @@ class PhpControlFlowEdgeProvider : EdgeProvider(
 
     private fun provideEdgesForInstruction(
         index: Int,
-        instructions: List<PhpInstruction>,
         elements: List<PsiElement?>,
         successors: Array<out Set<Int>>,
         nextNonBranchingInstructions: Array<out Set<Int>>,
@@ -101,7 +99,7 @@ class PhpControlFlowEdgeProvider : EdgeProvider(
                 newEdges.add(Edge(element, toElement, EdgeType.ControlElement))
             }
         }
-        if (element is PhpReturn || isTerminalInstruction(index, instructions, successors)) {
+        if (isTerminalInstruction(index, elements, successors)) {
             addReturnsToEdge(element, elements, newEdges)
         }
         return newEdges
@@ -109,11 +107,11 @@ class PhpControlFlowEdgeProvider : EdgeProvider(
 
     private fun isTerminalInstruction(
         index: Int,
-        instructions: List<PhpInstruction>,
+        elements: List<PsiElement?>,
         successors: Array<out Set<Int>>,
     ): Boolean =
         successors[index].isEmpty() ||
-                successors[index].map { instructions[it] }.any { it is PhpExitPointInstruction }
+                successors[index].map { elements[it] }.all { it == null }
 
     private fun addReturnsToEdge(
         element: PsiElement,
@@ -139,7 +137,7 @@ class PhpControlFlowEdgeProvider : EdgeProvider(
         val nextNonBranchingInstructions = computeNextNonBranchingInstructions(instructions, elements, successors)
         instructions.indices.forEach { index ->
             newEdges.addAll(
-                provideEdgesForInstruction(index, instructions, elements, successors, nextNonBranchingInstructions)
+                provideEdgesForInstruction(index, elements, successors, nextNonBranchingInstructions)
             )
         }
     }

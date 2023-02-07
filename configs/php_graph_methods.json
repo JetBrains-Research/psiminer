@@ -19,7 +19,11 @@
   "language": "PHP",
   "tree transformations": [
     {"name": "exclude whitespace"},
-    {"name": "exclude language symbols"}
+    {"name": "exclude language symbols"},
+    {
+      "name": "remove comments",
+      "removeDoc": true
+    }
   ],
   "numThreads": 1,
   "printTrees": false,

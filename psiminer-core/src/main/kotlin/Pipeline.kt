@@ -109,10 +109,9 @@ class Pipeline(
         numThreads: Int = 1,
         printTrees: Boolean = false
     ) {
+        applyTransformationsOnProject(project)
         val projectFiles = extractProjectFiles(project, language)
-
         val progressBar = ProgressBar(project.name, projectFiles.size.toLong())
-
         val service = Executors.newFixedThreadPool(numThreads)
         val futures = projectFiles.map { file ->
             service.submit {
@@ -128,5 +127,22 @@ class Pipeline(
         service.shutdown()
         futures.forEach { it.get() }
         progressBar.close()
+    }
+
+    private fun applyTransformationsOnProject(project: Project) {
+        val projectFiles = extractProjectFiles(project, language)
+        val transformationsProgressBar = ProgressBar(
+            "Applying transformations for project ${project.name}",
+            projectFiles.size.toLong()
+        )
+        projectFiles.forEach { file ->
+            try {
+                parser.applyTransformations(file, project)
+            } catch (exception: ParserException) {
+                logger.error("Error while parsing ${exception.filepath}")
+            } finally {
+                transformationsProgressBar.step()
+            }
+        }
     }
 }

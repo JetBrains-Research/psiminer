@@ -4,8 +4,9 @@ import Language
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import psi.transformations.*
-import psi.transformations.removecomments.JavaRemoveCommentsTransformation
-import psi.transformations.removecomments.PhpRemoveCommentsTransformation
+import psi.transformations.removecomments.JavaHideCommentsTransformation
+import psi.transformations.removecomments.PhpDeleteCommentsTransformation
+import psi.transformations.removecomments.PhpHideCommentsTransformation
 import psi.transformations.typeresolve.JavaResolveTypeTransformation
 import java.lang.IllegalArgumentException
 
@@ -43,11 +44,18 @@ class CompressOperatorsTransformationConfig : PsiTreeTransformationConfig() {
 
 @Serializable
 @SerialName("remove comments")
-class RemoveCommentsTransformationConfig(private val removeDoc: Boolean = true) : PsiTreeTransformationConfig() {
+class RemoveCommentsTransformationConfig(
+    private val removeDoc: Boolean = true,
+    private val modifySource: Boolean = false
+) : PsiTreeTransformationConfig() {
     override fun createTreeTransformation(language: Language): PsiTreeTransformation =
         when (language) {
-            Language.Java -> JavaRemoveCommentsTransformation(removeDoc)
-            Language.PHP -> PhpRemoveCommentsTransformation(removeDoc)
+            Language.Java -> JavaHideCommentsTransformation(removeDoc)
+            Language.PHP -> if (modifySource) {
+                PhpDeleteCommentsTransformation(removeDoc)
+            } else {
+                PhpHideCommentsTransformation(removeDoc)
+            }
             else -> throw UnsupportedLanguageTransformation("remove comments", language.name)
         }
 }

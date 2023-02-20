@@ -22,7 +22,8 @@
     {"name": "exclude language symbols"},
     {
       "name": "remove comments",
-      "removeDoc": true
+      "removeDoc": true,
+      "modifySource": true
     }
   ],
   "numThreads": 1,

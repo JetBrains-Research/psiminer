@@ -2,13 +2,16 @@ package psi
 
 import GranularityLevel
 import PATH_KEY
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ReadAction
+import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import psi.language.LanguageHandler
-import psi.transformations.CommonTreeTransformation
+import psi.transformations.PriTreeModifyingTransformation
 import psi.transformations.PsiTreeTransformation
 import java.io.File
 
@@ -18,25 +21,16 @@ class Parser(
     private val granularity: GranularityLevel
 ) {
 
-    init {
-        psiTreeTransformations.forEach {
-            if (!languageHandler.transformationType.isInstance(it) && it !is CommonTreeTransformation) {
-                throw IllegalArgumentException("Incorrect transformation ${it::class.simpleName}")
-            }
-        }
-    }
-
     val language = languageHandler.language
 
     override fun toString(): String =
         "$language parser with ${psiTreeTransformations.joinToString { it::class.simpleName ?: "" }}"
 
-    fun <T> parseFile(virtualFile: VirtualFile, project: Project, callback: (PsiElement) -> T): List<T> =
-        ReadAction.compute<List<T>, Exception> {
+    fun <T> parseFile(virtualFile: VirtualFile, project: Project, callback: (PsiElement) -> T): List<T> {
+        return ReadAction.compute<List<T>, Exception> {
             try {
                 val psiManager = PsiManager.getInstance(project)
                 val psiFile = psiManager.findFile(virtualFile) ?: throw ParserException(virtualFile.path)
-                psiTreeTransformations.forEach { it.transform(psiFile) }
                 val granularityPsiElements = languageHandler.splitByGranularity(psiFile, granularity)
                 granularityPsiElements.map {
                     val path = File(project.basePath ?: "")
@@ -49,6 +43,30 @@ class Parser(
             } catch (e: AssertionError) {
                 println("Skipping file due to error in file parsing: ${e.message}")
                 emptyList()
+            }
+        }
+    }
+
+    fun applyTransformations(file: VirtualFile, project: Project) {
+        val psiManager = PsiManager.getInstance(project)
+        val psiFile = psiManager.findFile(file) ?: throw ParserException(file.path)
+        applyNonModifyingTransformations(psiFile)
+        applyModifyingTransformations(psiFile, project)
+    }
+
+    private fun applyNonModifyingTransformations(psiFile: PsiFile) =
+        ReadAction.run<Exception> {
+            psiTreeTransformations.filter { it !is PriTreeModifyingTransformation }.forEach {
+                it.transform(psiFile)
+            }
+        }
+
+    private fun applyModifyingTransformations(psiFile: PsiFile, project: Project) =
+        ApplicationManager.getApplication().invokeAndWait {
+            WriteCommandAction.runWriteCommandAction(project) {
+                psiTreeTransformations.filter { it is PriTreeModifyingTransformation }.forEach {
+                    it.transform(psiFile)
+                }
             }
         }
 }

@@ -3,7 +3,10 @@ package psi.graphs.edgeProviders.php
 import com.intellij.psi.PsiElement
 import com.intellij.psi.controlFlow.*
 import com.jetbrains.php.codeInsight.controlFlow.PhpControlFlow
+import com.jetbrains.php.codeInsight.controlFlow.instructions.PhpCatchConditionInstruction
+import com.jetbrains.php.codeInsight.controlFlow.instructions.PhpFinallyEndInstruction
 import com.jetbrains.php.codeInsight.controlFlow.instructions.PhpInstruction
+import com.jetbrains.php.codeInsight.controlFlow.instructions.impl.PhpFinallyHostInstruction
 import com.jetbrains.php.lang.psi.elements.ControlStatement
 import com.jetbrains.php.lang.psi.elements.PhpReturn
 import com.jetbrains.php.lang.psi.elements.impl.MethodImpl
@@ -22,7 +25,26 @@ class PhpControlFlowEdgeProvider : EdgeProvider(
 
     private fun getPsiElementFromControlFlow(controlFlow: PhpControlFlow, index: Int): PsiElement? {
         val instruction = controlFlow.instructions[index]
-        return instruction.anchor
+        return instruction.anchor ?: tryFindFinallyAnchor(instruction, controlFlow, index)
+    }
+
+    /**
+     * Special case for try-catch-finally statement.
+     *
+     * Tries to map HOST instruction without anchor to Finally clause.
+     * In all other cases simply returns null.
+     */
+    private fun tryFindFinallyAnchor(
+        instruction: PhpInstruction,
+        controlFlow: PhpControlFlow,
+        index: Int
+    ): PsiElement? {
+        val prevInstruction = if (index > 0) controlFlow.instructions[index - 1] else return null
+        if (instruction is PhpFinallyHostInstruction && prevInstruction is PhpCatchConditionInstruction) {
+            val finallyEndInstruction = prevInstruction.predecessors.find { it is PhpFinallyEndInstruction }
+            return finallyEndInstruction?.anchor
+        }
+        return null
     }
 
     /**

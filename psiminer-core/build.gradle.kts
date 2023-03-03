@@ -9,6 +9,7 @@ dependencies {
 
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.7.21")
     implementation("me.tongfei:progressbar:0.9.5")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
     testImplementation("io.mockk:mockk:1.13.2")
 }
 

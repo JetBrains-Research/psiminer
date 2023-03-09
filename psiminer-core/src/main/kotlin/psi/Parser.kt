@@ -15,6 +15,7 @@ import psi.language.LanguageHandler
 import psi.transformations.CommonTreeTransformation
 import psi.transformations.PsiTreeTransformation
 import java.io.File
+import java.util.concurrent.BlockingQueue
 
 class Parser(
     private val languageHandler: LanguageHandler,
@@ -35,34 +36,38 @@ class Parser(
     override fun toString(): String =
         "$language parser with ${psiTreeTransformations.joinToString { it::class.simpleName ?: "" }}"
 
-    suspend fun parseFile(
+    fun<T> parseFile(
         virtualFile: VirtualFile,
         project: Project,
-        callback: (PsiElement) -> LabeledTree?,
-        sendChannel: SendChannel<LabeledTree>
+        callback: (PsiElement) -> T?,
+        taskQueue: BlockingQueue<T>
     ) {
+        ReadAction.run<Exception> {
             try {
                 val granularityPsiElements = mutableListOf<PsiElement>()
-                ReadAction.run<Exception> {
-                    val psiManager = PsiManager.getInstance(project)
-                    val psiFile = psiManager.findFile(virtualFile) ?: throw ParserException(virtualFile.path)
-                    psiTreeTransformations.forEach { it.transform(psiFile) }
-                    granularityPsiElements.addAll(languageHandler.splitByGranularity(psiFile, granularity))
-                    granularityPsiElements.forEach {
-                        val path = File(project.basePath ?: "")
-                            .toPath()
-                            .parent
-                            .relativize(File(it.containingFile.virtualFile.path).toPath())
-                        it.putUserData(PATH_KEY, path.toString())
-                    }
+                val psiManager = PsiManager.getInstance(project)
+                val psiFile = psiManager.findFile(virtualFile) ?: throw ParserException(virtualFile.path)
+                psiTreeTransformations.forEach { it.transform(psiFile) }
+                granularityPsiElements.addAll(languageHandler.splitByGranularity(psiFile, granularity))
+                granularityPsiElements.forEach {
+                    val path = File(project.basePath ?: "")
+                        .toPath()
+                        .parent
+                        .relativize(File(it.containingFile.virtualFile.path).toPath())
+                    it.putUserData(PATH_KEY, path.toString())
                 }
                 granularityPsiElements.forEach {
-                    callback(it)?.let { it1 -> sendChannel.send(it1) }
+                    val result = callback(it)
+                    if (result != null) {
+                        taskQueue.put(result)
+                    }
                 }
             } catch (e: AssertionError) {
                 println("Skipping file due to error in file parsing: ${e.message}")
             }
         }
+    }
+
 
 //    suspend fun applyTransformations(file: VirtualFile, project: Project) {
 //        val psiManager = PsiManager.getInstance(project)

@@ -36,37 +36,57 @@ class Parser(
     override fun toString(): String =
         "$language parser with ${psiTreeTransformations.joinToString { it::class.simpleName ?: "" }}"
 
-    fun<T> parseFile(
-        virtualFile: VirtualFile,
-        project: Project,
-        callback: (PsiElement) -> T?,
-        taskQueue: BlockingQueue<T>
-    ) {
-        ReadAction.run<Exception> {
+    fun <T> parseFile(virtualFile: VirtualFile, project: Project, callback: (PsiElement) -> T): List<T> =
+        ReadAction.compute<List<T>, Exception> {
             try {
-                val granularityPsiElements = mutableListOf<PsiElement>()
                 val psiManager = PsiManager.getInstance(project)
                 val psiFile = psiManager.findFile(virtualFile) ?: throw ParserException(virtualFile.path)
                 psiTreeTransformations.forEach { it.transform(psiFile) }
-                granularityPsiElements.addAll(languageHandler.splitByGranularity(psiFile, granularity))
-                granularityPsiElements.forEach {
+                val granularityPsiElements = languageHandler.splitByGranularity(psiFile, granularity)
+                granularityPsiElements.map {
                     val path = File(project.basePath ?: "")
                         .toPath()
                         .parent
                         .relativize(File(it.containingFile.virtualFile.path).toPath())
                     it.putUserData(PATH_KEY, path.toString())
-                }
-                granularityPsiElements.forEach {
-                    val result = callback(it)
-                    if (result != null) {
-                        taskQueue.put(result)
-                    }
+                    callback(it)
                 }
             } catch (e: AssertionError) {
                 println("Skipping file due to error in file parsing: ${e.message}")
+                emptyList()
             }
         }
-    }
+
+//    fun<T> parseFile(
+//        virtualFile: VirtualFile,
+//        project: Project,
+//        callback: (PsiElement) -> T?
+//    ) {
+//        ReadAction.run<Exception> {
+//            try {
+//                val granularityPsiElements = mutableListOf<PsiElement>()
+//                val psiManager = PsiManager.getInstance(project)
+//                val psiFile = psiManager.findFile(virtualFile) ?: throw ParserException(virtualFile.path)
+//                psiTreeTransformations.forEach { it.transform(psiFile) }
+//                granularityPsiElements.addAll(languageHandler.splitByGranularity(psiFile, granularity))
+//                granularityPsiElements.forEach {
+//                    val path = File(project.basePath ?: "")
+//                        .toPath()
+//                        .parent
+//                        .relativize(File(it.containingFile.virtualFile.path).toPath())
+//                    it.putUserData(PATH_KEY, path.toString())
+//                }
+//                granularityPsiElements.forEach {
+//                    val result = callback(it)
+//                    if (result != null) {
+//                        taskQueue.put(result)
+//                    }
+//                }
+//            } catch (e: AssertionError) {
+//                println("Skipping file due to error in file parsing: ${e.message}")
+//            }
+//        }
+//    }
 
 
 //    suspend fun applyTransformations(file: VirtualFile, project: Project) {

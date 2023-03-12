@@ -21,7 +21,7 @@
     {"name": "exclude whitespace"},
     {"name": "exclude language symbols"}
   ],
-  "numThreads": 4,
+  "numThreads": 6,
   "printTrees": false,
   "collectMetadata": true
 }

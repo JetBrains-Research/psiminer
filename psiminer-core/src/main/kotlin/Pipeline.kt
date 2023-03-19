@@ -1,29 +1,16 @@
-import astminer.storage.MetaDataStorage
-import astminercompatibility.store
-import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.PsiElement
 import filter.Filter
 import labelextractor.LabelExtractor
-import labelextractor.LabeledTree
-import me.tongfei.progressbar.ProgressBar
 import org.slf4j.LoggerFactory
-import psi.Parser
-import psi.ParserException
 import psi.language.JavaHandler
 import psi.language.KotlinHandler
 import psi.language.PhpHandler
-import psi.printTree
 import psi.transformations.PsiTreeTransformation
-import storage.Storage
-import storage.StoragesManager
+import storage.StorageManager
 import java.io.File
-import java.util.concurrent.Executors
+import java.util.concurrent.BlockingQueue
 import java.util.concurrent.LinkedBlockingQueue
-import java.util.concurrent.ThreadFactory
-import kotlin.concurrent.thread
-import kotlin.io.path.Path
 import kotlin.system.measureTimeMillis
 
 class Pipeline(
@@ -32,20 +19,17 @@ class Pipeline(
     val psiTreeTransformations: List<PsiTreeTransformation>,
     private val filters: List<Filter>,
     val labelExtractor: LabelExtractor,
-    val storagesManager: StoragesManager,
+    val storageManager: StorageManager,
     val collectMetadata: Boolean = false
 ) {
-    //private var metaDataStorage: MetaDataStorage? = null
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
-//    private val languageHandler = when (language) {
-//        Language.Java -> JavaHandler()
-//        Language.Kotlin -> KotlinHandler()
-//        Language.PHP -> PhpHandler()
-//    }
-//
-//    private val parser = Parser(languageHandler, psiTreeTransformations, labelExtractor.granularityLevel)
+    private val languageHandler = when (language) {
+        Language.Java -> JavaHandler()
+        Language.Kotlin -> KotlinHandler()
+        Language.PHP -> PhpHandler()
+    }
 
     private fun checkFolderIsDataset(folder: File): Boolean {
         val folderDirNames = folder.listFiles()?.filter { it.isDirectory }?.map { it.name } ?: return false
@@ -57,12 +41,7 @@ class Pipeline(
         numThreads: Int = 1,
         printTrees: Boolean = false
     ) {
-//        if (collectMetadata) {
-//            val metadataPath = Path(storage.outputDirectory.path, "metadata").toString()
-//            metaDataStorage = MetaDataStorage(metadataPath)
-//        }
         require(numThreads > 0) { "Amount threads must be positive." }
-        //println("Parser configuration:\n$parser")
         val isDataset = checkFolderIsDataset(inputDirectory)
         if (isDataset) {
             println("Dataset structure is detected.")
@@ -82,8 +61,6 @@ class Pipeline(
             println("No dataset found. Process all sources from passed path")
             processRepository(inputDirectory, null, numThreads, printTrees)
         }
-        //metaDataStorage?.close()
-        //metaDataStorage = null
     }
 
     private fun processRepository(
@@ -106,124 +83,28 @@ class Pipeline(
         numThreads: Int = 1,
         printTrees: Boolean = false
     ) {
-        val filesQueue = LinkedBlockingQueue(extractProjectFiles(project, language))
+       val filesQueue: BlockingQueue<VirtualFile> = LinkedBlockingQueue(extractProjectFiles(project, language))
 
-        val repositoryProcessors = List(numThreads) {
+        val workers = List(numThreads) {
             Thread(
-                RepositoryProcessor(
-                    storage = storagesManager.createStorage(),
-                    collectMetadata = collectMetadata,
-                    labelExtractor = labelExtractor,
-                    filters = filters,
+                Worker(
+                    languageHandler = languageHandler,
                     psiTreeTransformations = psiTreeTransformations,
-                    language = language,
-                    filesQueue, project, holdout, printTrees
+                    filters = filters,
+                    labelExtractor = labelExtractor,
+                    storage = storageManager.createStorage(),
+                    collectMetadata = collectMetadata,
+                    filesQueue = filesQueue,
+                    project = project,
+                    holdout = holdout,
+                    printTrees = printTrees
                 )
             )
         }
-        val timeMillis = measureTimeMillis {
-            repositoryProcessors.forEach { it.start() }
-            repositoryProcessors.forEach { it.join() }
+        val millis = measureTimeMillis {
+            workers.forEach { it.start() }
+            workers.forEach { it.join() }
         }
-        println("\nProcessed in ${timeMillis/1000}s!\n")
+        println("Processed ${project.name} in ${millis/1000}s")
     }
-
-//    private fun processPsiTree(psiRoot: PsiElement, holdout: Dataset? = null, printTrees: Boolean = false): Boolean {
-//        if (filters.any { !it.validateTree(psiRoot, languageHandler) }) return false
-//        val labeledTree = labelExtractor.extractLabel(psiRoot, languageHandler) ?: return false
-//        synchronized(storage) {
-//            storage.store(labeledTree, holdout)
-//            metaDataStorage?.store(labeledTree, holdout)
-//            if (printTrees) labeledTree.root.printTree()
-//        }
-//        return true
-//    }
-
-//    private fun labelTree(psiRoot: PsiElement): LabeledTree? {
-//        if (filters.any { !it.validateTree(psiRoot, languageHandler) })
-//            return null
-//        return labelExtractor.extractLabel(psiRoot, languageHandler)
-//    }
-//
-//    private fun storeTrees(labeledTree: LabeledTree, holdout: Dataset?, printTrees: Boolean) {
-//        ReadAction.run<Exception> {
-//            storage.store(labeledTree, holdout)
-//            metaDataStorage?.store(labeledTree, holdout)
-//            if (printTrees) labeledTree.root.printTree()
-//        }
-//    }
-//
-//    private fun <T> processProject(
-//        project: Project,
-//        numThreads: Int = 1,
-//        produce: (PsiElement) -> T?,
-//        consume: (T) -> Unit
-//    ) {
-//        val projectFiles = extractProjectFiles(project, language)
-//        val taskQueue = LinkedBlockingQueue(projectFiles)
-
-//        val consumer = thread(start = true) {
-//            while (!Thread.currentThread().isInterrupted) {
-//                try {
-//                    val task = taskQueue.take()
-//                    consume(task)
-//                } catch (e: InterruptedException) {
-//                    Thread.currentThread().interrupt()
-//                }
-//            }
-//            val remainingTasks = mutableListOf<T>()
-//            taskQueue.drainTo(remainingTasks)
-//            remainingTasks.forEach(consume)
-//        }
-//        val producers = Executors.newFixedThreadPool(numThreads)
-//        val progressBar = ProgressBar(project.name, projectFiles.size.toLong())
-//        val futures = projectFiles.map { file ->
-//            producers.submit {
-//                try {
-//                    parser.parseFile(file, project, produce, taskQueue)
-//                } catch (exception: ParserException) {
-//                    logger.error("Error while parsing ${exception.filepath}")
-//                } finally {
-//                    progressBar.step()
-//                }
-//            }
-//        }
-//        producers.shutdown()
-//        futures.forEach { it.get() }
-//        progressBar.close()
-//        consumer.interrupt()
-
-//        val channel = Channel<LabeledTree>(1000)
-//        launch {
-//            val jobs = projectFiles.map { file ->
-//                launch {
-//                    parser.parseFile(file, project, { labelTree(it) }, channel)
-//                }
-//            }
-//            jobs.forEach { it.join() }
-//            println("closing")
-//            channel.close()
-//        }
-//        launch {
-//            storeTrees(holdout, printTrees, channel)
-//        }
-
-//        val progressBar = ProgressBar(project.name, projectFiles.size.toLong())
-//
-//        val service = Executors.newFixedThreadPool(numThreads)
-//        val futures = projectFiles.map { file ->
-//            service.submit {
-//                try {
-//                    parser.parseFile(file, project) { processPsiTree(it, holdout, printTrees) }
-//                } catch (exception: ParserException) {
-//                    logger.error("Error while parsing ${exception.filepath}")
-//                } finally {
-//                    progressBar.step()
-//                }
-//            }
-//        }
-//        service.shutdown()
-//        futures.forEach { it.get() }
-//        progressBar.close()
-//    }
 }

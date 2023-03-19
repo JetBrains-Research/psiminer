@@ -2,7 +2,7 @@ package storage
 
 import java.io.File
 
-class StoragesManager(
+class StorageManager(
     private val createStorage: (outputDirectory: File) -> Storage,
     private val baseOutputDirectory: File
 ) {
@@ -10,7 +10,6 @@ class StoragesManager(
     private var storageId = 0
     private val storages = mutableListOf<Storage>()
 
-    @Synchronized
     fun createStorage(): Storage {
         val storagePath = File(baseOutputDirectory, storageId.toString())
         storageId += 1
@@ -21,7 +20,7 @@ class StoragesManager(
 
     fun printStoragesStatistic() {
         storages.forEachIndexed { index, storage ->
-            println(index)
+            println("Statistic for Storage-${storage.outputDirectory.name}")
             storage.printStatistic()
         }
     }

@@ -8,6 +8,7 @@ import labelextractor.LabelExtractor
 import psi.Parser
 import psi.language.JavaHandler
 import psi.language.KotlinHandler
+import psi.language.LanguageHandler
 import psi.language.PhpHandler
 import psi.printTree
 import psi.transformations.PsiTreeTransformation
@@ -16,23 +17,18 @@ import java.util.concurrent.BlockingQueue
 import java.util.concurrent.TimeUnit
 import kotlin.io.path.Path
 
-class RepositoryProcessor(
-    val storage: Storage,
-    collectMetadata: Boolean = false,
-    val labelExtractor: LabelExtractor,
+class Worker(
+    val languageHandler: LanguageHandler,
+    val psiTreeTransformations: List<PsiTreeTransformation>,
     val filters: List<Filter>,
-    psiTreeTransformations: List<PsiTreeTransformation>,
-    val language: Language,
-    private val filesQueue: BlockingQueue<VirtualFile>,
+    val labelExtractor: LabelExtractor,
+    val storage: Storage,
+    val collectMetadata: Boolean = false,
+    val filesQueue: BlockingQueue<VirtualFile>,
     val project: Project,
     private val holdout: Dataset?,
     private val printTrees: Boolean
 ) : Runnable {
-    private val languageHandler = when (language) {
-        Language.Java -> JavaHandler()
-        Language.Kotlin -> KotlinHandler()
-        Language.PHP -> PhpHandler()
-    }
 
     private val parser = Parser(languageHandler, psiTreeTransformations, labelExtractor.granularityLevel)
 

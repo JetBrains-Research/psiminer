@@ -19,7 +19,7 @@ class StorageManager(
     }
 
     fun printStoragesStatistic() {
-        storages.forEachIndexed { index, storage ->
+        storages.forEachIndexed { _, storage ->
             println("Statistic for Storage-${storage.outputDirectory.name}")
             storage.printStatistic()
         }

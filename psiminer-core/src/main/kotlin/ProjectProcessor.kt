@@ -6,10 +6,7 @@ import com.intellij.psi.PsiElement
 import filter.Filter
 import labelextractor.LabelExtractor
 import psi.Parser
-import psi.language.JavaHandler
-import psi.language.KotlinHandler
 import psi.language.LanguageHandler
-import psi.language.PhpHandler
 import psi.printTree
 import psi.transformations.PsiTreeTransformation
 import storage.Storage
@@ -17,18 +14,14 @@ import java.util.concurrent.BlockingQueue
 import java.util.concurrent.TimeUnit
 import kotlin.io.path.Path
 
-class Worker(
+class ProjectProcessor(
     val languageHandler: LanguageHandler,
     val psiTreeTransformations: List<PsiTreeTransformation>,
     val filters: List<Filter>,
     val labelExtractor: LabelExtractor,
     val storage: Storage,
     val collectMetadata: Boolean = false,
-    val filesQueue: BlockingQueue<VirtualFile>,
-    val project: Project,
-    private val holdout: Dataset?,
-    private val printTrees: Boolean
-) : Runnable {
+) {
 
     private val parser = Parser(languageHandler, psiTreeTransformations, labelExtractor.granularityLevel)
 
@@ -50,13 +43,25 @@ class Worker(
         return true
     }
 
-    override fun run() {
+    fun processProject(
+        project: Project,
+        filesQueue: BlockingQueue<VirtualFile>,
+        holdout: Dataset?,
+        printTrees: Boolean
+    ) {
         while (!filesQueue.isEmpty()) {
-            val file = filesQueue.poll(5000, TimeUnit.MILLISECONDS)
-            if (file != null)
+            val file = filesQueue.poll(POLL_TIMEOUT, TimeUnit.MILLISECONDS)
+            if (file != null) {
                 parser.parseFile(file, project) { processPsiTree(it, holdout, printTrees) }
+            }
         }
+    }
+
+    fun closeMetadataStorage() {
         metaDataStorage?.close()
-        Thread.currentThread().interrupt()
+    }
+
+    companion object {
+        const val POLL_TIMEOUT = 5000L
     }
 }

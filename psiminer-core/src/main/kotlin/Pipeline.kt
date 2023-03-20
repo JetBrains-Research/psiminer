@@ -2,6 +2,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import filter.Filter
 import labelextractor.LabelExtractor
+import me.tongfei.progressbar.ProgressBar
 import org.slf4j.LoggerFactory
 import psi.language.JavaHandler
 import psi.language.KotlinHandler
@@ -9,9 +10,10 @@ import psi.language.PhpHandler
 import psi.transformations.PsiTreeTransformation
 import storage.StorageManager
 import java.io.File
+import java.lang.Thread.sleep
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.LinkedBlockingQueue
-import kotlin.system.measureTimeMillis
+import kotlin.concurrent.thread
 
 class Pipeline(
     val language: Language,
@@ -80,31 +82,48 @@ class Pipeline(
     private fun processProject(
         project: Project,
         holdout: Dataset?,
-        numThreads: Int = 1,
-        printTrees: Boolean = false
+        numThreads: Int,
+        printTrees: Boolean
     ) {
-       val filesQueue: BlockingQueue<VirtualFile> = LinkedBlockingQueue(extractProjectFiles(project, language))
-
-        val workers = List(numThreads) {
-            Thread(
-                Worker(
-                    languageHandler = languageHandler,
-                    psiTreeTransformations = psiTreeTransformations,
-                    filters = filters,
-                    labelExtractor = labelExtractor,
-                    storage = storageManager.createStorage(),
-                    collectMetadata = collectMetadata,
-                    filesQueue = filesQueue,
-                    project = project,
-                    holdout = holdout,
-                    printTrees = printTrees
-                )
+        val filesQueue: BlockingQueue<VirtualFile> = LinkedBlockingQueue(extractProjectFiles(project, language))
+        val projectProcessors = List(numThreads) {
+            ProjectProcessor(
+                languageHandler = languageHandler,
+                psiTreeTransformations = psiTreeTransformations,
+                filters = filters,
+                labelExtractor = labelExtractor,
+                storage = storageManager.createStorage(),
+                collectMetadata = collectMetadata
             )
         }
-        val millis = measureTimeMillis {
-            workers.forEach { it.start() }
-            workers.forEach { it.join() }
+        val trackingThread = trackProgress(project.name, filesQueue)
+        val workers = projectProcessors.map { projectProcessor ->
+            thread(start = true) {
+                projectProcessor.processProject(project, filesQueue, holdout, printTrees)
+            }
         }
-        println("Processed ${project.name} in ${millis/1000}s")
+        workers.forEach { it.join() }
+        trackingThread.interrupt()
+        projectProcessors.forEach(ProjectProcessor::closeMetadataStorage)
+    }
+
+    private fun trackProgress(projectName: String, filesQueue: BlockingQueue<VirtualFile>): Thread {
+        val initialSize = filesQueue.size.toLong()
+        val progressBar = ProgressBar("Processing $projectName", initialSize)
+        return thread(start = true) {
+            try {
+                while (!Thread.currentThread().isInterrupted) {
+                    progressBar.stepTo(initialSize - filesQueue.size)
+                    sleep(TRACKING_INTERVAL)
+                }
+            } catch (_: InterruptedException) {
+            } finally {
+                progressBar.stepTo(initialSize - filesQueue.size)
+            }
+        }
+    }
+
+    companion object {
+        const val TRACKING_INTERVAL = 60_000L
     }
 }

@@ -2,8 +2,10 @@ package psi.graphs.graphMiners
 
 import psi.graphs.EdgeType
 import psi.graphs.edgeProviders.common.*
+import psi.graphs.edgeProviders.java.JavaArgumentToParameterEdgeProvider
 import psi.graphs.edgeProviders.java.JavaControlFlowEdgeProvider
 import psi.graphs.edgeProviders.java.JavaDeclarationUsageEdgeProvider
+import psi.graphs.edgeProviders.java.JavaMethodUsageEdgeProvider
 import psi.language.JavaHandler
 
 class JavaGraphMiner(
@@ -14,7 +16,9 @@ class JavaGraphMiner(
         EdgeType.ControlFlow,
         EdgeType.NextUsage,
         EdgeType.ComputedFrom,
-        EdgeType.NextLexicalUsage
+        EdgeType.NextLexicalUsage,
+        EdgeType.MethodDeclarationUsage,
+        EdgeType.ArgumentToParameter,
     )
 ) : GraphMiner(
     edgeTypesToMine,
@@ -25,6 +29,8 @@ class JavaGraphMiner(
         EdgeType.ControlFlow to JavaControlFlowEdgeProvider(),
         EdgeType.NextUsage to NextUsageEdgeProvider(),
         EdgeType.ComputedFrom to ComputedFromEdgeProvider(JavaHandler()),
-        EdgeType.NextLexicalUsage to NextLexicalUsageEdgeProvider()
+        EdgeType.NextLexicalUsage to NextLexicalUsageEdgeProvider(),
+        EdgeType.MethodDeclarationUsage to JavaMethodUsageEdgeProvider(),
+        EdgeType.ArgumentToParameter to JavaArgumentToParameterEdgeProvider(),
     )
 )

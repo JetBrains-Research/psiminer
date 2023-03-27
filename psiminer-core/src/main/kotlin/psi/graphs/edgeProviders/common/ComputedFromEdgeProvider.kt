@@ -10,7 +10,7 @@ class ComputedFromEdgeProvider(
     private val languageHandler: LanguageHandler
 ) : EdgeProvider(
     dependsOn = setOf(EdgeType.Ast),
-    providedType = EdgeType.ComputedFrom
+    providedType = EdgeType.ComputedFrom,
 ) {
     override fun provideEdges(graph: CodeGraph): List<Edge> {
         val newEdges = mutableListOf<Edge>()

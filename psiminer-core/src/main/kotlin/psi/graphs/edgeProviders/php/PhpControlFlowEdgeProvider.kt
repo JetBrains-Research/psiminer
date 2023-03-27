@@ -18,7 +18,7 @@ import psi.graphs.edgeProviders.EdgeProvider
 
 class PhpControlFlowEdgeProvider : EdgeProvider(
     dependsOn = setOf(EdgeType.Ast),
-    providedType = EdgeType.ControlFlow
+    providedType = EdgeType.ControlFlow,
 ) {
 
     private val logger = LoggerFactory.getLogger(javaClass)

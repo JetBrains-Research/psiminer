@@ -47,6 +47,7 @@ val module = SerializersModule {
     polymorphic(LabelExtractorConfig::class) {
         subclass(MethodNameLabelExtractorConfig::class)
         subclass(MethodCommentLabelExtractorConfig::class)
+        subclass(FileLevelMethodNameLabelExtractorConfig::class)
     }
     polymorphic(PsiTreeTransformationConfig::class) {
         subclass(HideLiteralsTransformationConfig::class)
@@ -92,7 +93,8 @@ class PsiExtractor : CliktCommand() {
             filters = config.filters.map { it.createFilter() },
             labelExtractor = config.labelExtractor.createProblem(),
             storage = storage,
-            collectMetadata = config.collectMetadata
+            collectMetadata = config.collectMetadata,
+            applyRecursiveMethodFiltering = config.applyRecursiveMethodFiltering,
         )
 
         try {

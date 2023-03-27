@@ -21,5 +21,6 @@ data class Config(
     // ===== Other parameters =====
     val numThreads: Int = 1,
     val printTrees: Boolean = false,
-    val collectMetadata: Boolean = false
+    val collectMetadata: Boolean = false,
+    val applyRecursiveMethodFiltering: Boolean = false,
 )

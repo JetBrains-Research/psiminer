@@ -2,12 +2,13 @@ package psi.graphs
 
 import com.intellij.psi.PsiElement
 import psi.graphs.edgeProviders.EdgeProvider
+import psi.nodeProperties.isHidden
 import psi.preOrder
 
 class CodeGraph(val root: PsiElement) {
 
     val vertices: List<PsiElement> = root.preOrder()
-    private val verticesSet = vertices.toSet()
+    private val verticesSet = vertices.filter { !it.isHidden }. toSet()
     val edges: EdgeCollection = mutableMapOf()
     private val variableDeclarationCache: MutableMap<PsiElement, PsiElement?> = mutableMapOf()
 

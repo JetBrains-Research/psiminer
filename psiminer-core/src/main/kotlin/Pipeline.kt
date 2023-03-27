@@ -2,7 +2,9 @@ import astminer.storage.MetaDataStorage
 import astminercompatibility.store
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
+import com.intellij.psi.util.PsiTreeUtil
 import filter.Filter
+import filter.filteredMethod
 import labelextractor.LabelExtractor
 import me.tongfei.progressbar.ProgressBar
 import org.slf4j.LoggerFactory
@@ -25,7 +27,8 @@ class Pipeline(
     private val filters: List<Filter>,
     val labelExtractor: LabelExtractor,
     val storage: Storage,
-    val collectMetadata: Boolean = false
+    val collectMetadata: Boolean = false,
+    val applyRecursiveMethodFiltering: Boolean = false,
 ) {
     private var metaDataStorage: MetaDataStorage? = null
 
@@ -93,7 +96,15 @@ class Pipeline(
     }
 
     private fun processPsiTree(psiRoot: PsiElement, holdout: Dataset? = null, printTrees: Boolean = false): Boolean {
-        if (filters.any { !it.validateTree(psiRoot, languageHandler) }) return false
+        if (!applyRecursiveMethodFiltering) {
+            if (filters.any { !it.validateTree(psiRoot, languageHandler) }) return false
+        } else {
+            PsiTreeUtil.collectElementsOfType(psiRoot, languageHandler.methodPsiType).forEach { methodRoot ->
+                if (filters.any { !it.validateTree(methodRoot, languageHandler) }) {
+                    methodRoot.filteredMethod = true
+                }
+            }
+        }
         val labeledTree = labelExtractor.extractLabel(psiRoot, languageHandler) ?: return false
         synchronized(storage) {
             storage.store(labeledTree, holdout)

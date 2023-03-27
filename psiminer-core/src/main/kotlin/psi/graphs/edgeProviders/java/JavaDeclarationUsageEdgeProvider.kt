@@ -10,7 +10,7 @@ import psi.graphs.edgeProviders.EdgeProvider
 
 class JavaDeclarationUsageEdgeProvider : EdgeProvider(
     dependsOn = setOf(EdgeType.Ast),
-    providedType = EdgeType.DeclarationUsage
+    providedType = EdgeType.DeclarationUsage,
 ) {
     override fun provideEdges(graph: CodeGraph): List<Edge> {
         val newEdges = mutableListOf<Edge>()

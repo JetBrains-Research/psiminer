@@ -1,0 +1,38 @@
+{
+  "filters": [
+    {"name": "constructor"},
+    {"name": "empty method"},
+    {
+      "name": "by modifiers",
+      "excludeModifiers": ["abstract"]
+    },
+    {
+      "name": "by annotations",
+      "excludeAnnotations": ["Override"]
+    }
+  ],
+  "label": {"name": "file level method name"},
+  "storage": {
+    "name": "json graph"
+  },
+
+  "language": "Java",
+  "tree transformations": [
+    {"name": "exclude whitespace"},
+    {"name": "exclude empty grammar lists"},
+    {"name": "exclude language symbols"},
+    {
+      "name": "hide literals",
+      "hideNumbers": true,
+      "hideStrings": true
+    },
+    {
+      "name": "remove comments",
+      "removeDoc": true
+    }
+  ],
+  "numThreads": 1,
+  "printTrees": false,
+  "collectMetadata": true,
+  "applyRecursiveMethodFiltering": true
+}

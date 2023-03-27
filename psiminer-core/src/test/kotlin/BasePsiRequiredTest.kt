@@ -1,5 +1,6 @@
 import com.intellij.openapi.application.ReadAction
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
@@ -15,6 +16,7 @@ abstract class BasePsiRequiredTest(private val psiSourceFile: File) : BasePlatfo
 
     abstract val handler: LanguageHandler
     private val methods = mutableMapOf<String, PsiElement>()
+    protected var psiFile: PsiFile? = null
     private class ResourceException(resourceRoot: String) : RuntimeException("Can't find resources in $resourceRoot")
 
     // We should define the root resources folder
@@ -26,7 +28,8 @@ abstract class BasePsiRequiredTest(private val psiSourceFile: File) : BasePlatfo
     override fun setUp() {
         super.setUp()
         val methodsFile = File(testDataPath).resolve(psiSourceFile)
-        myFixture.configureByFile(methodsFile.path).let {
+        psiFile = myFixture.configureByFile(methodsFile.path)
+        psiFile?.let {
             ReadAction.run<Exception> {
                 handler
                     .splitByGranularity(it, GranularityLevel.Method)

@@ -7,7 +7,7 @@ import psi.graphs.edgeProviders.EdgeProvider
 
 class NextUsageEdgeProvider : EdgeProvider(
     dependsOn = setOf(EdgeType.ControlFlow, EdgeType.DeclarationUsage),
-    providedType = EdgeType.NextUsage
+    providedType = EdgeType.NextUsage,
 ) {
     companion object {
         data class NextUsageVertex(

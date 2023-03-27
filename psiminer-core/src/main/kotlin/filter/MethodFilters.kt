@@ -1,5 +1,6 @@
 package filter
 
+import FILTERED_METHOD_KEY
 import com.intellij.psi.PsiElement
 import getCleanCode
 import psi.language.LanguageHandler
@@ -36,3 +37,8 @@ class EmptyMethodFilter : Filter {
         return cleanCode.isNotEmpty()
     }
 }
+
+var PsiElement.filteredMethod: Boolean?
+    get() = getUserData(FILTERED_METHOD_KEY)
+    set(value) = putUserData(FILTERED_METHOD_KEY, value)
+

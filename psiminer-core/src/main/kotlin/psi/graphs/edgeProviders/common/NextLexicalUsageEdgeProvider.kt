@@ -5,7 +5,7 @@ import psi.graphs.edgeProviders.EdgeProvider
 
 class NextLexicalUsageEdgeProvider : EdgeProvider(
     dependsOn = setOf(EdgeType.DeclarationUsage),
-    providedType = EdgeType.NextLexicalUsage
+    providedType = EdgeType.NextLexicalUsage,
 ) {
     override fun provideEdges(graph: CodeGraph): List<Edge> {
         val newEdges = mutableListOf<Edge>()

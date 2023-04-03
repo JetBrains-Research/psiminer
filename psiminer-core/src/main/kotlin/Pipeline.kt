@@ -8,6 +8,7 @@ import me.tongfei.progressbar.ProgressBar
 import org.slf4j.LoggerFactory
 import psi.Parser
 import psi.ParserException
+import psi.language.GoHandler
 import psi.language.JavaHandler
 import psi.language.KotlinHandler
 import psi.language.PhpHandler
@@ -35,6 +36,7 @@ class Pipeline(
         Language.Java -> JavaHandler()
         Language.Kotlin -> KotlinHandler()
         Language.PHP -> PhpHandler()
+        Language.GO -> GoHandler()
     }
 
     private val parser = Parser(languageHandler, psiTreeTransformations, labelExtractor.granularityLevel)

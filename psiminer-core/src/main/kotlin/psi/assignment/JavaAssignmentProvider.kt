@@ -20,14 +20,14 @@ class JavaAssignmentProvider : AssignmentProvider {
             }
         }
 
-    override fun getLeftPart(assignmentRoot: PsiElement): PsiElement? =
+    private fun getLeftPart(assignmentRoot: PsiElement): PsiElement? =
         when (assignmentRoot) {
             is PsiAssignmentExpression -> assignmentRoot.lExpression
             is PsiLocalVariable -> assignmentRoot.nameIdentifier
             else -> throw IncorrectPsiTypeException("Value of class ${assignmentRoot.className()} passed as assignment")
         }
 
-    override fun getRightPart(assignmentRoot: PsiElement): PsiElement? =
+    private fun getRightPart(assignmentRoot: PsiElement): PsiElement? =
         when (assignmentRoot) {
             is PsiAssignmentExpression -> assignmentRoot.rExpression
             is PsiLocalVariable -> assignmentRoot.initializer

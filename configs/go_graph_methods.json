@@ -1,0 +1,25 @@
+{
+  "filters": [
+    {"name": "empty method"},
+    {
+      "name": "by modifiers",
+      "excludeModifiers": ["abstract"]
+    },
+    {
+      "name": "by annotations",
+      "excludeAnnotations": ["Override"]
+    }
+  ],
+  "label": {"name": "method name"},
+  "storage": {
+    "name": "json graph"
+  },
+
+  "language": "GO",
+  "tree transformations": [
+    {"name": "exclude whitespace"}
+  ],
+  "numThreads": 1,
+  "printTrees": false,
+  "collectMetadata": true
+}

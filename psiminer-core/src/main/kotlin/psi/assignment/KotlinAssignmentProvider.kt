@@ -7,14 +7,6 @@ class KotlinAssignmentProvider : AssignmentProvider {
         TODO("Not yet implemented")
     }
 
-    override fun getLeftPart(assignmentRoot: PsiElement): PsiElement? {
-        TODO("Not yet implemented")
-    }
-
-    override fun getRightPart(assignmentRoot: PsiElement): PsiElement? {
-        TODO("Not yet implemented")
-    }
-
     override fun getLeftVariables(assignmentRoot: PsiElement): List<PsiElement> {
         TODO("Not yet implemented")
     }

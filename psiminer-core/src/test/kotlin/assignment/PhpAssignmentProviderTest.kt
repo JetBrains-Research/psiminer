@@ -31,38 +31,6 @@ internal class PhpAssignmentProviderTest : PhpPsiRequiredTest("PhpAssignmentMeth
             "selfAssignment"
         ]
     )
-    fun `test extraction of the left part`(methodName: String) = ReadAction.run<Exception> {
-        val psiRoot = getMethod(methodName)
-        val leftParts = phpAssignmentProvider.getAllAssignments(psiRoot).map { assignmentRoot ->
-            phpAssignmentProvider.getLeftPart(assignmentRoot)?.text ?: ""
-        }
-        assertEquals(correctLeftParts[methodName], leftParts)
-    }
-
-    @ParameterizedTest
-    @ValueSource(
-        strings = [
-            "straightAssignments",
-            "multiAssignment",
-            "selfAssignment"
-        ]
-    )
-    fun `test extraction of the right part`(methodName: String) = ReadAction.run<Exception> {
-        val psiRoot = getMethod(methodName)
-        val rightParts = phpAssignmentProvider.getAllAssignments(psiRoot).map { assignmentRoot ->
-            phpAssignmentProvider.getRightPart(assignmentRoot)?.text ?: ""
-        }
-        assertEquals(correctRightParts[methodName], rightParts)
-    }
-
-    @ParameterizedTest
-    @ValueSource(
-        strings = [
-            "straightAssignments",
-            "multiAssignment",
-            "selfAssignment"
-        ]
-    )
     fun `test extraction of all left part variables`(methodName: String) = ReadAction.run<Exception> {
         val psiRoot = getMethod(methodName)
         val variablesInLeftParts = phpAssignmentProvider.getAllAssignments(psiRoot).map { assignmentRoot ->
@@ -92,16 +60,6 @@ internal class PhpAssignmentProviderTest : PhpPsiRequiredTest("PhpAssignmentMeth
             "straightAssignments" to 3,
             "multiAssignment" to 3,
             "selfAssignment" to 2
-        )
-        val correctLeftParts = mapOf(
-            "straightAssignments" to listOf("\$a", "\$b", "\$c"),
-            "multiAssignment" to listOf("\$a", "\$b", "[\$c, \$d]"),
-            "selfAssignment" to listOf("\$a", "\$a")
-        )
-        val correctRightParts = mapOf(
-            "straightAssignments" to listOf("0", "\$c = array()", "array()"),
-            "multiAssignment" to listOf("\$b = \"ab\"", "\"ab\"", "array(\$a, \$b)"),
-            "selfAssignment" to listOf("0", "4")
         )
         val correctVariablesInLeftParts = mapOf(
             "straightAssignments" to listOf(listOf("\$a"), listOf("\$b"), listOf("\$c")),

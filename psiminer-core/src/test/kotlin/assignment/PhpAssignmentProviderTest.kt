@@ -31,38 +31,6 @@ internal class PhpAssignmentProviderTest : PhpPsiRequiredTest("PhpAssignmentMeth
             "selfAssignment"
         ]
     )
-    fun `test extraction of the left part`(methodName: String) = ReadAction.run<Exception> {
-        val psiRoot = getMethod(methodName)
-        val leftParts = phpAssignmentProvider.getAllAssignments(psiRoot).map { assignmentRoot ->
-            phpAssignmentProvider.getLeftPart(assignmentRoot)?.text ?: ""
-        }
-        assertEquals(correctLeftParts[methodName], leftParts)
-    }
-
-    @ParameterizedTest
-    @ValueSource(
-        strings = [
-            "straightAssignments",
-            "multiAssignment",
-            "selfAssignment"
-        ]
-    )
-    fun `test extraction of the right part`(methodName: String) = ReadAction.run<Exception> {
-        val psiRoot = getMethod(methodName)
-        val rightParts = phpAssignmentProvider.getAllAssignments(psiRoot).map { assignmentRoot ->
-            phpAssignmentProvider.getRightPart(assignmentRoot)?.text ?: ""
-        }
-        assertEquals(correctRightParts[methodName], rightParts)
-    }
-
-    @ParameterizedTest
-    @ValueSource(
-        strings = [
-            "straightAssignments",
-            "multiAssignment",
-            "selfAssignment"
-        ]
-    )
     fun `test extraction of all left part variables`(methodName: String) = ReadAction.run<Exception> {
         val psiRoot = getMethod(methodName)
         val variablesInLeftParts = phpAssignmentProvider.getAllAssignments(psiRoot).map { assignmentRoot ->

@@ -4,10 +4,7 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.TestInstance
-import psi.language.JavaHandler
-import psi.language.KotlinHandler
-import psi.language.LanguageHandler
-import psi.language.PhpHandler
+import psi.language.*
 import java.io.File
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -79,5 +76,14 @@ open class PhpPsiRequiredTest(source: String) : BasePsiRequiredTest(dataFolder.r
     companion object {
         val dataFolder = File("php")
         const val ext = "php"
+    }
+}
+
+open class PythonPsiRequiredTest(source: String) : BasePsiRequiredTest(dataFolder.resolve("$source.$ext")) {
+    override val handler: LanguageHandler = PythonHandler()
+
+    companion object {
+        val dataFolder = File("python")
+        const val ext = "py"
     }
 }

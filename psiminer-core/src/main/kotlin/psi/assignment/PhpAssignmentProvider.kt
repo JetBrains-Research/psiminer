@@ -25,7 +25,7 @@ class PhpAssignmentProvider : AssignmentProvider {
             }
         }
 
-    override fun getLeftPart(assignmentRoot: PsiElement): PsiElement? =
+    private fun getLeftPart(assignmentRoot: PsiElement): PsiElement? =
         when (assignmentRoot) {
             is SelfAssignmentExpression -> assignmentRoot.variable
             is MultiassignmentExpression -> assignmentRoot.variable ?: assignmentRoot.firstChild
@@ -33,7 +33,7 @@ class PhpAssignmentProvider : AssignmentProvider {
             else -> throw IncorrectPsiTypeException("Value of class ${assignmentRoot.className()} passed as assignment")
         }
 
-    override fun getRightPart(assignmentRoot: PsiElement): PsiElement? =
+    private fun getRightPart(assignmentRoot: PsiElement): PsiElement? =
         when (assignmentRoot) {
             is AssignmentExpression -> assignmentRoot.value
             else -> throw IncorrectPsiTypeException("Value of class ${assignmentRoot.className()} passed as assignment")

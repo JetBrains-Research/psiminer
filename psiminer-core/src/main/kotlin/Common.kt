@@ -26,7 +26,8 @@ enum class Language(val extensions: List<String>) {
     Java(listOf("java")),
     Kotlin(listOf("kt", "kts")),
     PHP(listOf("php")),
-    Python(listOf("py"))
+    Python(listOf("py")),
+    Ruby(listOf("rb"))
 }
 
 /*

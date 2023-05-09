@@ -87,3 +87,12 @@ open class PythonPsiRequiredTest(source: String) : BasePsiRequiredTest(dataFolde
         const val ext = "py"
     }
 }
+
+open class RubyPsiRequiredTest(source: String) : BasePsiRequiredTest(dataFolder.resolve("$source.$ext")) {
+    override val handler: LanguageHandler = RubyHandler()
+
+    companion object {
+        val dataFolder = File("ruby")
+        const val ext = "rb"
+    }
+}

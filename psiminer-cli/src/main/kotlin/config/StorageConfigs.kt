@@ -6,6 +6,7 @@ import kotlinx.serialization.Serializable
 import psi.graphs.graphMiners.JavaGraphMiner
 import psi.graphs.graphMiners.PhpGraphMiner
 import psi.graphs.graphMiners.PythonGraphMiner
+import psi.graphs.graphMiners.RubyGraphMiner
 import storage.tree.JsonTreeStorage
 import storage.Storage
 import storage.graphs.JsonGraphStorage
@@ -55,6 +56,7 @@ class JsonGraphStorageConfig : StorageConfig() {
             Language.Java -> JsonGraphStorage(outputDirectory, JavaGraphMiner())
             Language.PHP -> JsonGraphStorage(outputDirectory, PhpGraphMiner())
             Language.Python -> JsonGraphStorage(outputDirectory, PythonGraphMiner())
+            Language.Ruby -> JsonGraphStorage(outputDirectory, RubyGraphMiner())
             else -> throw UnsupportedStorageType("json graph", language.name)
         }
 }

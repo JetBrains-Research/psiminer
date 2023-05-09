@@ -15,3 +15,5 @@ interface KotlinTreeTransformation : PsiTreeTransformation
 interface PhpTreeTransformation : PsiTreeTransformation
 
 interface PythonTreeTransformation : PsiTreeTransformation
+
+interface RubyTreeTransformation : PsiTreeTransformation

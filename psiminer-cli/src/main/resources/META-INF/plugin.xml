@@ -12,6 +12,8 @@
     <depends>org.jetbrains.kotlin</depends>
     <depends>com.jetbrains.php</depends>
     <depends>Pythonid</depends>
+    <depends>org.jetbrains.plugins.ruby</depends>
+    <depends>org.jetbrains.plugins.yaml</depends>
 
 
     <extensions defaultExtensionNs="com.intellij">

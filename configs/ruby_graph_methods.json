@@ -1,0 +1,18 @@
+{
+  "filters": [
+    {"name": "constructor"},
+    {"name": "empty method"}
+  ],
+  "label": {"name": "method name"},
+  "storage": {
+    "name": "json graph"
+  },
+
+  "language": "Ruby",
+  "tree transformations": [
+    {"name": "exclude whitespace"}
+  ],
+  "numThreads": 1,
+  "printTrees": false,
+  "collectMetadata": true
+}

@@ -2,6 +2,7 @@ package psi.graphs.graphMiners
 
 import psi.graphs.EdgeType
 import psi.graphs.edgeProviders.common.*
+import psi.graphs.edgeProviders.python.PythonCallDeclarationEdgeProvider
 import psi.graphs.edgeProviders.python.PythonControlFlowEdgeProvider
 import psi.graphs.edgeProviders.python.PythonDeclarationUsageEdgeProvider
 import psi.language.PythonHandler
@@ -14,7 +15,8 @@ class PythonGraphMiner(
         EdgeType.ControlFlow,
         EdgeType.NextUsage,
         EdgeType.ComputedFrom,
-        EdgeType.NextLexicalUsage
+        EdgeType.NextLexicalUsage,
+        EdgeType.CallDeclaration
     )
 ) : GraphMiner(
     edgeTypesToMine,
@@ -25,6 +27,7 @@ class PythonGraphMiner(
         EdgeType.NextUsage to NextUsageEdgeProvider(),
         EdgeType.ComputedFrom to ComputedFromEdgeProvider(PythonHandler()),
         EdgeType.NextLexicalUsage to NextLexicalUsageEdgeProvider(),
-        EdgeType.ControlFlow to PythonControlFlowEdgeProvider()
+        EdgeType.ControlFlow to PythonControlFlowEdgeProvider(),
+        EdgeType.CallDeclaration to PythonCallDeclarationEdgeProvider()
     )
 )

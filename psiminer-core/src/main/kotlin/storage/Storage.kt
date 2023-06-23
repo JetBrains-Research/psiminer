@@ -7,7 +7,7 @@ import java.io.PrintWriter
 
 abstract class Storage(val outputDirectory: File) {
     private val datasetFileWriters = mutableMapOf<Dataset?, PrintWriter>()
-    private val datasetStatistic = mutableMapOf<Dataset?, Int>()
+    private val datasetStatistic = mutableMapOf<Dataset?, Long>()
 
     init {
         outputDirectory.mkdirs()

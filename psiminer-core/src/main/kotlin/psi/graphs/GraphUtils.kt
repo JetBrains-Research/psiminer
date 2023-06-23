@@ -14,6 +14,7 @@ enum class EdgeType {
     ControlElement,
     ReturnsTo,
     ThrowsTo,
+    CallDeclaration,
 
     // DFG edges
     DeclarationUsage,

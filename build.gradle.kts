@@ -24,7 +24,11 @@ allprojects {
     repositories {
         mavenCentral()
         maven(url = "https://packages.jetbrains.team/maven/p/astminer/astminer")
+        maven("https://packages.jetbrains.team/maven/p/big-code/bigcode")
     }
+
+    val utilitiesProjectVersion = "1.0"
+    val utilitiesProjectId = "org.jetbrains.research"
 
     dependencies {
         implementation("org.jetbrains.kotlin:kotlin-stdlib:1.7.21")
@@ -37,14 +41,9 @@ allprojects {
 
         detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.18.1")
 
-        implementation("${getProperty("utilitiesProjectName")}:plugin-utilities-core") {
-            version {
-                branch = getProperty("utilitiesBranch")
-            }
-            exclude("org.slf4j", "slf4j-simple")
-            exclude("org.slf4j", "slf4j-api")
-            exclude("org.slf4j", "slf4j")
-        }
+        implementation("$utilitiesProjectId:plugin-utilities-core:$utilitiesProjectVersion")
+        implementation("$utilitiesProjectId:plugin-utilities-test:$utilitiesProjectVersion")
+        implementation("$utilitiesProjectId:plugin-utilities-python:$utilitiesProjectVersion")
     }
 
     configurations.all {

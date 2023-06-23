@@ -1,8 +1,5 @@
 {
-  "filters": [
-    {"name": "constructor"},
-    {"name": "empty method"}
-  ],
+  "filters": [],
   "label": {"name": "method name"},
   "storage": {
     "name": "json graph"
@@ -12,7 +9,7 @@
   "tree transformations": [
     {"name": "exclude whitespace"}
   ],
-  "numThreads": 1,
+  "numThreads": 4,
   "printTrees": false,
   "collectMetadata": true
 }

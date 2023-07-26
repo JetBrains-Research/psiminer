@@ -82,4 +82,14 @@ class PhpFlowMethods
         }
         return 2;
     }
+
+    public function forWithReturn()
+    {
+        for ($i = 0; $i < 2; $i++) {
+            if ($i == 1) {
+                return;
+            }
+        }
+        $e = 5;
+    }
 }

@@ -1,6 +1,8 @@
-# `PSIMiner`
+# `[archived] PSIMiner`
 
 [![JetBrains Research](https://jb.gg/badges/research.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
+
+**Repository is archived as it requires a major rework following the updates to the IntelliJ Platform.**
 
 `PSIMiner` — a tool for processing PSI trees from the IntelliJ Platform.
 PSI trees contain code syntax trees as well as functions to work with them,
